@@ -39,6 +39,7 @@ class KuiklyPaint : Paint {
     override var strokeMiterLimit: Float = 4f
     override var style: PaintingStyle = PaintingStyle.Fill
     override var brush: Brush? = null
+    override var pathEffect: PathEffect? = null
 }
 
 interface Paint {
@@ -101,4 +102,9 @@ interface Paint {
     var strokeMiterLimit: Float
 
     var brush: Brush?
+
+    /**
+     * Specifies the [PathEffect] applied to the geometry of the shape that is drawn
+     */
+    var pathEffect: PathEffect?
 }

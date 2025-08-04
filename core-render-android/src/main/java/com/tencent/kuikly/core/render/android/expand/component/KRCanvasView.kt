@@ -17,11 +17,14 @@ package com.tencent.kuikly.core.render.android.expand.component
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.ComposePathEffect
+import android.graphics.CornerPathEffect
 import android.graphics.DashPathEffect
 import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PathEffect
 import android.graphics.Region
 import android.graphics.Shader
 import android.graphics.Typeface
@@ -79,6 +82,7 @@ class KRCanvasView(context: Context) : View(context), IKuiklyRenderViewExport {
             LINE_CAP -> setLineCap(params)
             LINE_WIDTH -> setLineWidth(params)
             LINE_DASH -> setLineDash(params)
+            LINE_CORNER -> setLineCorner(params)
             STROKE_STYLE -> setStrokeStyle(params)
             FILL_STYLE -> setFillStyle(params)
             BEGIN_PATH -> beginPath()
@@ -155,6 +159,13 @@ class KRCanvasView(context: Context) : View(context), IKuiklyRenderViewExport {
             currentDrawStyle.lineDash(DashPathEffect(intervals, 0f))
         }
     }
+
+    private fun setLineCorner(params: String?) {
+        val json = params.toJSONObjectSafely()
+        val radius = json.optDouble("radius", 0.0)
+        currentDrawStyle.lineCorner(CornerPathEffect(radius.toFloat()))
+    }
+
 
     private fun setStrokeStyle(params: String?) {
         val paramsJSON = params.toJSONObjectSafely()
@@ -260,6 +271,7 @@ class KRCanvasView(context: Context) : View(context), IKuiklyRenderViewExport {
                 lineWidth = currentDrawStyle.lineWidth
                 drawStyle = currentDrawStyle.drawStyle
                 lineDash = currentDrawStyle.lineDash
+                lineCorner = currentDrawStyle.lineCorner
             })
             if (drawOperationList.contains(it)) {
                 // 已经含有currentDrawOperation的话移除掉，保证绘制的指令时最新的
@@ -503,6 +515,8 @@ class KRCanvasView(context: Context) : View(context), IKuiklyRenderViewExport {
         private const val SKEW = "skew"
         private const val TRANSFORM = "transform"
         private const val LINE_DASH = "lineDash"
+        private const val LINE_CORNER = "lineCorner"
+
     }
 }
 
@@ -603,6 +617,9 @@ private class DrawStyle(private val kuiklyContext: IKuiklyRenderContext?) {
     var lineCap = Paint.Cap.BUTT
     var lineWidth = 0f
     var lineDash: DashPathEffect? = null
+    var lineDashSetTime = 0
+    var lineCorner: CornerPathEffect? = null
+    var lineCornerSetTime = 0
     var drawStyle = Paint.Style.STROKE
     var fillColor: Int? = null
     var fillGradient: LinearGradient? = null
@@ -633,6 +650,10 @@ private class DrawStyle(private val kuiklyContext: IKuiklyRenderContext?) {
         this.lineDash = dashPathEffect
     }
 
+    fun lineCorner(cornerPathEffect: CornerPathEffect?): DrawStyle = apply {
+        this.lineCorner = cornerPathEffect
+    }
+
     fun fillStyle(style: String): DrawStyle = apply {
         fillGradient = tryParseGradient(style)
         fillColor = if (fillGradient == null) {
@@ -655,6 +676,21 @@ private class DrawStyle(private val kuiklyContext: IKuiklyRenderContext?) {
         this.drawStyle = style
     }
 
+    fun getCombineEffect(): PathEffect? {
+        if (lineCorner == null) {
+            return lineDash
+        }
+        if (lineDash == null) {
+            return lineCorner
+        }
+
+        if (lineDashSetTime > lineCornerSetTime) {
+            return ComposePathEffect(lineCorner, lineDash)
+        } else {
+            return ComposePathEffect(lineDash, lineCorner)
+        }
+    }
+
     fun applyStyle(paint: Paint) {
         paint.strokeCap = lineCap
         paint.style = drawStyle
@@ -665,7 +701,7 @@ private class DrawStyle(private val kuiklyContext: IKuiklyRenderContext?) {
             internalApplyStyle(strokeGradient, strokeColor, paint)
             paint.strokeWidth = lineWidth
         }
-        paint.setPathEffect(lineDash)
+        paint.setPathEffect(getCombineEffect())
     }
 
     private fun internalApplyStyle(gradient: LinearGradient?, color: Int?, paint: Paint) {

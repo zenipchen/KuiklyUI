@@ -38,6 +38,7 @@ import com.tencent.kuikly.compose.ui.unit.IntOffset
 import com.tencent.kuikly.compose.ui.unit.IntSize
 import com.tencent.kuikly.compose.ui.unit.LayoutDirection
 import com.tencent.kuikly.compose.ui.KuiklyCanvas
+import com.tencent.kuikly.compose.ui.graphics.PathEffect
 
 /**
  * Implementation of [DrawScope] that issues drawing commands
@@ -100,7 +101,7 @@ class CanvasDrawScope : DrawScope {
         end: Offset,
         strokeWidth: Float,
         cap: StrokeCap,
-//        pathEffect: PathEffect?,
+        pathEffect: PathEffect?,
         @FloatRange(from = 0.0, to = 1.0) alpha: Float,
 //        colorFilter: ColorFilter?,
 //        blendMode: BlendMode
@@ -113,7 +114,7 @@ class CanvasDrawScope : DrawScope {
             Stroke.DefaultMiter,
             cap,
             StrokeJoin.Miter,
-//            pathEffect,
+            pathEffect,
             alpha,
 //            colorFilter,
 //            blendMode
@@ -129,7 +130,7 @@ class CanvasDrawScope : DrawScope {
         end: Offset,
         strokeWidth: Float,
         cap: StrokeCap,
-//        pathEffect: PathEffect?,
+        pathEffect: PathEffect?,
         @FloatRange(from = 0.0, to = 1.0) alpha: Float,
 //        colorFilter: ColorFilter?,
 //        blendMode: BlendMode
@@ -142,7 +143,7 @@ class CanvasDrawScope : DrawScope {
             Stroke.DefaultMiter,
             cap,
             StrokeJoin.Miter,
-//            pathEffect,
+            pathEffect,
             alpha,
 //            colorFilter,
 //            blendMode
@@ -463,7 +464,7 @@ class CanvasDrawScope : DrawScope {
         color: Color,
         strokeWidth: Float,
         cap: StrokeCap,
-//        pathEffect: PathEffect?,
+        pathEffect: PathEffect?,
         @FloatRange(from = 0.0, to = 1.0) alpha: Float,
 //        colorFilter: ColorFilter?,
 //        blendMode: BlendMode
@@ -476,7 +477,7 @@ class CanvasDrawScope : DrawScope {
             Stroke.DefaultMiter,
             cap,
             StrokeJoin.Miter,
-//            pathEffect,
+            pathEffect,
             alpha,
 //            colorFilter,
 //            blendMode
@@ -492,7 +493,7 @@ class CanvasDrawScope : DrawScope {
         brush: Brush,
         strokeWidth: Float,
         cap: StrokeCap,
-//        pathEffect: PathEffect?,
+        pathEffect: PathEffect?,
         @FloatRange(from = 0.0, to = 1.0) alpha: Float,
 //        colorFilter: ColorFilter?,
 //        blendMode: BlendMode
@@ -505,7 +506,7 @@ class CanvasDrawScope : DrawScope {
             Stroke.DefaultMiter,
             cap,
             StrokeJoin.Miter,
-//            pathEffect,
+            pathEffect,
             alpha,
 //            colorFilter,
 //            blendMode
@@ -596,7 +597,7 @@ class CanvasDrawScope : DrawScope {
                         if (strokeCap != drawStyle.cap) strokeCap = drawStyle.cap
                         if (strokeMiterLimit != drawStyle.miter) strokeMiterLimit = drawStyle.miter
 //                        if (strokeJoin != drawStyle.join) strokeJoin = drawStyle.join
-//                        if (pathEffect != drawStyle.pathEffect) pathEffect = drawStyle.pathEffect
+                        if (pathEffect != drawStyle.pathEffect) pathEffect = drawStyle.pathEffect
                     }
         }
 
@@ -652,7 +653,7 @@ class CanvasDrawScope : DrawScope {
         miter: Float,
         cap: StrokeCap,
         join: StrokeJoin,
-//        pathEffect: PathEffect?,
+        pathEffect: PathEffect?,
         @FloatRange(from = 0.0, to = 1.0) alpha: Float,
 //        colorFilter: ColorFilter?,
 //        blendMode: BlendMode,
@@ -670,7 +671,7 @@ class CanvasDrawScope : DrawScope {
             if (this.strokeMiterLimit != miter) this.strokeMiterLimit = miter
 //            if (this.strokeCap != cap) this.strokeCap = cap
 //            if (this.strokeJoin != join) this.strokeJoin = join
-//            if (this.pathEffect != pathEffect) this.pathEffect = pathEffect
+            if (this.pathEffect != pathEffect) this.pathEffect = pathEffect
 //            if (this.filterQuality != filterQuality) this.filterQuality = filterQuality
         }
 
@@ -680,7 +681,7 @@ class CanvasDrawScope : DrawScope {
         miter: Float,
         cap: StrokeCap,
         join: StrokeJoin,
-//        pathEffect: PathEffect?,
+        pathEffect: PathEffect?,
         @FloatRange(from = 0.0, to = 1.0) alpha: Float,
 //        colorFilter: ColorFilter?,
 //        blendMode: BlendMode,
@@ -697,7 +698,7 @@ class CanvasDrawScope : DrawScope {
         if (this.strokeMiterLimit != miter) this.strokeMiterLimit = miter
 //        if (this.strokeCap != cap) this.strokeCap = cap
 //        if (this.strokeJoin != join) this.strokeJoin = join
-//        if (this.pathEffect != pathEffect) this.pathEffect = pathEffect
+        if (this.pathEffect != pathEffect) this.pathEffect = pathEffect
 //        if (this.filterQuality != filterQuality) this.filterQuality = filterQuality
     }
 

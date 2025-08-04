@@ -63,6 +63,7 @@ internal class KuiklyCanvas : Canvas {
             }
             fill()
         } else {
+            paint.pathEffect?.applyTo(this)
             strokeStyle(paint.toKuiklyColor())
             lineWidthWithDensity(paint.strokeWidth)
             if (strokeCap != paint.strokeCap) {
@@ -166,6 +167,7 @@ internal class KuiklyCanvas : Canvas {
             lineToWithDensity(p2.x, p2.y)
             strokeStyle(paint.toKuiklyColor())
             lineWidthWithDensity(paint.strokeWidth)
+            paint.pathEffect?.applyTo(context)
             stroke()
         }
     }
