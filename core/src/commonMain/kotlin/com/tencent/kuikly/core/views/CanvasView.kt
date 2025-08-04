@@ -113,6 +113,7 @@ interface ContextApi {
     fun fillStyle(linearGradient: CanvasLinearGradient)
     fun lineWidth(width: Float)
     fun setLineDash(intervals: List<Float>)
+    fun setLineCorner(radius: Float)
     fun lineCapRound()
     fun lineCapButt()
     fun lineCapSquare()
@@ -340,6 +341,15 @@ open class CanvasContext(private val renderView: RenderView, private val pagerId
             params.put("intervals", jsonArray)
         }
         renderView.callMethod("lineDash", params.toString())
+    }
+
+    /**
+     * 设置线条圆角
+     */
+    override fun setLineCorner(radius: Float) {
+        val params = JSONObject()
+        params.put("radius", radius)
+        renderView.callMethod("lineCorner", params.toString())
     }
 
     /**
