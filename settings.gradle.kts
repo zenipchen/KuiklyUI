@@ -36,4 +36,10 @@ project(":miniApp").buildFileName = buildFileName
 include(":compose")
 project(":compose").buildFileName = buildFileName
 
+// Desktop JVM app
+include(":desktopApp")
+
+// Desktop Render Layer (桌面端渲染层)
+include(":desktop-render-layer")
+
 rootProject.buildFileName = buildFileName

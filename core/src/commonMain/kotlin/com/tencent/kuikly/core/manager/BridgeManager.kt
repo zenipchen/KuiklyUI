@@ -124,9 +124,16 @@ object BridgeManager {
                 PagerManager.fireCallBack(arg0 as String, arg1 as String, arg2)
             }
             KotlinMethod.FIRE_VIEW_EVENT -> {
+
+                val arg1ToInt = if (arg1 is String) {
+                    arg1.toInt()
+                } else {
+                    arg1 as Int
+                }
+
                 PagerManager.fireViewEvent(
                     arg0 as String,
-                    arg1 as Int,
+                    arg1ToInt,
                     arg2 as String,
                     arg3 as? String
                 )

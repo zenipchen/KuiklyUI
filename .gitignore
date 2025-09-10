@@ -45,3 +45,7 @@ proto/**/*.kt
 .kotlin
 /compose/compose.podspec
 /core/core.podspec
+/desktopApp/jcef-bundle/
+/desktopApp/bin
+/desktopWebRender/bin
+/jcef-bundle

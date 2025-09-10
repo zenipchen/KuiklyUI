@@ -80,6 +80,7 @@ object Output {
 
 object MavenConfig {
     const val GROUP = "com.tencent.kuikly-open"
+    const val GROUP_NO_OPEN = "com.tencent.kuikly"
     const val GROUP_WEB = "com.tencent.kuikly-open.core-render-web"
     const val REPO_URL = ""
     const val SNAPSHOT_REPO_URL = "https://central.sonatype.com/repository/maven-snapshots/"

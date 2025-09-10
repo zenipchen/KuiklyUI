@@ -36,6 +36,12 @@ publishing {
 }
 
 kotlin {
+    // JVM target for Desktop
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "17"
+        }
+    }
 
     androidTarget {
         publishLibraryVariantsGroupedByFlavor = true
