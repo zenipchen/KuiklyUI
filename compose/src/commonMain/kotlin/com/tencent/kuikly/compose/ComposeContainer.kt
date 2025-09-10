@@ -243,6 +243,10 @@ open class ComposeContainer :
         return pageData.isAccessibilityRunning
     }
 
+    override fun isAccessibilityRunning(): Boolean {
+        return pageData.isAccessibilityRunning
+    }
+
     /**
      * 当KuiklyCompose和原生Compose同时存在时候，通过覆盖该方法禁止KuiklyCompose页面在后台时
      * 会继续消费Compose Runtime 共享 Snapshot的变更。解决原生Compose的重组状态偶现丢失的问题。
