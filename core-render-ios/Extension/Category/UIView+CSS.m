@@ -856,7 +856,44 @@
     self.layer.anchorPoint = anchorPoint;
     self.layer.position = newPosition;
 }
+
+- (NSString *)css_accessibilityFocus {
+    return objc_getAssociatedObject(self, @selector(css_accessibilityFocus));
+}
+
+- (void)setCss_accessibilityFocus:(NSString *)css_accessibilityFocus {
+    if (self.css_accessibilityFocus != css_accessibilityFocus) {
+        objc_setAssociatedObject(self, @selector(css_accessibilityFocus), css_accessibilityFocus, OBJC_ASSOCIATION_RETAIN);
+        if (css_accessibilityFocus && css_accessibilityFocus.length > 0) {
+            // 解析 "1 1" 格式的值
+            NSArray<NSString *> *values = [css_accessibilityFocus componentsSeparatedByString:@" "];
+            if (values.count >= 2) {
+                BOOL isClickable = [values[0] boolValue];
+                BOOL isLongClickable = [values[1] boolValue];
+
+                // 设置无障碍特性
+                UIAccessibilityTraits traits = UIAccessibilityTraitNone;
+
+                if (isClickable) {
+                    traits |= UIAccessibilityTraitButton;
+                }
+
+                if (isLongClickable) {
+                    traits |= UIAccessibilityTraitAllowsDirectInteraction;
+                }
+
+                // 如果有点击功能，确保组件是可访问的
+                if (isClickable || isLongClickable) {
+                    self.isAccessibilityElement = YES;
+                    self.accessibilityTraits = traits;
+                }
+            }
+        }
+    }
+}
+
 @end
+
 
 
 
