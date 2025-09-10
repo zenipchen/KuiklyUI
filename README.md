@@ -13,6 +13,7 @@ English | [简体中文](./README-zh_CN.md) | [Homepage](https://framework.tds.q
 - [X] HarmonyOS
 - [X] Web (Beta)
 - [X] Mini Programs (Beta)
+- [X] **Desktop (New)** - Windows / macOS / Linux
 
 Since its launch, `Kuikly` has gained wide recognition from the business. It has been used by many products such as QQ, QQ Music, QQ Browser, Tencent News, Sogou Input Method, MyApp Hub(Tencent's app store), WeSing, Kugou Music, Kuwo Music, Tencent Self-selected Stock, ima.copilot, Weishi, etc.
 ## Key Features
@@ -48,6 +49,7 @@ Since its launch, `Kuikly` has gained wide recognition from the business. It has
 ├── iosApp                 # iOS host shell project
 ├── ohosApp                # Ohos host shell project
 ├── miniApp                # miniApp host shell project
+├── desktopApp             # Desktop host shell project (JCEF-based)
 ├── h5App                  # h5App host shell project
 ├── compose                # Cross-platform module implementing Compose UI, layout, and Kuikly bridging capabilities
     ├── src

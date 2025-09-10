@@ -9,6 +9,16 @@ plugins {
 }
 
 kotlin {
+    // JVM target for Desktop
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+                freeCompilerArgs += "-Xjvm-default=all"
+            }
+        }
+    }
+
     androidTarget {
         compilations.all {
             kotlinOptions {

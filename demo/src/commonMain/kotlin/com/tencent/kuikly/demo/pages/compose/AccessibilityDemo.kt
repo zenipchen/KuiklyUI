@@ -49,6 +49,7 @@ import com.tencent.kuikly.compose.ui.Alignment
 import com.tencent.kuikly.compose.ui.Modifier
 import com.tencent.kuikly.compose.ui.focus.FocusRequester
 import com.tencent.kuikly.compose.ui.focus.focusRequester
+import com.tencent.kuikly.compose.ui.platform.inspectable
 import com.tencent.kuikly.compose.ui.semantics.CustomAccessibilityAction
 import com.tencent.kuikly.compose.ui.semantics.Role
 import com.tencent.kuikly.compose.ui.semantics.clearAndSetSemantics
@@ -61,6 +62,7 @@ import com.tencent.kuikly.compose.ui.semantics.stateDescription
 import com.tencent.kuikly.compose.ui.unit.LayoutDirection
 import com.tencent.kuikly.compose.ui.unit.dp
 import com.tencent.kuikly.core.annotations.Page
+import de.drick.compose.hotpreview.HotPreview
 import kotlinx.coroutines.delay
 
 /**
@@ -80,6 +82,7 @@ internal class AccessibilityDemoPager : ComposeContainer() {
     }
 }
 
+@HotPreview(widthDp = 300, heightDp = 480)
 @Composable
 fun AccessibilityDemo() {
     LazyColumn(

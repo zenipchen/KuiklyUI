@@ -34,6 +34,10 @@ fun String.ohosFamily(): Boolean {
     return contains("ohos")
 }
 
+fun String.jvmFamily(): Boolean {
+    return contains("jvm") && !contains("android")
+}
+
 private fun KSClassDeclaration.pageAnnotateValue(): String {
     var name = ""
     annotations.toList()[0].arguments.forEach {

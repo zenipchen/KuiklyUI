@@ -1,0 +1,83 @@
+<idea-plugin>
+    <id>com.tencent.kuikly.plugin</id>
+    <name>Kuikly Preview</name>
+    <vendor email="kuikly@tencent.com" url="https://github.com/Tencent/KuiklyUI">
+        Tencent Kuikly Team
+    </vendor>
+    
+    <description><![CDATA[
+        <h2>Kuikly Preview - 实时预览插件</h2>
+        
+        <p>为 Kuikly 跨平台 UI 框架提供实时预览功能，让开发者在编码时即时看到 UI 效果。</p>
+        
+        <h3>主要功能</h3>
+        <ul>
+            <li>✨ 实时预览 @Page 注解的页面</li>
+            <li>🔥 代码修改自动热重载</li>
+            <li>📱 多设备尺寸模拟（手机、平板）</li>
+            <li>🔧 集成 Chrome DevTools 调试</li>
+            <li>🚀 基于 Web 渲染，100% 真实效果</li>
+        </ul>
+        
+        <h3>快速开始</h3>
+        <ol>
+            <li>打开 Kuikly 项目</li>
+            <li>构建 h5App: <code>./gradlew :h5App:jsBrowserDevelopmentWebpack</code></li>
+            <li>打开预览窗口: View -> Tool Windows -> Kuikly Preview</li>
+            <li>选择页面并开始编码！</li>
+        </ol>
+        
+        <p>详细文档: <a href="https://github.com/Tencent/KuiklyUI">KuiklyUI GitHub</a></p>
+    ]]></description>
+    
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.kotlin</depends>
+    
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Tool Window -->
+        <toolWindow
+            id="Kuikly Preview"
+            anchor="right"
+            icon="/icons/kuikly.svg"
+            factoryClass="com.tencent.kuikly.plugin.ui.KuiklyPreviewToolWindowFactory"/>
+        
+        <!-- Project Service -->
+        <projectService
+            serviceImplementation="com.tencent.kuikly.plugin.KuiklyPluginService"/>
+    </extensions>
+    
+    <actions>
+        <!-- Main Menu -->
+        <group id="KuiklyPreviewMenu" text="Kuikly" popup="true">
+            <add-to-group group-id="MainMenu" anchor="last"/>
+            
+            <action
+                id="Kuikly.OpenPreview"
+                class="com.tencent.kuikly.plugin.actions.OpenPreviewAction"
+                text="打开预览窗口"
+                description="打开 Kuikly 预览窗口"
+                icon="/icons/kuikly.svg">
+                <keyboard-shortcut first-keystroke="ctrl alt P" keymap="$default"/>
+            </action>
+            
+            <action
+                id="Kuikly.RefreshPreview"
+                class="com.tencent.kuikly.plugin.actions.RefreshPreviewAction"
+                text="刷新预览"
+                description="刷新 Kuikly 预览">
+                <keyboard-shortcut first-keystroke="ctrl alt R" keymap="$default"/>
+            </action>
+        </group>
+        
+        <!-- Editor Popup Menu -->
+        <action
+            id="Kuikly.PreviewThisPage"
+            class="com.tencent.kuikly.plugin.actions.PreviewCurrentPageAction"
+            text="预览此页面"
+            description="预览当前 Kuikly 页面"
+            icon="/icons/kuikly.svg">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+    </actions>
+</idea-plugin>
+
