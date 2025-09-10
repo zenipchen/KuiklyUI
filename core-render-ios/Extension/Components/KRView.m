@@ -21,6 +21,10 @@
 
 /// 层级置顶方法
 #define CSS_METHOD_BRING_TO_FRONT @"bringToFront"
+/// 无障碍聚焦
+#define CSS_METHOD_ACCESSIBILITY_FOCUS @"accessibilityFocus"
+/// 无障碍朗读语音
+#define CSS_METHOD_ACCESSIBILITY_ANNOUNCE @"accessibilityAnnounce"
 
 @interface KRView()
 /**禁止屏幕刷新帧事件**/

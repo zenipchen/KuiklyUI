@@ -273,6 +273,15 @@ abstract class DeclarativeBaseView<A : Attr, E : Event> : AbstractBaseView<A, E>
     }
 
     /**
+     * 无障碍焦点触发，如果包含无障碍描述会触发朗读
+     */
+    fun accessibilityFocus() {
+        performTaskWhenRenderViewDidLoad {
+            renderView?.callMethod("accessibilityFocus", null, null)
+        }
+    }
+
+    /**
      * 获取View截图
      * 注：暂时仅支持鸿蒙平台（1.1.71版本）
      *
