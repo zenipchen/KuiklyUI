@@ -195,3 +195,7 @@ enum class AccessibilityRole(val roleName: String) {
     /** 表示视图是一个复选框 */
     CHECKBOX("checkbox")
 }
+
+enum class AccessibilityEvent(val eventName: String) {
+    FOCUS("focus"),
+}
