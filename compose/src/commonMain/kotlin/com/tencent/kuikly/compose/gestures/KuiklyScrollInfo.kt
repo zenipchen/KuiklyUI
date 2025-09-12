@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.tencent.kuikly.compose.foundation.gestures.Orientation
+import com.tencent.kuikly.compose.ui.node.StickyHeaderCacheManager
 import com.tencent.kuikly.compose.ui.unit.IntOffset
 import com.tencent.kuikly.core.layout.Frame
 import com.tencent.kuikly.core.pager.PageData
@@ -110,6 +111,12 @@ class KuiklyScrollInfo {
      * When PullToRefresh is used, the isAtTop judgment logic needs to be adjusted
      */
     var hasPullToRefresh: Boolean = false
+
+    /**
+     * Sticky Header 缓存管理器
+     * 与当前 KuiklyScrollInfo 实例绑定
+     */
+    val stickyHeaderCacheManager = StickyHeaderCacheManager()
 
     /**
      * Update content size to render view

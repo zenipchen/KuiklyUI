@@ -17,7 +17,6 @@ package com.tencent.kuikly.compose.ui.node
 
 import androidx.compose.runtime.CompositionLocalMap
 import com.tencent.kuikly.compose.foundation.gestures.Orientation
-import com.tencent.kuikly.compose.ui.Modifier
 import com.tencent.kuikly.compose.ui.geometry.CornerRadius
 import com.tencent.kuikly.compose.ui.geometry.Offset
 import com.tencent.kuikly.compose.ui.geometry.RoundRect
@@ -62,6 +61,39 @@ internal class KNode<T : DeclarativeBaseView<*, *>>(
 ) : LayoutNode(isVirtual = isVirtual) {
 
     var kuiklyCoordinates: LayoutCoordinates? = null
+
+    /**
+     * 判断当前节点是否为 sticky header
+     * 只要是 HoverView 类型就认为是 sticky header，不限制为当前活跃的
+     */
+    private fun isStickyHeaderNode(): Boolean {
+        return view is HoverView
+    }
+
+    /**
+     * 获取 sticky header 的缓存位置
+     * 使用与 KuiklyScrollInfo 绑定的 StickyHeaderCacheManager 管理缓存
+     */
+    private fun getCachedStickyPosition(currentPos: Offset, currentSize: IntSize): Offset {
+        val currentItemKey = (foldedParent as? KNode<*>)?.lazyItemKey ?: return currentPos
+
+        // 获取绑定的缓存管理器
+        val cacheManager = getCacheManager()
+
+        return cacheManager?.getCachedStickyPosition(currentItemKey, currentPos, currentSize) ?: currentPos
+    }
+
+    /**
+     * 获取 StickyHeaderCacheManager 实例
+     * 从 KuiklyScrollInfo 获取绑定的缓存管理器
+     */
+    private fun getCacheManager(): StickyHeaderCacheManager? {
+        val scrollNode = parent as? KNode<*>
+        val kuiklyInfo = scrollNode?.view?.extProps?.get(KuiklyInfoKey) as? KuiklyScrollInfo
+
+        return kuiklyInfo?.stickyHeaderCacheManager
+    }
+
 
     /**
      * The key of the Lazy item that this KNode represents
@@ -161,38 +193,13 @@ internal class KNode<T : DeclarativeBaseView<*, *>>(
         }
     }
 
-    private fun shouldUpdateStickyNode(newSize: IntSize): Boolean {
-        if (view !is HoverView) return true
-        val curSize = IntSize(
-            width = ((view.renderView?.currentFrame?.width ?: 0f) * density.density).toInt(),
-            height = ((view.renderView?.currentFrame?.height ?: 0f) * density.density).toInt(),
-        )
-        if (curSize != newSize) return true
-
-        // Use foldedParent to get the real parent including virtual nodes
-        val itemKey = (foldedParent as? KNode<*>)?.lazyItemKey
-        val scrollNode = parent as? KNode<*>
-        val kuiklyInfo = scrollNode?.view?.extProps?.get(KuiklyInfoKey) as? KuiklyScrollInfo
-        val currentStickyKey = kuiklyInfo?.stickyItemKey
-
-        if (itemKey != null && itemKey == currentStickyKey) {
-            return false
-        }
-        return true
-    }
-
     override fun onWillStartMeasure() {
         super.onWillStartMeasure()
         kuiklyCoordinates = null
     }
 
     override fun updateKuiklyViewFrame(coordinator: LayoutCoordinates) {
-
         val curCoordinator = kuiklyCoordinates ?: innerCoordinator
-        val shouldUpdateSticky = shouldUpdateStickyNode(curCoordinator.size)
-        if (!shouldUpdateSticky) {
-            return
-        }
 
         resetViewVisible()
 
@@ -215,6 +222,12 @@ internal class KNode<T : DeclarativeBaseView<*, *>>(
         }
 
         val densityValue = density.density
+
+        // 检查是否为 sticky header 并处理位置缓存
+        val isStickyHeader = isStickyHeaderNode()
+        if (isStickyHeader) {
+            pos = getCachedStickyPosition(pos, curCoordinator.size)
+        }
 
         var newFrame = Frame(
             x = pos.x / densityValue,

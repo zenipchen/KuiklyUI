@@ -139,6 +139,7 @@ internal class ComposeAllSample : ComposeContainer() {
             DemoItem("OverNativeClickDemo", "遮住原生View可点击", "OverNativeClickDemo"),
             DemoItem("AppearPercentDemo", "可见度百度比", "AppearDemo"),
             DemoItem("内外边距", "Compose内外边距，边框写法示例", "MarginPaddingTest"),
+            DemoItem("LazyColumnStickyHeader", "LazyColumnStickyHeader", "LazyColumnStickyHeader"),
         )
 
     @Composable
