@@ -48,6 +48,7 @@ import com.tencent.kuikly.compose.ui.unit.IntOffset
 import com.tencent.kuikly.compose.ui.unit.LayoutDirection
 import com.tencent.kuikly.compose.ui.unit.dp
 import com.tencent.kuikly.core.annotations.Page
+import de.drick.compose.hotpreview.HotPreview
 import kotlinx.coroutines.delay
 
 @Page("AccessibilityDemo")
@@ -63,6 +64,7 @@ internal class AccessibilityDemoPager : ComposeContainer() {
     }
 }
 
+@HotPreview
 @Composable
 fun AccessibilityDemo() {
     LazyColumn(
