@@ -48,21 +48,24 @@ class CoreProcessor(
     SymbolProcessor {
 
     private var isInitialInvocation = true
+    private var coreEntryGenerated = false
     private val hotPreviewProcessor = HotPreviewProcessor(codeGenerator, logger)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        // 首先处理 HotPreview 注解，生成预览 Pager 类
+        // 先处理 HotPreview 注解，生成预览 Pager 类
         hotPreviewProcessor.process(resolver)
-        
-        val newFiles = resolver.getNewFiles()
-        if (!isInitialInvocation || newFiles.firstOrNull() == null) {
-            // * A subsequent invocation is for processing generated files. We do not need to process these.
-            // * If there are no new files to process, we avoid generating an output file, as this would break
-            //   incremental compilation.
-            //   TODO: This could be omitted if file generation were not required to discover the output source set.
+
+        // 第一次调用仅触发下一轮（让本轮生成的 @Page 预览类在下一轮被收集）
+        if (isInitialInvocation) {
+            isInitialInvocation = false
             return emptyList()
         }
-        isInitialInvocation = false
+
+        // 入口文件仅生成一次
+        if (coreEntryGenerated) {
+            return emptyList()
+        }
+
         codeGenerator.createNewFile(
             dependencies = Dependencies(aggregating = true),
             packageName = "",
@@ -76,6 +79,7 @@ class CoreProcessor(
                 }
             }
         }
+        coreEntryGenerated = true
         return emptyList()
     }
 
