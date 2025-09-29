@@ -63,6 +63,7 @@ class HotPreviewProcessor(
         
         // 生成预览 Pager 类
         val fileSpec = FileSpec.builder(packageName, className)
+            .addImport("com.tencent.kuikly.compose", "setContent")
             .addType(
                 TypeSpec.classBuilder(className)
                     .addAnnotation(
