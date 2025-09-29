@@ -48,8 +48,12 @@ class CoreProcessor(
     SymbolProcessor {
 
     private var isInitialInvocation = true
+    private val hotPreviewProcessor = HotPreviewProcessor(codeGenerator, logger)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
+        // 首先处理 HotPreview 注解，生成预览 Pager 类
+        hotPreviewProcessor.process(resolver)
+        
         val newFiles = resolver.getNewFiles()
         if (!isInitialInvocation || newFiles.firstOrNull() == null) {
             // * A subsequent invocation is for processing generated files. We do not need to process these.
