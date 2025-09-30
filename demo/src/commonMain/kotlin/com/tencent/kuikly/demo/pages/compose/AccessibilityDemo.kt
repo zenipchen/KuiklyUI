@@ -65,7 +65,7 @@ internal class AccessibilityDemoPager : ComposeContainer() {
     }
 }
 
-@HotPreview
+@HotPreview()
 @Composable
 fun AccessibilityDemo() {
     LazyColumn(
