@@ -1,0 +1,308 @@
+> Task :compose:preBuild UP-TO-DATE
+> Task :core-render-android:preBuild UP-TO-DATE
+> Task :core:preBuild UP-TO-DATE
+> Task :core-render-android:preDebugBuild UP-TO-DATE
+> Task :core:preDebugBuild UP-TO-DATE
+> Task :compose:preDebugBuild UP-TO-DATE
+> Task :core-annotations:preBuild UP-TO-DATE
+> Task :androidApp:createDebugVariantModel UP-TO-DATE
+> Task :demo:preBuild UP-TO-DATE
+> Task :core-annotations:preDebugBuild UP-TO-DATE
+> Task :demo:preDebugBuild UP-TO-DATE
+> Task :core:compileDebugAidl NO-SOURCE
+> Task :androidApp:preBuild UP-TO-DATE
+> Task :core-annotations:compileDebugAidl NO-SOURCE
+> Task :androidApp:preDebugBuild UP-TO-DATE
+> Task :androidApp:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :core:packageDebugRenderscript NO-SOURCE
+> Task :compose:compileDebugAidl NO-SOURCE
+> Task :androidApp:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core-render-android:compileDebugAidl NO-SOURCE
+> Task :core-render-android:packageDebugRenderscript NO-SOURCE
+> Task :demo:compileDebugAidl NO-SOURCE
+> Task :compose:writeDebugAarMetadata UP-TO-DATE
+> Task :core:writeDebugAarMetadata UP-TO-DATE
+> Task :core-annotations:writeDebugAarMetadata UP-TO-DATE
+> Task :core-render-android:writeDebugAarMetadata UP-TO-DATE
+> Task :demo:packageDebugRenderscript NO-SOURCE
+> Task :compose:compileDebugRenderscript NO-SOURCE
+> Task :compose:generateDebugResValues UP-TO-DATE
+> Task :compose:generateDebugResources UP-TO-DATE
+> Task :demo:writeDebugAarMetadata UP-TO-DATE
+> Task :core-annotations:compileDebugRenderscript NO-SOURCE
+> Task :core:compileDebugRenderscript NO-SOURCE
+> Task :compose:packageDebugResources UP-TO-DATE
+> Task :core-annotations:generateDebugResValues UP-TO-DATE
+> Task :core-annotations:generateDebugResources UP-TO-DATE
+> Task :core-render-android:compileDebugRenderscript NO-SOURCE
+> Task :core:generateDebugResValues UP-TO-DATE
+> Task :core-render-android:generateDebugResValues UP-TO-DATE
+> Task :core:generateDebugResources UP-TO-DATE
+> Task :core-render-android:generateDebugResources UP-TO-DATE
+> Task :androidApp:generateDebugBuildConfig UP-TO-DATE
+> Task :core-annotations:packageDebugResources UP-TO-DATE
+> Task :compose:packageDebugRenderscript NO-SOURCE
+> Task :core:packageDebugResources UP-TO-DATE
+> Task :demo:generateDebugResValues UP-TO-DATE
+> Task :androidApp:compileDebugAidl NO-SOURCE
+> Task :compose:extractDeepLinksDebug UP-TO-DATE
+> Task :core-annotations:packageDebugRenderscript NO-SOURCE
+> Task :androidApp:compileDebugRenderscript NO-SOURCE
+> Task :demo:compileDebugRenderscript NO-SOURCE
+> Task :core-render-android:packageDebugResources UP-TO-DATE
+> Task :core:extractDeepLinksDebug UP-TO-DATE
+> Task :demo:generateDebugResources UP-TO-DATE
+> Task :compose:processDebugManifest UP-TO-DATE
+> Task :core:processDebugManifest UP-TO-DATE
+> Task :core-render-android:extractDeepLinksDebug UP-TO-DATE
+> Task :core-annotations:extractDeepLinksDebug UP-TO-DATE
+> Task :core-annotations:processDebugManifest UP-TO-DATE
+> Task :demo:packageDebugResources UP-TO-DATE
+> Task :core-render-android:processDebugManifest UP-TO-DATE
+> Task :compose:compileDebugLibraryResources UP-TO-DATE
+> Task :demo:extractDeepLinksDebug UP-TO-DATE
+> Task :demo:processDebugManifest UP-TO-DATE
+> Task :core-annotations:compileDebugLibraryResources UP-TO-DATE
+> Task :compose:parseDebugLocalResources UP-TO-DATE
+> Task :core-annotations:parseDebugLocalResources UP-TO-DATE
+> Task :core:parseDebugLocalResources UP-TO-DATE
+> Task :core-render-android:compileDebugLibraryResources UP-TO-DATE
+> Task :core-annotations:generateDebugRFile UP-TO-DATE
+> Task :demo:compileDebugLibraryResources UP-TO-DATE
+> Task :core:generateDebugRFile UP-TO-DATE
+> Task :demo:parseDebugLocalResources UP-TO-DATE
+> Task :core-render-android:parseDebugLocalResources UP-TO-DATE
+> Task :core:compileDebugLibraryResources UP-TO-DATE
+> Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core:generateDebugBuildConfig UP-TO-DATE
+> Task :compose:generateDebugRFile UP-TO-DATE
+> Task :demo:generateDebugRFile UP-TO-DATE
+> Task :compose:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :compose:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :compose:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :compose:generateResourceAccessorsForAndroidMain SKIPPED
+> Task :compose:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :core:compileDebugKotlinAndroid UP-TO-DATE
+> Task :core:javaPreCompileDebug UP-TO-DATE
+> Task :compose:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :compose:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :compose:generateResourceAccessorsForCommonMain SKIPPED
+> Task :compose:generateActualResourceCollectorsForAndroidMain SKIPPED
+> Task :compose:generateComposeResClass SKIPPED
+> Task :compose:generateDebugBuildConfig UP-TO-DATE
+> Task :compose:generateExpectResourceCollectorsForCommonMain SKIPPED
+> Task :compose:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :core:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :core-annotations:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core-annotations:generateDebugBuildConfig UP-TO-DATE
+> Task :compose:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :compose:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :compose:generateResourceAccessorsForAndroidDebug SKIPPED
+> Task :core-annotations:compileDebugKotlinAndroid UP-TO-DATE
+> Task :core-annotations:javaPreCompileDebug UP-TO-DATE
+> Task :core-annotations:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core-annotations:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :demo:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :demo:convertXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :demo:copyNonXmlValueResourcesForAndroidMain NO-SOURCE
+> Task :demo:prepareComposeResourcesTaskForAndroidMain NO-SOURCE
+> Task :demo:generateResourceAccessorsForAndroidMain SKIPPED
+> Task :demo:convertXmlValueResourcesForCommonMain NO-SOURCE
+> Task :demo:copyNonXmlValueResourcesForCommonMain NO-SOURCE
+> Task :demo:prepareComposeResourcesTaskForCommonMain NO-SOURCE
+> Task :demo:generateResourceAccessorsForCommonMain SKIPPED
+> Task :demo:generateActualResourceCollectorsForAndroidMain SKIPPED
+> Task :demo:generateComposeResClass SKIPPED
+> Task :demo:generateDebugBuildConfig UP-TO-DATE
+> Task :demo:generateExpectResourceCollectorsForCommonMain SKIPPED
+> Task :demo:convertXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :demo:copyNonXmlValueResourcesForAndroidDebug NO-SOURCE
+> Task :demo:prepareComposeResourcesTaskForAndroidDebug NO-SOURCE
+> Task :demo:generateResourceAccessorsForAndroidDebug SKIPPED
+> Task :core-annotations:compileKotlinJvm UP-TO-DATE
+> Task :core-annotations:compileJvmMainJava NO-SOURCE
+> Task :core-annotations:jvmProcessResources NO-SOURCE
+> Task :core-annotations:processJvmMainResources SKIPPED
+> Task :core-annotations:jvmMainClasses UP-TO-DATE
+> Task :core-annotations:jvmJar UP-TO-DATE
+> Task :demo:javaPreCompileDebug UP-TO-DATE
+> Task :core:mergeDebugShaders UP-TO-DATE
+> Task :core:compileDebugShaders NO-SOURCE
+> Task :core:debugAssetsCopyForAGP NO-SOURCE
+> Task :core:generateDebugAssets UP-TO-DATE
+> Task :core:packageDebugAssets UP-TO-DATE
+> Task :core-annotations:mergeDebugShaders UP-TO-DATE
+> Task :core-annotations:compileDebugShaders NO-SOURCE
+> Task :core-annotations:debugAssetsCopyForAGP NO-SOURCE
+> Task :core-annotations:generateDebugAssets UP-TO-DATE
+> Task :core-annotations:packageDebugAssets UP-TO-DATE
+> Task :demo:mergeDebugShaders UP-TO-DATE
+> Task :demo:compileDebugShaders NO-SOURCE
+> Task :demo:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :demo:debugAssetsCopyForAGP NO-SOURCE
+> Task :demo:generateDebugAssets UP-TO-DATE
+> Task :demo:packageDebugAssets UP-TO-DATE
+> Task :core:processDebugJavaRes NO-SOURCE
+> Task :core:bundleLibResDebug UP-TO-DATE
+> Task :core-annotations:processDebugJavaRes NO-SOURCE
+> Task :core-annotations:bundleLibResDebug UP-TO-DATE
+> Task :core-render-android:generateDebugRFile UP-TO-DATE
+> Task :core-render-android:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :core-render-android:generateDebugBuildConfig UP-TO-DATE
+> Task :demo:processDebugJavaRes NO-SOURCE
+> Task :core:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :compose:compileDebugKotlinAndroid UP-TO-DATE
+> Task :compose:javaPreCompileDebug UP-TO-DATE
+> Task :core-annotations:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :core:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose:compileDebugJavaWithJavac UP-TO-DATE
+> Task :core:mergeDebugNativeLibs NO-SOURCE
+> Task :core:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :core-annotations:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core-annotations:mergeDebugNativeLibs NO-SOURCE
+> Task :core-annotations:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :demo:mergeDebugJniLibFolders UP-TO-DATE
+> Task :demo:mergeDebugNativeLibs NO-SOURCE
+> Task :compose:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :demo:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :compose:mergeDebugShaders UP-TO-DATE
+> Task :compose:compileDebugShaders NO-SOURCE
+> Task :compose:copyDebugComposeResourcesToAndroidAssets UP-TO-DATE
+> Task :compose:debugAssetsCopyForAGP NO-SOURCE
+> Task :compose:generateDebugAssets UP-TO-DATE
+> Task :compose:packageDebugAssets UP-TO-DATE
+> Task :compose:processDebugJavaRes NO-SOURCE
+> Task :compose:bundleLibResDebug UP-TO-DATE
+> Task :compose:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :compose:mergeDebugJniLibFolders UP-TO-DATE
+> Task :compose:mergeDebugNativeLibs NO-SOURCE
+> Task :compose:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :androidApp:checkDebugAarMetadata UP-TO-DATE
+> Task :androidApp:generateDebugResValues UP-TO-DATE
+> Task :androidApp:mapDebugSourceSetPaths UP-TO-DATE
+> Task :androidApp:generateDebugResources UP-TO-DATE
+> Task :androidApp:mergeDebugResources UP-TO-DATE
+> Task :androidApp:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :androidApp:extractDeepLinksDebug UP-TO-DATE
+> Task :core-render-android:compileDebugKotlin UP-TO-DATE
+> Task :core-render-android:javaPreCompileDebug UP-TO-DATE
+> Task :core-render-android:compileDebugJavaWithJavac UP-TO-DATE
+> Task :androidApp:processDebugMainManifest UP-TO-DATE
+> Task :core-render-android:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :androidApp:processDebugManifest UP-TO-DATE
+> Task :androidApp:processDebugManifestForPackage UP-TO-DATE
+> Task :core-render-android:mergeDebugShaders UP-TO-DATE
+> Task :core-render-android:compileDebugShaders NO-SOURCE
+> Task :core-render-android:generateDebugAssets UP-TO-DATE
+> Task :core-render-android:packageDebugAssets UP-TO-DATE
+> Task :core-render-android:processDebugJavaRes NO-SOURCE
+> Task :core-render-android:bundleLibResDebug UP-TO-DATE
+> Task :core-render-android:bundleLibRuntimeToDirDebug UP-TO-DATE
+> Task :core-render-android:mergeDebugJniLibFolders UP-TO-DATE
+> Task :core-render-android:mergeDebugNativeLibs NO-SOURCE
+> Task :core-render-android:copyDebugJniLibsProjectOnly UP-TO-DATE
+> Task :androidApp:processDebugResources UP-TO-DATE
+> Task :androidApp:javaPreCompileDebug UP-TO-DATE
+> Task :androidApp:mergeDebugShaders UP-TO-DATE
+> Task :androidApp:compileDebugShaders NO-SOURCE
+> Task :androidApp:generateDebugAssets UP-TO-DATE
+> Task :androidApp:mergeDebugAssets UP-TO-DATE
+> Task :androidApp:compressDebugAssets UP-TO-DATE
+> Task :androidApp:processDebugJavaRes NO-SOURCE
+> Task :androidApp:checkDebugDuplicateClasses UP-TO-DATE
+> Task :androidApp:desugarDebugFileDependencies UP-TO-DATE
+> Task :androidApp:mergeExtDexDebug UP-TO-DATE
+> Task :androidApp:mergeDebugJniLibFolders UP-TO-DATE
+> Task :androidApp:mergeDebugNativeLibs UP-TO-DATE
+> Task :androidApp:stripDebugDebugSymbols UP-TO-DATE
+> Task :androidApp:validateSigningDebug UP-TO-DATE
+> Task :androidApp:writeDebugAppMetadata UP-TO-DATE
+> Task :androidApp:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :demo:kspDebugKotlinAndroid
+
+> Task :demo:compileDebugKotlinAndroid
+w: Opt-in requirement marker kotlinx.cinterop.ExperimentalForeignApi is unresolved. Please make sure it's present in the module dependencies
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/app/home/AppFeedListPage.kt:200:41 'when' is exhaustive so 'else' is redundant here.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/base/extension/FloatExt.kt:23:57 'var currentPageId: String' is deprecated. 使用Pager上下文的pagerId代替.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/base/extension/FloatExt.kt:27:57 'var currentPageId: String' is deprecated. 使用Pager上下文的pagerId代替.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/base/ktx/PageDataKtx.kt:26:23 This extension is shadowed by a member: 'fun isDebug(): Boolean' defined in 'com/tencent/kuikly/core/pager/PageData'.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnchorDraggableDemo.kt:548:42 'val progress: Float' is deprecated. Use the progress function to query the progress between two specified anchors.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:252:34 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:329:79 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:332:80 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:409:68 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:412:75 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:422:35 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:525:65 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:726:34 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:846:31 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:910:34 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedContentDemo.kt:1029:77 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/AnimatedVisibilityDemo.kt:646:75 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/CanvasDemo.kt:981:9 Expected performance impact from inlining is insignificant. Inlining works best for functions with parameters of function types.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/ComposeAnimateDemo1.kt:443:79 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/ComposeAnimateDemo1.kt:446:80 'fun EnterTransition.with(exit: ExitTransition): ContentTransform' is deprecated. Infix fun EnterTransition.with(ExitTransition) has been renamed to togetherWith.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/CoroutinesDemoPage.kt:146:33 This extension is shadowed by a member: 'val IO: CoroutineDispatcher' defined in 'kotlinx/coroutines/Dispatchers'.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/GestureConflictDemo.kt:249:36 'fun PointerInputChange.consumePositionChange(): Unit' is deprecated. Partial consumption has been deprecated. Use consume() instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/LazyHorizontalGridDemo3.kt:309:37 Condition is always 'true'.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/LazyHorizontalGridDemo3.kt:309:61 Condition is always 'true'.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/LiquidGlassComposeDemo.kt:207:9 Expected performance impact from inlining is insignificant. Inlining works best for functions with parameters of function types.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/compose/ModifierKuikly.kt:84:5 'suspend fun PointerInputScope.forEachGesture(block: suspend PointerInputScope.() -> Unit): Unit' is deprecated. Use awaitEachGesture instead. forEachGesture() can drop events between gestures.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/AnimationView.kt:74:25 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/AnimationView.kt:75:31 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/AnimationView.kt:76:31 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:12:8 'interface IPagerId : PagerScope' is deprecated. Use PagerScope instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:36:76 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:37:80 'fun <T> observableList(): ReadWriteProperty<Any, ObservableList<T>>' is deprecated. use PagerScope.observableList(mode) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:38:79 'fun <T> observableSet(): ReadWriteProperty<Any, ObservableSet<T>>' is deprecated. use PagerScope.observableSet(mode) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:42:21 'interface IPagerId : PagerScope' is deprecated. Use PagerScope instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:42:53 'fun <reified T> pagerId(noinline initializer: (String) -> T): ReadOnlyProperty<PagerScope, T>' is deprecated. Use PagerScope instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:57:73 'var currentPageId: String' is deprecated. 使用Pager上下文的pagerId代替.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:141:51 'fun postDelayed(delay: Int, callback: () -> Unit): String' is deprecated. Use PagerScope.setTimeout(timeout, callback) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:150:51 'fun cancelPostCallback(callbackRef: String): Unit' is deprecated. Use PagerScope.clearTimeout(timeoutRef) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:154:51 'fun setTimeout(pagerId: String, noinline callback: () -> Unit, timeout: Int = ...): String' is deprecated. Use setTimeout(pagerId, timeout, callback) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:160:51 'fun setTimeout(noinline callback: () -> Unit, timeout: Int = ...): String' is deprecated. Use PagerScope.setTimeout(timeout, callback) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:166:51 'fun setTimeout(timeout: Int = ..., noinline callback: () -> Unit): String' is deprecated. Use PagerScope.setTimeout(timeout, callback) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/CompatibilityTestPage.kt:175:51 'fun clearTimeout(timeoutRef: String): Unit' is deprecated. Use PagerScope.clearTimeout(timeoutRef) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/DBExamplePage.kt:37:21 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/DBExamplePage.kt:38:26 'fun <T> observableList(): ReadWriteProperty<Any, ObservableList<T>>' is deprecated. use PagerScope.observableList(mode) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/DBExamplePage.kt:39:18 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/EventDemoPage.kt:296:37 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/EventDemoPage.kt:297:46 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/GalleryExamplePage.kt:34:27 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/InputMeasureDemoPage.kt:229:16 'fun setText(text: String): Unit' is deprecated. Use TextAreaAttr#text() instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/ListViewDemoPage.kt:206:37 'when' is exhaustive so 'else' is redundant here.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/ReactiveDemoPage.kt:107:18 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/TabsExamplePage.kt:37:21 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/TabsExamplePage.kt:38:24 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/TabsExamplePage.kt:39:18 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/WaterfallListDemoPage.kt:32:26 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/WaterfallListDemoPage.kt:33:27 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/WaterfallListDemoPage.kt:34:26 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/base/NavigationBar.kt:60:29 'fun fontWeightSemisolid(): TextAttr' is deprecated. use fontWeightSemiBold() instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/catalog/ExampleIndexPage.kt:285:23 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/catalog/ExampleIndexPage.kt:286:22 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/catalog/ExampleIndexPage.kt:287:25 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/catalog/ExampleIndexPage.kt:288:34 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/kit_demo/DeclarativeDemo/PageListExamplePage.kt:147:21 'fun <T> observableList(): ReadWriteProperty<Any, ObservableList<T>>' is deprecated. use PagerScope.observableList(mode) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/kit_demo/DeclarativeDemo/PageListExamplePage.kt:151:18 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/kit_demo/DeclarativeDemo/ZIndexExamplePage.kt:34:19 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/kit_demo/DeclarativeDemo/ZIndexExamplePage.kt:35:18 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/kit_demo/DeclarativeDemo/ZIndexExamplePage.kt:36:22 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+w: file:///Users/zhenhuachen/Desktop/KuiklyUI/demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/demo/kit_demo/DeclarativeDemo/ZIndexExamplePage.kt:37:21 'fun <T> observable(init: T): ReadWriteProperty<Any, T>' is deprecated. use PagerScope.observable(mode, value) instead.
+
+> Task :demo:compileDebugJavaWithJavac UP-TO-DATE
+> Task :demo:bundleLibResDebug UP-TO-DATE
+> Task :demo:bundleLibCompileToJarDebug
+> Task :demo:bundleLibRuntimeToDirDebug
+> Task :androidApp:compileDebugKotlin UP-TO-DATE
+> Task :androidApp:compileDebugJavaWithJavac UP-TO-DATE
+> Task :androidApp:mergeDebugJavaResource UP-TO-DATE
+> Task :androidApp:dexBuilderDebug UP-TO-DATE
+> Task :androidApp:mergeProjectDexDebug UP-TO-DATE
+> Task :androidApp:mergeLibDexDebug
+> Task :androidApp:packageDebug
+> Task :androidApp:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :androidApp:assembleDebug
