@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Kuikly Desktop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; }
+    </style>
+    <script type="text/javascript" src="http://127.0.0.1:8083/nativevue2.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/libpag@latest/lib/libpag.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/javascript">
+  // 透传桌面标识，h5App Main.kt 会读取 URL 参数
+  (function(){
+    var params = new URLSearchParams(window.location.search);
+    if(!params.has('page_name')) params.set('page_name','router');
+    var url = window.location.origin + window.location.pathname + '?' + params.toString();
+    if(location.href !== url) location.replace(url);
+  })();
+</script>
+<script type="text/javascript" src="http://localhost:8080/h5App.js"></script>
+</body>
+<!-- 可选：若不使用 dev server，将上方 script 替换为打包产物路径，如 file:///.../h5App.js -->
+</html>
+
+

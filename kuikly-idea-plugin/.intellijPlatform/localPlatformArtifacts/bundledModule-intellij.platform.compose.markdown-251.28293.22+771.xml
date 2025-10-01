@@ -1,0 +1,10 @@
+<ivy-module version="2.0">
+  <info organisation="bundledModule" module="intellij.platform.compose.markdown" revision="251.28293.22+771"/>
+  <configurations>
+    <conf name="default" visibility="public"/>
+  </configurations>
+  <publications>
+    <artifact name="/Applications/IntelliJ IDEA.app/Contents/lib/modules/intellij.platform.compose.markdown.jar" type="jar" conf="default"/>
+  </publications>
+  <dependencies/>
+</ivy-module>
