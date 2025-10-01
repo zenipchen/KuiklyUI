@@ -38,7 +38,6 @@ project(":compose").buildFileName = buildFileName
 
 // Desktop JVM app
 include(":desktopApp")
-project(":desktopApp").buildFileName = buildFileName
 
 // Desktop Web Render module (纯渲染层)
 include(":desktopWebRender")
