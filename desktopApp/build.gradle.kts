@@ -13,10 +13,13 @@ repositories {
 }
 
 dependencies {
+    // 核心依赖 - JVM 版本（业务逻辑层）
     implementation(project(":core"))
     implementation(project(":compose"))
-    implementation(project(":core-render-web:base"))
-    implementation(project(":core-render-web:h5"))
+    implementation(project(":demo")) // 包含业务逻辑
+    
+    // 桌面端 Web 渲染模块（纯渲染层，不包含业务逻辑）
+    implementation(project(":desktopWebRender"))
     
     // JCEF (Java Chromium Embedded Framework) - 使用最新版本
     implementation("me.friwi:jcefmaven:122.1.11")

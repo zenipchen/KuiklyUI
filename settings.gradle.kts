@@ -40,4 +40,7 @@ project(":compose").buildFileName = buildFileName
 include(":desktopApp")
 project(":desktopApp").buildFileName = buildFileName
 
+// Desktop Web Render module (纯渲染层)
+include(":desktopWebRender")
+
 rootProject.buildFileName = buildFileName

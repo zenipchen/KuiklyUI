@@ -31,9 +31,20 @@ import javax.swing.WindowConstants
  * 当前状态：完整版本，支持 Web 渲染和 JS Bridge
  */
 fun main(args: Array<String>) {
-    println("[Kuikly Desktop] 🚀 正在初始化 Chromium...")
+    println("[Kuikly Desktop] 🚀 正在初始化...")
     
-    // 构建 JCEF 应用
+    // 1. 初始化 BridgeManager (JVM 业务逻辑层)
+    println("[Kuikly Desktop] 🔗 初始化 BridgeManager...")
+    try {
+        BridgeManager.init()
+        println("[Kuikly Desktop] ✅ BridgeManager 初始化完成")
+    } catch (e: Exception) {
+        println("[Kuikly Desktop] ❌ BridgeManager 初始化失败: ${e.message}")
+        e.printStackTrace()
+    }
+    
+    // 2. 构建 JCEF 应用
+    println("[Kuikly Desktop] 🌐 正在初始化 Chromium...")
     val builder = CefAppBuilder()
     builder.setAppHandler(object : MavenCefAppHandlerAdapter() {})
     
@@ -110,9 +121,10 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例
-        val url = "http://localhost:8080/?page_name=router"
-        println("[Kuikly Desktop] 正在加载: $url")
+        // 创建浏览器实例 - 使用纯渲染模块
+        val url = "http://localhost:8080/desktopWebRender.html"
+        println("[Kuikly Desktop] 正在加载纯渲染层: $url")
+        println("[Kuikly Desktop] 💡 业务逻辑运行在 JVM 中，Web 层仅负责渲染")
         val browser = client.createBrowser(url, false, false)
         
         // 将浏览器添加到窗口
@@ -228,12 +240,6 @@ class KuiklyJSBridge {
                     val argsArray = json.getAsJsonArray("args")
                     
                     println("[Kuikly Desktop] 📞 callKotlinMethod: methodId=$methodId")
-                    
-                    // 确保 BridgeManager 已初始化
-                    if (!BridgeManager.isDidInit()) {
-                        BridgeManager.init()
-                        println("[Kuikly Desktop] ✅ BridgeManager 已初始化")
-                    }
                     
                     // 解析参数
                     val arg0 = if (argsArray.size() > 0) argsArray[0]?.asString else null
