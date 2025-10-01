@@ -113,51 +113,447 @@
 
 ### 4.2 核心模块设计
 
-#### 4.2.1 模块一：[模块名称]
+#### 4.2.1 模块一：Pager（页面管理）
 
 **职责：**
-[描述模块职责]
+- 页面生命周期管理
+- UI 构建和更新
+- 状态管理
+- 事件处理
 
-**接口设计：**
+**核心接口：**
 ```kotlin
 /**
- * [接口说明]
+ * Kuikly 页面基类
+ * 所有使用自研 DSL 的页面都需要继承此类
  */
-interface ModuleName {
+abstract class Pager : IPager {
     /**
-     * [方法说明]
-     * @param param1 参数说明
-     * @return 返回值说明
+     * 构建页面 UI
+     * @return ViewBuilder DSL 构建器
      */
-    fun functionName(param1: Type): ReturnType
+    abstract fun body(): ViewBuilder
+    
+    /**
+     * 页面初始化前回调
+     */
+    open fun willInit() {}
+    
+    /**
+     * 页面初始化后回调
+     */
+    open fun didInit() {}
+    
+    /**
+     * 创建事件对象
+     */
+    open fun createEvent(): ComposeEvent = ComposeEvent()
+    
+    /**
+     * 创建外部模块
+     */
+    open fun createExternalModules(): Map<String, Module>? = null
+    
+    /**
+     * 获取模块实例
+     */
+    fun <T : Module> acquireModule(moduleName: String): T
 }
 ```
 
-**实现方案：**
-- Android 平台实现
-- iOS 平台实现
-- 其他平台实现
-
-**关键类设计：**
+**实际使用示例：**
 ```kotlin
-/**
- * [类说明]
- */
-class ClassName(
-    private val dependency: Dependency
-) {
-    // 属性
-    private var state: State = State.INIT
+@Page("HelloWorldPage")
+internal class HelloWorldPage : Pager() {
     
-    // 方法
-    fun doSomething() {
-        // 实现逻辑
+    var message: String by observable("Hello")
+    
+    override fun willInit() {
+        super.willInit()
+        // 初始化逻辑
+        message = "Hello Kuikly!"
+    }
+    
+    override fun body(): ViewBuilder {
+        val ctx = this
+        return {
+            View {
+                attr {
+                    flex(1f)
+                    backgroundColor(Color.WHITE)
+                    allCenter()
+                }
+                Text {
+                    attr {
+                        text(ctx.message)
+                        fontSize(18f)
+                    }
+                }
+            }
+        }
     }
 }
 ```
 
-#### 4.2.2 模块二：[模块名称]
-[同上结构]
+#### 4.2.2 模块二：响应式系统（Reactive System）
+
+**职责：**
+- 管理可观察属性
+- 追踪依赖关系
+- 自动触发UI更新
+- 集合变化监听
+
+**核心类设计：**
+```kotlin
+/**
+ * 可观察属性包装器
+ * 当属性值变化时自动通知观察者，触发UI更新
+ */
+class ObservableProperty<T>(
+    private var value: T
+) : ReadWriteProperty<Any?, T> {
+    
+    private val observers = mutableListOf<ReactiveObserver>()
+    
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        // 记录依赖
+        return value
+    }
+    
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        if (this.value != value) {
+            this.value = value
+            // 通知所有观察者
+            notifyObservers()
+        }
+    }
+    
+    private fun notifyObservers() {
+        observers.forEach { it.update() }
+    }
+}
+
+/**
+ * 可观察列表
+ * 支持列表元素的增删改查操作，并自动触发UI更新
+ */
+class ObservableList<E> : MutableList<E> {
+    private val innerList = mutableListOf<E>()
+    private val observers = mutableListOf<ReactiveObserver>()
+    
+    override fun add(element: E): Boolean {
+        val result = innerList.add(element)
+        if (result) notifyObservers()
+        return result
+    }
+    
+    override fun removeAt(index: Int): E {
+        val element = innerList.removeAt(index)
+        notifyObservers()
+        return element
+    }
+    
+    // ... 其他 MutableList 方法实现
+}
+```
+
+**使用示例：**
+```kotlin
+@Page("ReactiveDemo")
+class ReactiveDemoPage : Pager() {
+    // 可观察属性
+    var count: Int by observable(0)
+    var name: String by observable("User")
+    
+    // 可观察列表
+    var items: ObservableList<String> by observableList()
+    
+    override fun willInit() {
+        super.willInit()
+        items.addAll(listOf("Item 1", "Item 2"))
+    }
+    
+    override fun body(): ViewBuilder {
+        val ctx = this
+        return {
+            View {
+                // 显示count，count变化会自动更新UI
+                Text {
+                    attr { text("Count: ${ctx.count}") }
+                }
+                
+                // 点击增加计数
+                event {
+                    click { ctx.count++ }  // 自动触发UI更新
+                }
+            }
+            
+            // 列表渲染，items变化会自动更新
+            vfor(ctx.items) { item, index ->
+                Text {
+                    attr { text("${index + 1}. $item") }
+                }
+            }
+        }
+    }
+}
+```
+
+#### 4.2.3 模块三：ComposeContainer（Compose集成）
+
+**职责：**
+- 桥接 Compose 和 Kuikly
+- 管理 Compose 生命周期
+- 处理布局方向和主题
+
+**核心实现：**
+```kotlin
+/**
+ * Compose DSL 容器基类
+ * 使用 Jetpack Compose API 的页面需要继承此类
+ */
+abstract class ComposeContainer : Pager() {
+    
+    protected var layoutDirection: LayoutDirection = LayoutDirection.Ltr
+    
+    /**
+     * 设置 Compose 内容
+     */
+    fun setContent(content: @Composable () -> Unit) {
+        // 创建 Compose 场景
+        val mediator = ComposeSceneMediator()
+        mediator.setContent(content)
+        
+        // 桥接到 Kuikly 渲染系统
+        attachComposeScene(mediator)
+    }
+    
+    override fun body(): ViewBuilder {
+        return {
+            // Compose内容会渲染在这里
+        }
+    }
+}
+```
+
+**实际使用：**
+```kotlin
+@Page("ComposeDemo")
+internal class ComposeDemoPage : ComposeContainer() {
+    
+    override fun willInit() {
+        super.willInit()
+        layoutDirection = LayoutDirection.Ltr
+        
+        setContent {
+            MyComposeUI()
+        }
+    }
+}
+
+@Composable
+fun MyComposeUI() {
+    var count by remember { mutableStateOf(0) }
+    
+    Column(
+        modifier = Modifier.fillMaxSize().padding(16.dp)
+    ) {
+        Text("Count: $count")
+        Button(onClick = { count++ }) {
+            Text("Increment")
+        }
+    }
+}
+```
+
+#### 4.2.4 模块四：注解处理（KSP Processor）
+
+**职责：**
+- 扫描 @Page 和 @HotPreview 注解
+- 生成页面入口代码
+- 生成预览 Pager 类
+- 支持模块化打包
+
+**核心处理器：**
+```kotlin
+/**
+ * Kuikly KSP 注解处理器
+ * 处理 @Page 和 @HotPreview 注解
+ */
+class KuiklyCoreProcessor(
+    private val codeGenerator: CodeGenerator,
+    private val logger: KSPLogger,
+    private val option: Map<String, String>
+) : SymbolProcessor {
+    
+    private val hotPreviewProcessor = HotPreviewProcessor(codeGenerator, logger)
+    
+    override fun process(resolver: Resolver): List<KSAnnotated> {
+        // 1. 处理 @HotPreview 注解
+        hotPreviewProcessor.process(resolver)
+        
+        // 2. 收集所有 @Page 注解的类
+        val pageClasses = resolver
+            .getSymbolsWithAnnotation(Page::class.qualifiedName!!)
+            .filterIsInstance<KSClassDeclaration>()
+            .map { it.toPageInfo() }
+        
+        // 3. 生成入口文件 KuiklyCoreEntry.kt
+        generateEntryFile(pageClasses)
+        
+        return emptyList()
+    }
+    
+    private fun generateEntryFile(pages: List<PageInfo>) {
+        // 生成页面映射代码
+        val fileSpec = FileSpec.builder("", "KuiklyCoreEntry")
+            .addFunction(
+                FunSpec.builder("getPageMap")
+                    .returns(Map::class.parameterizedBy(String::class, ...))
+                    .addStatement("return mapOf(")
+                    .apply {
+                        pages.forEach { page ->
+                            addStatement("    %S to { %T() },", 
+                                page.pageName, 
+                                page.className
+                            )
+                        }
+                    }
+                    .addStatement(")")
+                    .build()
+            )
+            .build()
+        
+        // 写入文件
+        codeGenerator.createNewFile(...)
+            .use { output ->
+                output.write(fileSpec.toString().toByteArray())
+            }
+    }
+}
+
+/**
+ * HotPreview 注解处理器
+ * 为 @HotPreview 标记的 Composable 函数生成预览 Pager
+ */
+class HotPreviewProcessor(
+    private val codeGenerator: CodeGenerator,
+    private val logger: KSPLogger
+) {
+    fun process(resolver: Resolver) {
+        // 查找所有 @HotPreview 注解的函数
+        resolver
+            .getSymbolsWithAnnotation("de.drick.compose.hotpreview.HotPreview")
+            .filterIsInstance<KSFunctionDeclaration>()
+            .forEach { function ->
+                generatePreviewPager(function)
+            }
+    }
+    
+    private fun generatePreviewPager(function: KSFunctionDeclaration) {
+        val functionName = function.simpleName.asString()
+        val packageName = function.packageName.asString()
+        val className = "${functionName}PreviewPager"
+        
+        // 生成预览 Pager 类
+        val fileSpec = FileSpec.builder(packageName, className)
+            .addType(
+                TypeSpec.classBuilder(className)
+                    .addAnnotation(
+                        AnnotationSpec.builder(Page::class)
+                            .addMember("name = %S", "${functionName}Preview")
+                            .build()
+                    )
+                    .superclass(ComposeContainer::class)
+                    .addFunction(
+                        FunSpec.builder("willInit")
+                            .addModifiers(KModifier.OVERRIDE)
+                            .addStatement("super.willInit()")
+                            .addStatement("setContent { %L() }", functionName)
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
+        
+        // 写入生成的文件
+        codeGenerator.createNewFile(...)
+    }
+}
+```
+
+**生成的代码示例：**
+```kotlin
+// 原始代码
+@HotPreview
+@Composable
+fun AccessibilityDemo() {
+    Text("Demo Content")
+}
+
+// KSP 自动生成
+@Page("AccessibilityDemoPreview")
+internal class AccessibilityDemoPreviewPager : ComposeContainer() {
+    override fun willInit() {
+        super.willInit()
+        setContent {
+            AccessibilityDemo()
+        }
+    }
+}
+```
+
+#### 4.2.5 模块五：Layout 布局引擎
+
+**职责：**
+- 实现 Flexbox 布局算法
+- 计算视图尺寸和位置
+- 支持自适应和响应式布局
+
+**核心类：**
+```kotlin
+/**
+ * Flex 布局节点
+ */
+class FlexNode {
+    var style: FlexStyle
+    var children: List<FlexNode>
+    
+    // 计算后的布局结果
+    var left: Float = 0f
+    var top: Float = 0f
+    var width: Float = 0f
+    var height: Float = 0f
+    
+    /**
+     * 计算布局
+     */
+    fun calculateLayout(
+        parentWidth: Float?,
+        parentHeight: Float?
+    ) {
+        // Flexbox 布局算法实现
+        // 参考 Yoga 布局引擎
+    }
+}
+
+/**
+ * Flex 样式
+ */
+class FlexStyle {
+    var flexDirection: FlexDirection = FlexDirection.COLUMN
+    var justifyContent: JustifyContent = JustifyContent.FLEX_START
+    var alignItems: AlignItems = AlignItems.STRETCH
+    var flexWrap: FlexWrap = FlexWrap.NO_WRAP
+    
+    var width: Dimension = Dimension.Auto
+    var height: Dimension = Dimension.Auto
+    var flex: Float? = null
+    
+    var margin: Edges = Edges.ZERO
+    var padding: Edges = Edges.ZERO
+}
+```
 
 ### 4.3 数据模型
 

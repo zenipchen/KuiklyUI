@@ -649,9 +649,384 @@ class CalculatorTest {
 
 详细测试规范参考：test-rules.md
 
-## 7. 版本控制
+## 7. Kuikly 特定规范
 
-### 7.1 Commit 规范
+### 7.1 自研 DSL 编码规范
+
+#### 7.1.1 Pager 类规范
+
+**[强制]** 所有页面必须使用 @Page 注解：
+
+```kotlin
+// ✅ 正确
+@Page("HelloWorldPage")
+internal class HelloWorldPage : Pager() {
+    override fun body(): ViewBuilder {
+        return { /* UI代码 */ }
+    }
+}
+
+// ❌ 错误：缺少注解
+internal class HelloWorldPage : Pager() {
+    // ...
+}
+```
+
+**[推荐]** 页面类命名以 Page 或 Pager 结尾：
+
+```kotlin
+// ✅ 推荐
+@Page("UserProfile")
+internal class UserProfilePage : Pager()
+
+@Page("Settings")  
+internal class SettingsPager : Pager()
+
+// ⚠️ 可以但不推荐
+@Page("Home")
+internal class HomeScreen : Pager()
+```
+
+#### 7.1.2 响应式属性规范
+
+**[强制]** 需要触发 UI 更新的属性必须使用 observable：
+
+```kotlin
+// ✅ 正确
+class MyPage : Pager() {
+    var count: Int by observable(0)
+    var message: String by observable("")
+    var items: ObservableList<String> by observableList()
+    
+    // ❌ 错误：普通属性不会触发UI更新
+    var normalCount: Int = 0  // UI不会自动更新
+}
+```
+
+**[推荐]** 响应式属性初始化在 willInit 中：
+
+```kotlin
+// ✅ 推荐
+override fun willInit() {
+    super.willInit()
+    items.addAll(listOf("Item 1", "Item 2"))
+    count = 0
+}
+
+// ⚠️ 不推荐在 body() 中初始化
+override fun body(): ViewBuilder {
+    items.add("Item") // 避免在这里修改状态
+    return { /* ... */ }
+}
+```
+
+#### 7.1.3 ViewBuilder DSL 规范
+
+**[强制]** 使用闭包捕获 this 引用：
+
+```kotlin
+// ✅ 正确
+override fun body(): ViewBuilder {
+    val ctx = this  // 捕获引用
+    return {
+        View {
+            attr { text(ctx.message) }
+            event { 
+                click { ctx.count++ }
+            }
+        }
+    }
+}
+
+// ❌ 错误：直接使用 this 可能有问题
+override fun body(): ViewBuilder {
+    return {
+        View {
+            attr { text(this.message) }  // 这里的 this 不对
+        }
+    }
+}
+```
+
+**[推荐]** attr 和 event 块保持简洁：
+
+```kotlin
+// ✅ 好的写法
+View {
+    attr {
+        width(300f)
+        height(200f)
+        backgroundColor(Color.WHITE)
+        padding(16f)
+    }
+    
+    event {
+        click { handleClick() }
+        longPress { handleLongPress() }
+    }
+    
+    // 子视图
+    Text {
+        attr { text("Title") }
+    }
+}
+
+// ❌ 不好的写法：attr 中混入过多逻辑
+View {
+    attr {
+        width(300f)
+        if (someCondition) {  // 避免在 attr 中写复杂逻辑
+            height(200f)
+        } else {
+            height(100f)
+        }
+    }
+}
+```
+
+#### 7.1.4 条件渲染规范
+
+**[推荐]** 使用 vif 进行条件渲染：
+
+```kotlin
+// ✅ 推荐使用 vif
+vif({ ctx.isLoggedIn }) {
+    UserProfileView { }
+}
+
+vif({ !ctx.isLoggedIn }) {
+    LoginView { }
+}
+
+// ⚠️ 也可以但不够声明式
+if (ctx.isLoggedIn) {
+    UserProfileView { }()  // 需要手动调用
+} else {
+    LoginView { }()
+}
+```
+
+#### 7.1.5 列表渲染规范
+
+**[强制]** 使用 vfor 渲染列表：
+
+```kotlin
+// ✅ 正确
+vfor(ctx.items) { item, index ->
+    View {
+        attr {
+            height(50f)
+            padding(10f)
+        }
+        Text {
+            attr { text("${index + 1}. $item") }
+        }
+    }
+}
+
+// ❌ 错误：不要用 forEach
+ctx.items.forEach { item ->
+    View { /* ... */ }()  // 不会响应式更新
+}
+```
+
+### 7.2 Compose DSL 编码规范
+
+#### 7.2.1 ComposeContainer 规范
+
+**[强制]** Compose 页面必须继承 ComposeContainer：
+
+```kotlin
+// ✅ 正确
+@Page("ComposeDemo")
+internal class ComposeDemoPage : ComposeContainer() {
+    override fun willInit() {
+        super.willInit()
+        setContent {
+            MyComposable()
+        }
+    }
+}
+
+// ❌ 错误：不要在 body() 中使用 Compose
+@Page("WrongDemo")
+internal class WrongDemoPage : Pager() {
+    override fun body(): ViewBuilder {
+        setContent { /* 不要这样做 */ }
+        return { }
+    }
+}
+```
+
+#### 7.2.2 HotPreview 使用规范
+
+**[推荐]** 使用 @HotPreview 提高开发效率：
+
+```kotlin
+// ✅ 推荐：可独立预览的 Composable
+@HotPreview
+@Composable
+fun UserCard() {
+    Card {
+        Text("User Info")
+    }
+}
+
+// 会自动生成 UserCardPreviewPager
+
+// ⚠️ 不建议给有大量依赖的函数加预览
+@HotPreview  // 不推荐
+@Composable
+fun ComplexPage(
+    viewModel: ViewModel,
+    repository: Repository,
+    // 很多依赖...
+) {
+    // 复杂页面
+}
+```
+
+#### 7.2.3 状态提升规范
+
+**[推荐]** 合理进行状态提升：
+
+```kotlin
+// ✅ 好的状态提升
+@Composable
+fun CounterScreen() {
+    var count by remember { mutableStateOf(0) }
+    
+    Counter(
+        count = count,
+        onIncrement = { count++ }
+    )
+}
+
+@Composable
+fun Counter(
+    count: Int,
+    onIncrement: () -> Unit
+) {
+    Column {
+        Text("Count: $count")
+        Button(onClick = onIncrement) {
+            Text("Increment")
+        }
+    }
+}
+
+// ❌ 不好：状态管理混乱
+@Composable
+fun BadCounter() {
+    // 状态分散，难以管理
+}
+```
+
+### 7.3 跨平台代码规范
+
+#### 7.3.1 expect/actual 使用规范
+
+**[强制]** 平台特定代码使用 expect/actual：
+
+```kotlin
+// commonMain - 定义接口
+expect class PlatformUtils {
+    companion object {
+        fun isIOS(): Boolean
+        fun platformName(): String
+    }
+}
+
+expect fun showNativeDialog(title: String, message: String)
+
+// androidMain - 实现
+actual class PlatformUtils {
+    actual companion object {
+        actual fun isIOS(): Boolean = false
+        actual fun platformName(): String = "Android"
+    }
+}
+
+actual fun showNativeDialog(title: String, message: String) {
+    // Android 实现
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
+// iosMain - 实现
+actual class PlatformUtils {
+    actual companion object {
+        actual fun isIOS(): Boolean = true
+        actual fun platformName(): String = "iOS"
+    }
+}
+
+actual fun showNativeDialog(title: String, message: String) {
+    // iOS 实现
+    UIAlertController.show(title, message)
+}
+```
+
+#### 7.3.2 平台判断规范
+
+**[推荐]** 使用 vif 进行平台判断：
+
+```kotlin
+// ✅ 推荐
+override fun body(): ViewBuilder {
+    return {
+        vif({ PlatformUtils.isIOS() }) {
+            iOSSwitch { /* iOS 特有组件 */ }
+        }
+        
+        vif({ PlatformUtils.isAndroid() }) {
+            AndroidCheckbox { /* Android 特有组件 */ }
+        }
+    }
+}
+
+// ⚠️ 也可以但不够声明式
+override fun body(): ViewBuilder {
+    return {
+        if (PlatformUtils.isIOS()) {
+            iOSSwitch { }()
+        }
+    }
+}
+```
+
+### 7.4 模块通信规范
+
+**[推荐]** 使用 Module 进行模块间通信：
+
+```kotlin
+// 定义模块
+class UserModule : Module() {
+    companion object {
+        const val MODULE_NAME = "UserModule"
+    }
+    
+    fun getUserInfo(userId: String): UserInfo {
+        // 实现
+    }
+}
+
+// 在 Pager 中注册
+override fun createExternalModules(): Map<String, Module> {
+    return mapOf(
+        UserModule.MODULE_NAME to UserModule()
+    )
+}
+
+// 使用模块
+fun loadUser() {
+    val module = acquireModule<UserModule>(UserModule.MODULE_NAME)
+    val user = module.getUserInfo("123")
+}
+```
+
+## 8. 版本控制
+
+### 8.1 Commit 规范
 **[强制]** 遵循约定式提交规范
 
 ```
@@ -672,6 +1047,15 @@ class CalculatorTest {
 - `test`: 测试
 - `chore`: 构建/工具
 
+**Kuikly 特定的 scope**:
+- `core`: 核心模块
+- `compose`: Compose 模块
+- `render-android`: Android 渲染
+- `render-ios`: iOS 渲染
+- `render-ohos`: 鸿蒙渲染
+- `ksp`: KSP 注解处理
+- `demo`: 示例代码
+
 **示例**:
 ```
 feat(compose): 新增滚动性能优化
@@ -680,6 +1064,18 @@ feat(compose): 新增滚动性能优化
 - 减少不必要的重组
 
 Closes #123
+
+feat(ksp): 支持 @HotPreview 注解
+
+- 自动生成预览 Pager
+- 支持 Composable 函数预览
+
+fix(render-ios): 修复 iOS 14 崩溃问题
+
+- 修复 UIView 层级问题
+- 添加兼容性处理
+
+Fixes #456
 ```
 
 详细规范参考：dev-guide.md
