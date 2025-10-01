@@ -79,10 +79,20 @@ dependencies {
 ./gradlew :desktopApp:run
 ```
 
+**注意**：已自动配置必要的 JVM 参数：
+- `--add-opens java.desktop/sun.awt=ALL-UNNAMED` (JCEF 需要)
+- `--add-opens java.desktop/java.awt=ALL-UNNAMED`
+- `--add-opens java.desktop/java.awt.peer=ALL-UNNAMED`
+- `-Xmx1024m` (增加内存)
+
 ### 方式二：构建可执行 JAR
 ```bash
 ./gradlew :desktopApp:build
-java -jar desktopApp/build/libs/desktopApp-1.0.0.jar
+java --add-opens java.desktop/sun.awt=ALL-UNNAMED \
+     --add-opens java.desktop/java.awt=ALL-UNNAMED \
+     --add-opens java.desktop/java.awt.peer=ALL-UNNAMED \
+     -Xmx1024m \
+     -jar desktopApp/build/libs/desktopApp-1.0.0.jar
 ```
 
 ### 方式三：生成分发包

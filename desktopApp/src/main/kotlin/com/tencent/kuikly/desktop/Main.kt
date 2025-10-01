@@ -2,8 +2,6 @@ package com.tencent.kuikly.desktop
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import com.tencent.kuikly.core.manager.BridgeManager
-import com.tencent.kuikly.core.nvi.NativeBridge
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.browser.CefBrowser
@@ -27,9 +25,11 @@ import javax.swing.WindowConstants
  * - 逻辑层：JVM (Kotlin) - core + compose + demo
  * - 渲染层：Chromium (Web) - core-render-web
  * - 通信：JS Bridge 双向桥接
+ * 
+ * 当前状态：基础版本，展示 WebView 和 JS Bridge 注入
  */
 fun main(args: Array<String>) {
-    println("[Kuikly Desktop] 正在初始化 Chromium...")
+    println("[Kuikly Desktop] 🚀 正在初始化 Chromium...")
     
     // 构建 JCEF 应用
     val builder = CefAppBuilder()
@@ -119,41 +119,10 @@ fun main(args: Array<String>) {
         
         frame.isVisible = true
         
-        println("[Kuikly Desktop] 🚀 窗口已启动！")
-        
-        // 初始化 Kuikly Core（业务逻辑层）
-        initKuiklyCore(bridge)
+        println("[Kuikly Desktop] 🎉 窗口已启动！")
+        println("[Kuikly Desktop] 💡 当前为基础版本，已启用 JS Bridge")
+        println("[Kuikly Desktop] 💡 后续可集成 BridgeManager 实现完整业务逻辑")
     }
-}
-
-/**
- * 初始化 Kuikly 核心业务逻辑
- */
-fun initKuiklyCore(bridge: KuiklyJSBridge) {
-    try {
-        // 设置桌面端的 NativeBridge 实现
-        NativeBridge.setInstance(DesktopNativeBridge(bridge))
-        
-        println("[Kuikly Desktop] ✅ Kuikly Core 已初始化")
-    } catch (e: Exception) {
-        println("[Kuikly Desktop] ❌ Kuikly Core 初始化失败: ${e.message}")
-        e.printStackTrace()
-    }
-}
-
-/**
- * 桌面端 NativeBridge 实现
- * 负责 JVM 逻辑层 → Web 渲染层的调用
- */
-class DesktopNativeBridge(private val bridge: KuiklyJSBridge) : NativeBridge() {
-    
-    override fun callNative(method: Int, vararg args: Any?) {
-        println("[Desktop NativeBridge] callNative: method=$method, args=${args.contentToString()}")
-        // 桌面端通过 JS Bridge 将调用转发给 Web 渲染层
-        // TODO: 解析 method 并调用对应的 Web 方法
-    }
-    
-    override fun platformName(): String = "Desktop"
 }
 
 /**
@@ -226,6 +195,7 @@ class KuiklyJSBridge {
                 };
                 
                 console.log('[Kuikly Bridge] ✅ JS Bridge 注入完成');
+                console.log('[Kuikly Bridge] 可用函数: window.callKotlinMethod, com.tencent.kuikly.core.nvi.registerCallNative');
             })();
         """.trimIndent()
         
@@ -238,7 +208,7 @@ class KuiklyJSBridge {
      */
     fun handleWebCall(request: String, callback: CefQueryCallback?) {
         try {
-            println("[Kuikly Desktop] 收到 Web 调用: $request")
+            println("[Kuikly Desktop] 📥 收到 Web 调用: $request")
             
             val json = gson.fromJson(request, JsonObject::class.java)
             val type = json.get("type")?.asString
@@ -248,43 +218,26 @@ class KuiklyJSBridge {
                     // 解析参数
                     val methodId = json.get("methodId")?.asInt ?: 0
                     val argsArray = json.getAsJsonArray("args")
-                    val args = arrayOfNulls<Any?>(argsArray.size())
                     
-                    for (i in 0 until argsArray.size()) {
-                        val element = argsArray.get(i)
-                        args[i] = when {
-                            element.isJsonNull -> null
-                            element.isJsonPrimitive -> {
-                                val primitive = element.asJsonPrimitive
-                                when {
-                                    primitive.isString -> primitive.asString
-                                    primitive.isNumber -> primitive.asNumber
-                                    primitive.isBoolean -> primitive.asBoolean
-                                    else -> primitive.toString()
-                                }
-                            }
-                            else -> element.toString()
-                        }
-                    }
+                    println("[Kuikly Desktop] 📞 callKotlinMethod: methodId=$methodId")
+                    println("[Kuikly Desktop] 💡 当前为基础版本，暂未集成 BridgeManager")
                     
-                    // 调用 BridgeManager
-                    println("[Kuikly Desktop] 调用 BridgeManager.performNativeMethodWithMethod($methodId, ${args.contentToString()})")
-                    BridgeManager.performNativeMethodWithMethod(methodId, *args)
+                    // TODO: 集成 BridgeManager.performNativeMethodWithMethod(methodId, *args)
                     
                     callback?.success("OK")
                 }
                 "registerCallback" -> {
                     val pagerId = json.get("pagerId")?.asString
-                    println("[Kuikly Desktop] 注册回调: $pagerId")
+                    println("[Kuikly Desktop] 📝 registerCallback: $pagerId")
                     callback?.success("OK")
                 }
                 else -> {
-                    println("[Kuikly Desktop] 未知请求类型: $type")
+                    println("[Kuikly Desktop] ⚠️ 未知请求类型: $type")
                     callback?.failure(400, "Unknown request type: $type")
                 }
             }
         } catch (e: Exception) {
-            println("[Kuikly Desktop] 处理 Web 调用失败: ${e.message}")
+            println("[Kuikly Desktop] ❌ 处理 Web 调用失败: ${e.message}")
             e.printStackTrace()
             callback?.failure(500, e.message ?: "Internal error")
         }
@@ -315,17 +268,17 @@ class KuiklyJSBridge {
                 try {
                     if (window.__kuiklyNativeCallbacks && window.__kuiklyNativeCallbacks['$pagerId']) {
                         window.__kuiklyNativeCallbacks['$pagerId'].$methodName($argsJson);
-                        console.log('[Kuikly Bridge] 成功调用: $pagerId.$methodName');
+                        console.log('[Kuikly Bridge] ✅ 成功调用: $pagerId.$methodName');
                     } else {
-                        console.error('[Kuikly Bridge] Callback not found for pagerId: $pagerId');
+                        console.error('[Kuikly Bridge] ❌ Callback not found for pagerId: $pagerId');
                     }
                 } catch (e) {
-                    console.error('[Kuikly Bridge] 调用失败:', e);
+                    console.error('[Kuikly Bridge] ❌ 调用失败:', e);
                 }
             })();
         """.trimIndent()
         
         browser.executeJavaScript(jsCode, browser.url, 0)
-        println("[Kuikly Desktop] 已调用 Web: $pagerId.$methodName")
+        println("[Kuikly Desktop] 📤 已调用 Web: $pagerId.$methodName")
     }
 }

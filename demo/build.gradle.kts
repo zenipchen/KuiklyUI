@@ -87,7 +87,7 @@ kotlin {
 //        )
     }
 
-    val jvmMain by sourceSets.creating {
+    val jvmMain by sourceSets.getting {
         dependsOn(commonMain)
     }
 
