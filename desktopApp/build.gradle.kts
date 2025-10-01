@@ -17,8 +17,9 @@ dependencies {
     implementation(project(":compose"))
     implementation(project(":core-render-web:base"))
     implementation(project(":core-render-web:h5"))
-    implementation("org.openjfx:javafx-controls:21.0.3:${System.getProperty("os.name").lowercase().let { if (it.contains("mac")) "mac-aarch64" else if (it.contains("win")) "win" else "linux" }}")
-    implementation("org.openjfx:javafx-web:21.0.3:${System.getProperty("os.name").lowercase().let { if (it.contains("mac")) "mac-aarch64" else if (it.contains("win")) "win" else "linux" }}")
+    
+    // 使用 Swing，无需额外的 GUI 依赖
+    // Swing 是 Java 标准库的一部分
 }
 
 application {
