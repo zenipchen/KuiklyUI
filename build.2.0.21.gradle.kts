@@ -32,6 +32,9 @@ allprojects {
             substitute(module("${MavenConfig.GROUP}:core")).using(project(":core"))
             substitute(module("${MavenConfig.GROUP}:core-annotations")).using(project(":core-annotations"))
             substitute(module("${MavenConfig.GROUP}:compose")).using(project(":compose"))
+            substitute(module("${MavenConfig.GROUP}:core-render-web:base")).using(project(":core-render-web:base"))
+            substitute(module("${MavenConfig.GROUP}:core-render-web:h5")).using(project(":core-render-web:h5"))
+            substitute(module("${MavenConfig.GROUP}:core-render-web:miniapp")).using(project(":core-render-web:miniapp"))
         }
     }
 }

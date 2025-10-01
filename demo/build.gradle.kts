@@ -43,6 +43,8 @@ kotlin {
         binaries.executable() //将kotlin.js与kotlin代码打包成一份可直接运行的js文件
     }
 
+    jvm()
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -83,6 +85,10 @@ kotlin {
 //            "build/generated/ksp/android/androidDebug/kotlin",
 //            "build/generated/ksp/android/androidRelease/kotlin",
 //        )
+    }
+
+    val jvmMain by sourceSets.creating {
+        dependsOn(commonMain)
     }
 
     sourceSets.iosMain {
@@ -142,6 +148,7 @@ dependencies {
         add("kspIosSimulatorArm64", this)
         add("kspAndroid", this)
         add("kspJs", this)
+        add("kspJvm", this)
     }
 }
 

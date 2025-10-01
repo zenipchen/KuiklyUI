@@ -36,4 +36,8 @@ project(":miniApp").buildFileName = buildFileName
 include(":compose")
 project(":compose").buildFileName = buildFileName
 
+// Desktop JVM app
+include(":desktopApp")
+project(":desktopApp").buildFileName = buildFileName
+
 rootProject.buildFileName = buildFileName

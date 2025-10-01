@@ -4,8 +4,6 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.wm.ToolWindowManager
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtFile
 
 /**
  * 预览当前页面动作
@@ -15,40 +13,32 @@ class PreviewCurrentPageAction : AnAction() {
     
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE) as? KtFile ?: return
-        
-        // 查找带 @Page 注解的类
-        val pageClass = psiFile.declarations.filterIsInstance<KtClass>().find { ktClass ->
-            ktClass.annotationEntries.any { 
-                it.shortName?.asString() == "Page" 
-            }
-        }
-        
-        if (pageClass == null) {
-            return
-        }
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
         
         // 打开预览窗口
         val toolWindowManager = ToolWindowManager.getInstance(project)
         val toolWindow = toolWindowManager.getToolWindow("Kuikly Preview")
         toolWindow?.show()
         
-        println("📱 Preview page: ${pageClass.name}")
+        println("📱 Preview page from: ${psiFile.name}")
     }
     
     override fun update(e: AnActionEvent) {
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE) as? KtFile
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
         
         // 只在 Kotlin 文件中且包含 @Page 注解时显示
-        val hasPageAnnotation = psiFile?.declarations
-            ?.filterIsInstance<KtClass>()
-            ?.any { ktClass ->
-                ktClass.annotationEntries.any { 
-                    it.shortName?.asString() == "Page" 
-                }
-            } ?: false
+        val isKotlinFile = psiFile?.name?.endsWith(".kt") == true
+        val hasPageAnnotation = if (isKotlinFile && psiFile != null) {
+            try {
+                val content = psiFile.text
+                content.contains("@Page")
+            } catch (e: Exception) {
+                false
+            }
+        } else {
+            false
+        }
         
         e.presentation.isEnabledAndVisible = hasPageAnnotation
     }
 }
-

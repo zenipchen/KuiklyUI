@@ -38,16 +38,20 @@ class KuiklyDevServer(
             }
             
             routing {
-                // 静态文件服务
-                static("/") {
-                    val buildDir = getH5AppBuildDir()
-                    files(buildDir)
+                // h5App.js 文件服务
+                get("/h5App.js") {
+                    val file = java.io.File(getH5AppBuildDir(), "h5App.js")
+                    if (file.exists()) {
+                        call.respondFile(file)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound, "h5App.js not found")
+                    }
                 }
                 
                 // 主页面（支持预览参数）
                 get("/") {
                     val html = generateIndexHtml()
-                    call.respondText(html, contentType = io.ktor.http.ContentType.Text.Html)
+                    call.respondText(html, contentType = ContentType.Text.Html)
                 }
                 
                 get("/index.html") {
@@ -56,7 +60,7 @@ class KuiklyDevServer(
                     val height = call.parameters["height"]?.toIntOrNull() ?: 844
                     
                     val html = generatePreviewHtml(pageName, width, height)
-                    call.respondText(html, contentType = io.ktor.http.ContentType.Text.Html)
+                    call.respondText(html, contentType = ContentType.Text.Html)
                 }
                 
                 // WebSocket 端点（用于热重载）
