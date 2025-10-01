@@ -28,14 +28,15 @@ val jcefPlatform = when {
 dependencies {
     // Kuikly 核心依赖（暂时不依赖 demo，先验证基础功能）
     implementation(project(":core"))
-     implementation(project(":demo")) // TODO: 等依赖问题解决后再启用
+    // 暂时移除 demo 依赖，避免版本冲突
+    // implementation(project(":demo")) // TODO: 等依赖问题解决后再启用
 
     // 桌面端 Web 渲染模块（纯渲染层，不包含业务逻辑）
     implementation(project(":desktopWebRender"))
 
-    // JCEF (Java Chromium Embedded Framework) - 使用最新版本
-    implementation("me.friwi:jcefmaven:122.1.11")
-    implementation("org.slf4j:slf4j-simple:2.0.9")
+    // JCEF (Java Chromium Embedded Framework) - 暂时注释掉，先验证基础功能
+    // implementation("me.friwi:jcefmaven:118.1.11")
+    // implementation("org.slf4j:slf4j-simple:2.0.9")
 
     // JSON 解析
     implementation("com.google.code.gson:gson:2.10.1")
