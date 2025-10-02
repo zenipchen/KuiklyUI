@@ -120,11 +120,94 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例 - 使用 desktopWebRender 作为渲染层
-        val url = "http://localhost:8080/desktopWebRender.html"
-        println("[Kuikly Desktop] 正在加载桌面端 Web 渲染层: $url")
+        // 创建浏览器实例 - 使用内嵌的 HTML 作为渲染层
+        val htmlContent = """
+            <!DOCTYPE html>
+            <html lang="zh-CN">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Kuikly Desktop Web Render</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .container {
+                        text-align: center;
+                        padding: 40px;
+                        background: rgba(255, 255, 255, 0.1);
+                        backdrop-filter: blur(10px);
+                        border-radius: 20px;
+                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                    }
+                    h1 {
+                        font-size: 48px;
+                        font-weight: 700;
+                        margin-bottom: 20px;
+                        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                    }
+                    p {
+                        font-size: 20px;
+                        margin-bottom: 10px;
+                        opacity: 0.9;
+                    }
+                    .status {
+                        margin-top: 30px;
+                        padding: 15px 30px;
+                        background: rgba(255, 255, 255, 0.2);
+                        border-radius: 10px;
+                        font-size: 16px;
+                    }
+                    .success { color: #4ade80; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>🚀 Kuikly Desktop</h1>
+                    <p>纯 Web 渲染层</p>
+                    <p>业务逻辑运行在 JVM 中</p>
+                    <div class="status">
+                        <span class="success">✓</span> 渲染层准备就绪
+                    </div>
+                </div>
+                <script>
+                    console.log('[Kuikly Desktop] 纯渲染层已加载');
+                    console.log('[Kuikly Desktop] 等待 JVM 业务逻辑层的调用...');
+                    
+                    // 测试 JS Bridge 是否可用
+                    window.addEventListener('load', function() {
+                        console.log('[Kuikly Desktop] 页面加载完成，JS Bridge 准备就绪');
+                        
+                        // 通知 JVM 端渲染层已就绪
+                        if (window.cefQuery) {
+                            window.cefQuery({
+                                request: JSON.stringify({ type: 'renderReady' }),
+                                onSuccess: function(response) {
+                                    console.log('[Kuikly Desktop] 已通知 JVM 端渲染层就绪');
+                                },
+                                onFailure: function(error_code, error_message) {
+                                    console.error('[Kuikly Desktop] 通知 JVM 失败:', error_message);
+                                }
+                            });
+                        }
+                    });
+                </script>
+            </body>
+            </html>
+        """.trimIndent()
+        
+        // 使用 data URI 加载 HTML
+        val dataUri = "data:text/html;charset=utf-8," + java.net.URLEncoder.encode(htmlContent, "UTF-8")
+        println("[Kuikly Desktop] 正在加载内嵌 Web 渲染层（data URI）")
         println("[Kuikly Desktop] 💡 业务逻辑运行在 JVM 中，Web 层仅负责渲染")
-        val browser = client.createBrowser(url, false, false)
+        val browser = client.createBrowser(dataUri, false, false)
         
         // 将浏览器添加到窗口
         frame.add(browser.uiComponent, BorderLayout.CENTER)

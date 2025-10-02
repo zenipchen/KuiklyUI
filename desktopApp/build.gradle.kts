@@ -40,16 +40,17 @@ application {
         // 增加内存以支持 Chromium
         "-Xmx1024m",
         
-        // 使用 --add-exports 和 --add-opens 组合
+        // 关键：同时使用 --add-exports 和 --add-opens 确保 JCEF 可以访问 sun.awt.AWTAccessor
+        "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
         "--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED",
         "--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
-        "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
         "--add-exports=java.desktop/sun.java2d=ALL-UNNAMED",
         "--add-exports=java.desktop/sun.java2d.opengl=ALL-UNNAMED",
         "--add-exports=java.desktop/sun.java2d.metal=ALL-UNNAMED",
         "--add-exports=java.desktop/sun.font=ALL-UNNAMED",
         "--add-exports=java.desktop/sun.java2d.pipe=ALL-UNNAMED",
         "--add-exports=java.desktop/sun.java2d.pipe.hw=ALL-UNNAMED",
+        "--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED",
         
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
         "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
@@ -61,6 +62,7 @@ application {
         "--add-opens=java.desktop/sun.java2d.metal=ALL-UNNAMED",
         "--add-opens=java.desktop/java.awt.peer=ALL-UNNAMED",
         "--add-opens=java.desktop/java.awt.event=ALL-UNNAMED",
+        "--add-opens=java.desktop/java.awt=ALL-UNNAMED",
         "--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED",
         "--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
         "--add-opens=java.desktop/sun.font=ALL-UNNAMED",
@@ -77,16 +79,17 @@ kotlin {
 afterEvaluate {
     tasks.withType<JavaExec> {
         jvmArgs(
-            // 使用 --add-exports 和 --add-opens 组合
+            // 关键：同时使用 --add-exports 和 --add-opens 确保 JCEF 可以访问 sun.awt.AWTAccessor
+            "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
             "--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED",
             "--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
-            "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
             "--add-exports=java.desktop/sun.java2d=ALL-UNNAMED",
             "--add-exports=java.desktop/sun.java2d.opengl=ALL-UNNAMED",
             "--add-exports=java.desktop/sun.java2d.metal=ALL-UNNAMED",
             "--add-exports=java.desktop/sun.font=ALL-UNNAMED",
             "--add-exports=java.desktop/sun.java2d.pipe=ALL-UNNAMED",
             "--add-exports=java.desktop/sun.java2d.pipe.hw=ALL-UNNAMED",
+            "--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED",
             
             "--add-opens=java.base/java.lang=ALL-UNNAMED",
             "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
@@ -98,6 +101,7 @@ afterEvaluate {
             "--add-opens=java.desktop/sun.java2d.metal=ALL-UNNAMED",
             "--add-opens=java.desktop/java.awt.peer=ALL-UNNAMED",
             "--add-opens=java.desktop/java.awt.event=ALL-UNNAMED",
+            "--add-opens=java.desktop/java.awt=ALL-UNNAMED",
             "--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED",
             "--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
             "--add-opens=java.desktop/sun.font=ALL-UNNAMED",
