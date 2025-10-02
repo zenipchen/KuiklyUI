@@ -20,11 +20,117 @@ import javax.swing.SwingUtilities
 import javax.swing.WindowConstants
 
 /**
+ * 生成桌面端专用的 HTML（加载 h5App 渲染层，但不加载 demo 业务逻辑 JS）
+ * 业务逻辑由 JVM 端的 demo 模块提供
+ */
+fun generateDesktopHtml(): String {
+    // 加载 core-render-web 渲染引擎（不加载 h5App，因为它包含业务逻辑）
+    val renderWebBasePath = "../core-render-web/base/build/kotlin-webpack/js/productionExecutable/KuiklyCore-render-web-base.js"
+    val renderWebH5Path = "../core-render-web/h5/build/kotlin-webpack/js/productionExecutable/KuiklyCore-render-web-h5.js"
+    
+    val renderWebBaseFile = java.io.File(renderWebBasePath)
+    val renderWebH5File = java.io.File(renderWebH5Path)
+    
+    if (!renderWebBaseFile.exists() || !renderWebH5File.exists()) {
+        println("[Kuikly Desktop] ⚠️ 未找到 core-render-web 编译产物")
+        println("[Kuikly Desktop] 💡 请运行: ./gradlew :core-render-web:h5:jsBrowserProductionWebpack")
+        return """
+            <!DOCTYPE html>
+            <html><head><meta charset="UTF-8"><title>Kuikly Desktop - Error</title></head>
+            <body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
+                <div style="text-align:center;">
+                    <h2>❌ core-render-web 未找到</h2>
+                    <p>请运行: ./gradlew :core-render-web:h5:jsBrowserProductionWebpack</p>
+                </div>
+            </body></html>
+        """.trimIndent()
+    }
+    
+    // 读取 core-render-web 渲染引擎
+    val renderWebBaseJs = renderWebBaseFile.readText()
+    val renderWebH5Js = renderWebH5File.readText()
+    println("[Kuikly Desktop] 📦 成功加载 core-render-web base (${renderWebBaseJs.length} 字节)")
+    println("[Kuikly Desktop] 📦 成功加载 core-render-web h5 (${renderWebH5Js.length} 字节)")
+    
+    // 生成 HTML（仅加载 core-render-web 渲染引擎，不加载业务逻辑）
+    return """
+        <!DOCTYPE html>
+        <html lang="zh-CN">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Kuikly Desktop - Pure Render Layer</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body, html {
+                    width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+                }
+                #root {
+                    width: 100%;
+                    height: 100%;
+                }
+                .list-no-scrollbar {
+                    scrollbar-width: none;
+                }
+                .list-no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="root"></div>
+            
+            <!-- 加载 core-render-web 基础渲染引擎 -->
+            <script>
+                console.log('[Kuikly Desktop] 🚀 加载 core-render-web base...');
+                $renderWebBaseJs
+                console.log('[Kuikly Desktop] ✅ core-render-web base 加载完成');
+            </script>
+            
+            <!-- 加载 core-render-web h5 扩展 -->
+            <script>
+                console.log('[Kuikly Desktop] 🚀 加载 core-render-web h5...');
+                $renderWebH5Js
+                console.log('[Kuikly Desktop] ✅ core-render-web h5 加载完成');
+            </script>
+            
+            <!-- 初始化纯渲染层 -->
+            <script>
+                console.log('[Kuikly Desktop] 🔧 初始化纯渲染层...');
+                console.log('[Kuikly Desktop] 💡 业务逻辑运行在 JVM 端');
+                console.log('[Kuikly Desktop] 💡 Web 端仅负责 DOM 渲染');
+                
+                // 等待 JVM 端通过 JS Bridge 初始化渲染层
+                window.addEventListener('load', function() {
+                    console.log('[Kuikly Desktop] ⏳ 等待 JVM 端初始化渲染层...');
+                    
+                    // 通知 JVM 端渲染层已就绪
+                    if (window.cefQuery) {
+                        window.cefQuery({
+                            request: JSON.stringify({ type: 'renderLayerReady' }),
+                            onSuccess: function(response) {
+                                console.log('[Kuikly Desktop] ✅ 已通知 JVM 端渲染层就绪');
+                            },
+                            onFailure: function(error_code, error_message) {
+                                console.error('[Kuikly Desktop] ❌ 通知 JVM 失败:', error_message);
+                            }
+                        });
+                    }
+                });
+            </script>
+        </body>
+        </html>
+    """.trimIndent()
+}
+
+/**
  * Kuikly 桌面端 - 使用 JCEF (Chromium)
  * 
  * 架构：
  * - 逻辑层：JVM (Kotlin) - core + compose
- * - 渲染层：Chromium (Web) - desktopWebRender
+ * - 渲染层：Chromium (Web) - core-render-web
  * - 通信：JS Bridge 双向桥接
  * 
  * 当前状态：完整版本，支持 Web 渲染和 JS Bridge
@@ -121,92 +227,110 @@ fun main(args: Array<String>) {
         })
         
         // 创建浏览器实例 - 使用内嵌的 HTML 作为渲染层
-        val htmlContent = """
+        // 5. 生成桌面端专用 HTML（包含 h5App 渲染层）
+        val htmlContent = generateDesktopHtml()
+        
+        /*
+        val htmlContent_old = """
             <!DOCTYPE html>
             <html lang="zh-CN">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Kuikly Desktop Web Render</title>
+                <title>Kuikly Desktop</title>
                 <style>
                     * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body {
-                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white;
-                        min-height: 100vh;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
+                    body, html {
+                        width: 100%;
+                        height: 100%;
+                        overflow: hidden;
                     }
-                    .container {
-                        text-align: center;
-                        padding: 40px;
-                        background: rgba(255, 255, 255, 0.1);
-                        backdrop-filter: blur(10px);
-                        border-radius: 20px;
-                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                    #kuikly-render-root {
+                        width: 100%;
+                        height: 100%;
                     }
-                    h1 {
-                        font-size: 48px;
-                        font-weight: 700;
-                        margin-bottom: 20px;
-                        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-                    }
-                    p {
-                        font-size: 20px;
-                        margin-bottom: 10px;
-                        opacity: 0.9;
-                    }
-                    .status {
-                        margin-top: 30px;
-                        padding: 15px 30px;
-                        background: rgba(255, 255, 255, 0.2);
-                        border-radius: 10px;
-                        font-size: 16px;
-                    }
-                    .success { color: #4ade80; }
                 </style>
             </head>
             <body>
-                <div class="container">
-                    <h1>🚀 Kuikly Desktop</h1>
-                    <p>纯 Web 渲染层</p>
-                    <p>业务逻辑运行在 JVM 中</p>
-                    <div class="status">
-                        <span class="success">✓</span> 渲染层准备就绪
-                    </div>
-                </div>
+                <!-- Kuikly 渲染容器 -->
+                <div id="kuikly-render-root"></div>
+                
+                <!-- 加载 core-render-web 渲染引擎 -->
                 <script>
-                    console.log('[Kuikly Desktop] 纯渲染层已加载');
-                    console.log('[Kuikly Desktop] 等待 JVM 业务逻辑层的调用...');
+                    $renderEngineJs
+                </script>
+                
+                <!-- 初始化 Kuikly 渲染层 -->
+                <script>
+                    console.log('[Kuikly Desktop] 🚀 初始化 Web 渲染层...');
                     
-                    // 测试 JS Bridge 是否可用
+                    // 1. 初始化全局命名空间（Web 端需要的接口）
+                    window.com = window.com || {};
+                    window.com.tencent = window.com.tencent || {};
+                    window.com.tencent.kuikly = window.com.tencent.kuikly || {};
+                    window.com.tencent.kuikly.core = window.com.tencent.kuikly.core || {};
+                    window.com.tencent.kuikly.core.nvi = window.com.tencent.kuikly.core.nvi || {};
+                    
+                    // 2. 注册回调存储（用于 JVM 调用 Web）
+                    const nativeCallbacks = {};
+                    
+                    // 3. Web 端注册接口：供 core-render-web 调用，注册回调函数
+                    window.com.tencent.kuikly.core.nvi.registerCallNative = function(pageId, callback) {
+                        console.log('[Kuikly Desktop] Web 端注册 Native 回调:', pageId);
+                        nativeCallbacks[pageId] = callback;
+                    };
+                    
+                    // 4. 初始化 KuiklyRenderView（渲染层入口）
                     window.addEventListener('load', function() {
-                        console.log('[Kuikly Desktop] 页面加载完成，JS Bridge 准备就绪');
-                        
-                        // 通知 JVM 端渲染层已就绪
-                        if (window.cefQuery) {
-                            window.cefQuery({
-                                request: JSON.stringify({ type: 'renderReady' }),
-                                onSuccess: function(response) {
-                                    console.log('[Kuikly Desktop] 已通知 JVM 端渲染层就绪');
-                                },
-                                onFailure: function(error_code, error_message) {
-                                    console.error('[Kuikly Desktop] 通知 JVM 失败:', error_message);
+                        try {
+                            // 获取渲染容器
+                            const container = document.getElementById('kuikly-render-root');
+                            
+                            // 创建 KuiklyRenderView 实例
+                            // 注意：这里需要等待 core-render-web 导出的全局对象
+                            if (window.KuiklyRenderView) {
+                                const renderView = new window.KuiklyRenderView(container);
+                                
+                                // 初始化渲染
+                                const pageName = 'router'; // 默认页面
+                                const params = {};
+                                renderView.init(pageName, params);
+                                
+                                console.log('[Kuikly Desktop] ✅ Web 渲染层初始化完成');
+                                
+                                // 通知 JVM 端渲染层已就绪
+                                if (window.cefQuery) {
+                                    window.cefQuery({
+                                        request: JSON.stringify({ 
+                                            type: 'renderReady',
+                                            pageId: renderView.instanceId 
+                                        }),
+                                        onSuccess: function(response) {
+                                            console.log('[Kuikly Desktop] 已通知 JVM 端渲染层就绪');
+                                        },
+                                        onFailure: function(error_code, error_message) {
+                                            console.error('[Kuikly Desktop] 通知 JVM 失败:', error_message);
+                                        }
+                                    });
                                 }
-                            });
+                            } else {
+                                console.error('[Kuikly Desktop] ❌ core-render-web 未正确加载');
+                            }
+                        } catch (error) {
+                            console.error('[Kuikly Desktop] ❌ 初始化失败:', error);
                         }
                     });
+                    
+                    console.log('[Kuikly Desktop] ⏳ 等待页面加载完成...');
                 </script>
             </body>
             </html>
         """.trimIndent()
+        */
         
-        // 使用 data URI 加载 HTML
+        // 6. 使用 data URI 加载 HTML
         val dataUri = "data:text/html;charset=utf-8," + java.net.URLEncoder.encode(htmlContent, "UTF-8")
-        println("[Kuikly Desktop] 正在加载内嵌 Web 渲染层（data URI）")
-        println("[Kuikly Desktop] 💡 业务逻辑运行在 JVM 中，Web 层仅负责渲染")
+        println("[Kuikly Desktop] 📄 正在加载 Web 渲染层...")
         val browser = client.createBrowser(dataUri, false, false)
         
         // 将浏览器添加到窗口
