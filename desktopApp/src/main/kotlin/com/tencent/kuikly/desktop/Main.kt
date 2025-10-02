@@ -3,7 +3,6 @@ package com.tencent.kuikly.desktop
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.tencent.kuikly.core.manager.BridgeManager
-import com.tencent.kuikly.core.manager.KotlinMethod
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.browser.CefBrowser
@@ -24,8 +23,8 @@ import javax.swing.WindowConstants
  * Kuikly 桌面端 - 使用 JCEF (Chromium)
  * 
  * 架构：
- * - 逻辑层：JVM (Kotlin) - core + compose + demo
- * - 渲染层：Chromium (Web) - core-render-web
+ * - 逻辑层：JVM (Kotlin) - core + compose
+ * - 渲染层：Chromium (Web) - desktopWebRender
  * - 通信：JS Bridge 双向桥接
  * 
  * 当前状态：完整版本，支持 Web 渲染和 JS Bridge
@@ -121,9 +120,9 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例 - 使用 H5App 作为渲染层
-        val url = "http://localhost:8080/?page_name=router"
-        println("[Kuikly Desktop] 正在加载 H5App 渲染层: $url")
+        // 创建浏览器实例 - 使用 desktopWebRender 作为渲染层
+        val url = "http://localhost:8080/desktopWebRender.html"
+        println("[Kuikly Desktop] 正在加载桌面端 Web 渲染层: $url")
         println("[Kuikly Desktop] 💡 业务逻辑运行在 JVM 中，Web 层仅负责渲染")
         val browser = client.createBrowser(url, false, false)
         
@@ -153,9 +152,6 @@ class KuiklyJSBridge {
     
     /**
      * 注入 JS Bridge 到 Web 环境
-     * 实现两个核心功能：
-     * 1. window.callKotlinMethod - Web 调用 JVM
-     * 2. com.tencent.kuikly.core.nvi.registerCallNative - JVM 调用 Web
      */
     fun injectBridge() {
         val browser = this.browser ?: run {
@@ -167,7 +163,7 @@ class KuiklyJSBridge {
             (function() {
                 console.log('[Kuikly Bridge] 正在注入 JS Bridge...');
                 
-                // 1. Web → JVM: 提供 callKotlinMethod 函数
+                // Web → JVM: 提供 callKotlinMethod 函数
                 window.callKotlinMethod = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
                     var request = JSON.stringify({
                         type: 'callKotlinMethod',
@@ -175,7 +171,6 @@ class KuiklyJSBridge {
                         args: [arg0, arg1, arg2, arg3, arg4, arg5]
                     });
                     
-                    // 使用 JCEF 的消息路由发送到 JVM
                     window.cefQuery({
                         request: request,
                         onSuccess: function(response) {
@@ -187,35 +182,7 @@ class KuiklyJSBridge {
                     });
                 };
                 
-                // 2. JVM → Web: 提供 registerCallNative 函数
-                if (!window.com) window.com = {};
-                if (!window.com.tencent) window.com.tencent = {};
-                if (!window.com.tencent.kuikly) window.com.tencent.kuikly = {};
-                if (!window.com.tencent.kuikly.core) window.com.tencent.kuikly.core = {};
-                if (!window.com.tencent.kuikly.core.nvi) window.com.tencent.kuikly.core.nvi = {};
-                
-                window.com.tencent.kuikly.core.nvi.registerCallNative = function(pagerId, callback) {
-                    console.log('[Kuikly Bridge] 注册 native 回调:', pagerId);
-                    // 将回调保存到全局对象
-                    if (!window.__kuiklyNativeCallbacks) {
-                        window.__kuiklyNativeCallbacks = {};
-                    }
-                    window.__kuiklyNativeCallbacks[pagerId] = callback;
-                    
-                    // 通知 JVM 已注册
-                    var request = JSON.stringify({
-                        type: 'registerCallback',
-                        pagerId: pagerId
-                    });
-                    window.cefQuery({
-                        request: request,
-                        onSuccess: function(response) {},
-                        onFailure: function(error_code, error_message) {}
-                    });
-                };
-                
                 console.log('[Kuikly Bridge] ✅ JS Bridge 注入完成');
-                console.log('[Kuikly Bridge] 可用函数: window.callKotlinMethod, com.tencent.kuikly.core.nvi.registerCallNative');
             })();
         """.trimIndent()
         
@@ -235,13 +202,11 @@ class KuiklyJSBridge {
             
             when (type) {
                 "callKotlinMethod" -> {
-                    // 解析参数
                     val methodId = json.get("methodId")?.asInt ?: 0
                     val argsArray = json.getAsJsonArray("args")
                     
                     println("[Kuikly Desktop] 📞 callKotlinMethod: methodId=$methodId")
                     
-                    // 解析参数
                     val arg0 = if (argsArray.size() > 0) argsArray[0]?.asString else null
                     val arg1 = if (argsArray.size() > 1) argsArray[1]?.asString else null
                     val arg2 = if (argsArray.size() > 2) argsArray[2]?.asString else null
@@ -249,15 +214,9 @@ class KuiklyJSBridge {
                     val arg4 = if (argsArray.size() > 4) argsArray[4]?.asString else null
                     val arg5 = if (argsArray.size() > 5) argsArray[5]?.asString else null
                     
-                    // 调用 BridgeManager
                     BridgeManager.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
                     
                     println("[Kuikly Desktop] ✅ BridgeManager.callKotlinMethod 调用成功")
-                    return "OK"
-                }
-                "registerCallback" -> {
-                    val pagerId = json.get("pagerId")?.asString
-                    println("[Kuikly Desktop] 📝 registerCallback: $pagerId")
                     return "OK"
                 }
                 else -> {
@@ -271,43 +230,5 @@ class KuiklyJSBridge {
             return "ERROR: ${e.message ?: "Internal error"}"
         }
     }
-    
-    /**
-     * JVM 调用 Web (JVM → Web，用于逻辑层驱动渲染层)
-     */
-    fun callWeb(pagerId: String, methodName: String, vararg args: Any?) {
-        val browser = this.browser ?: run {
-            println("[Kuikly Desktop] ❌ Browser 未初始化")
-            return
-        }
-        
-        // 构建 JS 调用
-        val argsJson = args.joinToString(",") { 
-            when (it) {
-                null -> "null"
-                is String -> gson.toJson(it)
-                is Number -> it.toString()
-                is Boolean -> it.toString()
-                else -> gson.toJson(it)
-            }
-        }
-        
-        val jsCode = """
-            (function() {
-                try {
-                    if (window.__kuiklyNativeCallbacks && window.__kuiklyNativeCallbacks['$pagerId']) {
-                        window.__kuiklyNativeCallbacks['$pagerId'].$methodName($argsJson);
-                        console.log('[Kuikly Bridge] ✅ 成功调用: $pagerId.$methodName');
-                    } else {
-                        console.error('[Kuikly Bridge] ❌ Callback not found for pagerId: $pagerId');
-                    }
-                } catch (e) {
-                    console.error('[Kuikly Bridge] ❌ 调用失败:', e);
-                }
-            })();
-        """.trimIndent()
-        
-        browser.executeJavaScript(jsCode, browser.url, 0)
-        println("[Kuikly Desktop] 📤 已调用 Web: $pagerId.$methodName")
-    }
 }
+

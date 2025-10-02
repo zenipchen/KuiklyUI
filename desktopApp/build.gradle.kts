@@ -13,12 +13,19 @@ repositories {
 }
 
 dependencies {
-    // 核心依赖 - JVM 版本（业务逻辑层）
-    implementation(project(":demo")) // 包含业务逻辑
+    // 核心依赖 - 排除有问题的 coroutines
+    implementation(project(":core")) {
+        exclude(group = "com.tencent.kuiklyx-open", module = "coroutines")
+    }
+    implementation(project(":compose")) {
+        exclude(group = "com.tencent.kuiklyx-open", module = "coroutines")
+    }
+    
+    // 桌面端 Web 渲染模块
     implementation(project(":desktopWebRender"))
-
-    // JCEF (Java Chromium Embedded Framework) - 使用最新版本
-    implementation("me.friwi:jcefmaven:122.1.11")
+    
+    // JCEF (Java Chromium Embedded Framework)
+    implementation("me.friwi:jcefmaven:121.1.11")
     implementation("org.slf4j:slf4j-simple:2.0.9")
     
     // JSON 解析
