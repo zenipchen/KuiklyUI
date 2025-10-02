@@ -9,10 +9,11 @@ plugins {
 
 buildscript {
     repositories {
+
+        mavenLocal()
         gradlePluginPortal()
         google()
         mavenCentral()
-        mavenLocal()
     }
     dependencies {
         classpath(BuildPlugin.kotlin)
@@ -23,12 +24,15 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
-        mavenLocal()
     }
     configurations.all {
         resolutionStrategy.dependencySubstitution {
+            substitute(module("${MavenConfig.GROUP_NO_OPEN}:core")).using(project(":core"))
+            substitute(module("${MavenConfig.GROUP_NO_OPEN}:core-annotations")).using(project(":core-annotations"))
+
             substitute(module("${MavenConfig.GROUP}:core")).using(project(":core"))
             substitute(module("${MavenConfig.GROUP}:core-annotations")).using(project(":core-annotations"))
             substitute(module("${MavenConfig.GROUP}:compose")).using(project(":compose"))

@@ -25,7 +25,7 @@ dependencies {
     implementation(project(":desktopWebRender"))
     
     // JCEF (Java Chromium Embedded Framework)
-    implementation("me.friwi:jcefmaven:121.1.11")
+    implementation("me.friwi:jcefmaven:122.1.10")
     implementation("org.slf4j:slf4j-simple:2.0.9")
     
     // JSON 解析
