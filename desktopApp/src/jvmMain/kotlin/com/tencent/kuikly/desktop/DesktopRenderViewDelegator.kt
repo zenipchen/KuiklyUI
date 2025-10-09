@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.tencent.kuikly.core.IKuiklyCoreEntry
 import com.tencent.kuikly.core.manager.BridgeManager
 import com.tencent.kuikly.core.pager.Pager
+// import com.tencent.kuikly.demo.pages.HelloWorldPage  // HelloWorldPage 是 internal 的，无法直接访问
 // import com.tencent.kuikly.core.render.web.ktx.SizeI
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
@@ -65,6 +66,9 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                     };
                     const size = [window.innerWidth, window.innerHeight];
                     
+                    // 存储 renderView 实例到全局，供后续调用
+                    window.desktopRenderView = renderView;
+                    
                     renderView.init(container, pageName, pageData, size);
                     renderView.resume();
                     
@@ -79,6 +83,22 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                             }),
                             onSuccess: function(response) {
                                 console.log('[Desktop Render] ✅ 已通知 JVM 端渲染层就绪');
+                                
+                                // 触发 HelloWorldPage 创建
+                                setTimeout(function() {
+                                    console.log('[Desktop Render] 🚀 开始创建 HelloWorldPage...');
+                                    if (window.callKotlinMethod) {
+                                        const result = window.callKotlinMethod(1, 'HelloWorldPage', null, null, null, null, null);
+                                        console.log('[Desktop Render] 📄 HelloWorldPage 创建结果:', result);
+                                        
+                                        // 获取页面数据
+                                        setTimeout(function() {
+                                            console.log('[Desktop Render] 📊 获取页面数据...');
+                                            const pageData = window.callKotlinMethod(2, 'HelloWorldPage', null, null, null, null, null);
+                                            console.log('[Desktop Render] 📊 页面数据:', pageData);
+                                        }, 100);
+                                    }
+                                }, 500);
                             },
                             onFailure: function(error_code, error_message) {
                                 console.error('[Desktop Render] ❌ 通知 JVM 失败:', error_message);
@@ -167,10 +187,19 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
     fun createPage(pageName: String): Pager? {
         return when (pageName) {
             "HelloWorldPage" -> {
-                // 暂时返回 null，因为 HelloWorldPage 是 internal 的
-                // 在实际应用中，这里应该通过反射或其他方式创建页面实例
                 println("[Desktop Render] 📄 创建页面: $pageName")
-                null
+                try {
+                    // 使用反射创建 HelloWorldPage 实例
+                    val helloWorldClass = Class.forName("com.tencent.kuikly.demo.pages.HelloWorldPage")
+                    val page = helloWorldClass.newInstance() as Pager
+                    pageInstances[pageName] = page
+                    println("[Desktop Render] ✅ HelloWorldPage 创建成功")
+                    page
+                } catch (e: Exception) {
+                    println("[Desktop Render] ❌ HelloWorldPage 创建失败: ${e.message}")
+                    e.printStackTrace()
+                    null
+                }
             }
             else -> {
                 println("[Desktop Render] ❌ 未知页面: $pageName")
@@ -200,10 +229,34 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                 val page = createPage(pageName)
                 if (page != null) {
                     println("[Desktop Render] ✅ 页面创建成功: $pageName")
-                    "OK"
+                    
+                    // 触发页面渲染
+                    try {
+                        val renderData = mapOf(
+                            "type" to "renderPage",
+                            "pageId" to pageName,
+                            "pageName" to pageName,
+                            "pageData" to mapOf(
+                                "statusBarHeight" to 0,
+                                "activityWidth" to 1200,
+                                "activityHeight" to 800,
+                                "param" to emptyMap<String, Any>()
+                            ),
+                            "width" to 1200,
+                            "height" to 800
+                        )
+                        
+                        // 通知 JS 端开始渲染
+                        callNative(1, gson.toJson(renderData), null, null, null, null, null)
+                        "OK"
+                    } catch (e: Exception) {
+                        println("[Desktop Render] ❌ 页面渲染失败: ${e.message}")
+                        e.printStackTrace()
+                        "ERROR: Render failed"
+                    }
                 } else {
                     println("[Desktop Render] ❌ 页面创建失败: $pageName")
-                    "ERROR"
+                    "ERROR: Page creation failed"
                 }
             }
             2 -> {
@@ -211,15 +264,53 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                 val pageName = arg0 as? String ?: "HelloWorldPage"
                 val page = pageInstances[pageName]
                 if (page != null) {
-                    // 这里应该返回页面的渲染数据
-                    // 暂时返回简单的测试数据
-                    val testData = mapOf(
-                        "type" to "RichText",
-                        "text" to "Hello World from Desktop!",
-                        "color" to "#000000",
-                        "fontSize" to 16
-                    )
-                    gson.toJson(testData)
+                    try {
+                        // 获取页面的渲染数据
+                        val event = page.createEvent()
+                        val viewBuilder = page.body()
+                        
+                        // 这里应该将 ViewBuilder 转换为渲染数据
+                        // 暂时返回 HelloWorldPage 的富文本数据
+                        val richTextData = mapOf(
+                            "type" to "RichText",
+                            "attr" to mapOf(
+                                "marginTop" to 30.0,
+                                "lines" to 3,
+                                "textOverFlowTail" to true,
+                                "color" to "#000000",
+                                "fontSize" to 16.0
+                            ),
+                            "children" to listOf(
+                                mapOf(
+                                    "type" to "Span",
+                                    "text" to "我是第一个文本我是第一个文本"
+                                ),
+                                mapOf(
+                                    "type" to "Span",
+                                    "color" to "#FF0000",
+                                    "fontSize" to 16.0,
+                                    "text" to "这是第二个文本",
+                                    "fontWeightBold" to true,
+                                    "textDecorationLineThrough" to true
+                                ),
+                                mapOf(
+                                    "type" to "Span",
+                                    "color" to "#FF0000",
+                                    "fontSize" to 16.0,
+                                    "text" to "这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个",
+                                    "fontWeightMedium" to true,
+                                    "fontStyleItalic" to true,
+                                    "textDecorationUnderLine" to true
+                                )
+                            )
+                        )
+                        
+                        gson.toJson(richTextData)
+                    } catch (e: Exception) {
+                        println("[Desktop Render] ❌ 获取页面数据失败: ${e.message}")
+                        e.printStackTrace()
+                        "ERROR: Failed to get page data"
+                    }
                 } else {
                     "ERROR: Page not found"
                 }
@@ -248,10 +339,31 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
         val browser = this.browser ?: return null
         
         val jsCode = """
-            if (typeof window.desktopCallNativeCallback === 'function') {
+            console.log('[Desktop Render] 🌐 执行 callNative: methodId=$methodId');
+            
+            // 优先使用 desktopRenderView 实例
+            if (window.desktopRenderView && typeof window.desktopRenderView.sendEvent === 'function') {
+                console.log('[Desktop Render] ✅ 使用 desktopRenderView 发送事件');
+                
+                // 解析参数
+                var eventData = null;
+                try {
+                    if (arg0) {
+                        eventData = JSON.parse(arg0);
+                    }
+                } catch (e) {
+                    console.warn('[Desktop Render] ⚠️ 无法解析事件数据:', e);
+                }
+                
+                // 发送事件到 JS 渲染层
+                if (eventData && eventData.type) {
+                    window.desktopRenderView.sendEvent(eventData.type, eventData);
+                }
+            } else if (typeof window.desktopCallNativeCallback === 'function') {
+                console.log('[Desktop Render] ✅ 使用 desktopCallNativeCallback');
                 window.desktopCallNativeCallback($methodId, $arg0, $arg1, $arg2, $arg3, $arg4, $arg5);
             } else {
-                console.warn('[Desktop Render] ⚠️ callNative 回调未注册');
+                console.warn('[Desktop Render] ⚠️ callNative 回调未注册，desktopRenderView 不可用');
             }
         """.trimIndent()
         
