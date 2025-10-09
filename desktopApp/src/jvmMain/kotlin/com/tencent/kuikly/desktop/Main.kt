@@ -106,21 +106,6 @@ fun generateDesktopHtml(): String {
  * 当前状态：完整版本，支持 Web 渲染和 JS Bridge
  */
 fun main(args: Array<String>) {
-    println("[Kuikly Desktop] 🚀 正在初始化...")
-
-    // 1. 初始化 BridgeManager (JVM 业务逻辑层)
-    println("[Kuikly Desktop] 🔗 初始化 BridgeManager...")
-    try {
-        BridgeManager.init()
-        println("[Kuikly Desktop] ✅ BridgeManager 初始化完成")
-        
-        // 页面注册将通过 KuiklyCoreEntry 自动处理
-        println("[Kuikly Desktop] 📝 页面注册将通过 KuiklyCoreEntry 自动处理")
-    } catch (e: Exception) {
-        println("[Kuikly Desktop] ❌ BridgeManager 初始化失败: ${e.message}")
-        e.printStackTrace()
-    }
-    
     // 2. 初始化 Kuikly 线程调度器
     println("[Kuikly Desktop] 🧵 初始化 Kuikly 线程调度器...")
     try {
@@ -503,51 +488,11 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
             (function() {
                 console.log('[Kuikly Bridge] 正在注入 JS Bridge...');
                 
-                // Web → JVM: 提供 callKotlinMethod 函数
-                window.callKotlinMethod = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
-                    var request = JSON.stringify({
-                        type: 'callKotlinMethod',
-                        methodId: methodId,
-                        args: [arg0, arg1, arg2, arg3, arg4, arg5]
-                    });
-                    
-                    window.cefQuery({
-                        request: request,
-                        onSuccess: function(response) {
-                            console.log('[Kuikly Bridge] JVM 调用成功:', response);
-                        },
-                        onFailure: function(error_code, error_message) {
-                            console.error('[Kuikly Bridge] JVM 调用失败:', error_message);
-                        }
-                    });
-                };
-                
-                // 全局 callNative 函数，供 core-render-web 调用
-                window.callNative = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
-                    console.log('[Kuikly Bridge] 全局 callNative 调用: methodId=' + methodId);
-                    
-                    var request = JSON.stringify({
-                        type: 'callNative',
-                        methodId: methodId,
-                        args: [arg0, arg1, arg2, arg3, arg4, arg5]
-                    });
-                    
-                    var result = null;
-                    window.cefQuery({
-                        request: request,
-                        onSuccess: function(response) {
-                            console.log('[Kuikly Bridge] callNative 调用成功:', response);
-                            result = response;
-                        },
-                        onFailure: function(error_code, error_message) {
-                            console.error('[Kuikly Bridge] callNative 调用失败:', error_message);
-                        }
-                    });
-                    
-                    return result;
-                };
+                // 只提供 cefQuery 函数，其他函数由 desktop-render-layer 提供
+                // desktop-render-layer 会提供 callKotlinMethod 和 callNative 函数
                 
                 console.log('[Kuikly Bridge] ✅ JS Bridge 注入完成');
+                console.log('[Kuikly Bridge] 💡 callKotlinMethod 和 callNative 由 desktop-render-layer 提供');
             })();
         """.trimIndent()
         
@@ -617,30 +562,10 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
                 }
                 "renderReady" -> {
                     println("[Kuikly Desktop] 🎉 Web 渲染层已就绪！")
+                    println("[Kuikly Desktop] 💡 等待 Web 渲染层主动驱动渲染流程...")
                     
-                    // 测试：发送初始化指令到 Web 渲染层
-                    callWebRender("init", mapOf(
-                        "pageName" to "kuikly_dsl_desktop",
-                        "width" to 800,
-                        "height" to 600
-                    ))
-                    
-                   // 延迟发送 HelloWorldPage 渲染指令
-                   Thread {
-                       Thread.sleep(3000) // 等待 3 秒，确保渲染引擎加载完成
-                       println("[Kuikly Desktop] 🎨 发送 HelloWorldPage 渲染指令...")
-                       callWebRender("render", mapOf(
-                           "pageName" to "HelloWorldPage",
-                           "pageData" to mapOf(
-                               "title" to "Hello World Page",
-                               "description" to "桌面端 HelloWorldPage 渲染测试",
-                               "version" to "1.0.0",
-                               "platform" to "desktop",
-                               "pageViewWidth" to 800,
-                               "pageViewHeight" to 600
-                           )
-                       ))
-                   }.start()
+                    // 不再主动发送渲染指令，让 Web 渲染层驱动
+                    // Web 渲染层会通过 callKotlinMethod 调用 JVM 逻辑层
                     
                     return "OK"
                 }
