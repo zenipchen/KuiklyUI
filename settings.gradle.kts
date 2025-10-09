@@ -48,4 +48,7 @@ include(":desktopRenderHost")
 // Desktop Render Engine (桌面端渲染引擎)
 include(":desktop-render-engine")
 
+// Desktop Render Layer (桌面端渲染层)
+include(":desktop-render-layer")
+
 rootProject.buildFileName = buildFileName

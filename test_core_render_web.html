@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Render Web 测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            color: black;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        #kuikly-render-container {
+            width: 100%;
+            height: 400px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            margin-top: 20px;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .status.info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Core Render Web 测试</h1>
+            <p>使用桌面渲染层测试 core-render-web 模块渲染功能</p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-primary" onclick="initRenderEngine()">初始化渲染引擎</button>
+            <button class="btn-success" onclick="renderHelloWorldPage()">渲染 HelloWorldPage</button>
+            <button class="btn-warning" onclick="clearContainer()">清空容器</button>
+        </div>
+        
+        <div id="kuikly-render-container">
+            <div style="color: #666; text-align: center;">
+                <p>渲染容器</p>
+                <p>点击上方按钮开始测试</p>
+            </div>
+        </div>
+        
+        <div id="status" class="status info">
+            <strong>状态日志:</strong><br>
+            等待初始化...
+        </div>
+    </div>
+
+    <!-- 引入 Kuikly JS Bridge -->
+    <script>
+        window.callKotlinMethod = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
+            return new Promise((resolve, reject) => {
+                if (window.cefQuery) {
+                    const request = JSON.stringify({
+                        type: "callKotlinMethod",
+                        methodId: methodId,
+                        args: [arg0, arg1, arg2, arg3, arg4, arg5]
+                    });
+                    console.log("[Kuikly Bridge] 📞 调用 JVM: " + request);
+                    window.cefQuery({
+                        request: request,
+                        onSuccess: function(response) {
+                            console.log("[Kuikly Bridge] JVM 调用成功: " + response);
+                            resolve(response);
+                        },
+                        onFailure: function(error_code, error_message) {
+                            console.error("[Kuikly Bridge] JVM 调用失败: " + error_message);
+                            reject(new Error(error_message));
+                        }
+                    });
+                } else {
+                    console.warn("[Kuikly Bridge] ⚠️ window.cefQuery 未定义，无法调用 JVM 方法。");
+                    reject(new Error("window.cefQuery is not defined."));
+                }
+            });
+        };
+        
+        console.log("[Kuikly Bridge] 正在注入 JS Bridge...");
+        // 确保在 DOMContentLoaded 之后再检查 cefQuery
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.cefQuery) {
+                console.log("[Kuikly Bridge] ✅ JS Bridge 注入完成");
+            } else {
+                console.warn("[Kuikly Bridge] ❌ JS Bridge 注入失败，window.cefQuery 未定义。");
+            }
+        });
+    </script>
+
+    <!-- 引入桌面渲染层 JS 文件 -->
+    <script src="../desktop-render-layer/build/kotlin-webpack/js/productionExecutable/desktopRenderLayer.js"></script>
+    
+    <script>
+        let renderView = null;
+        let isInitialized = false;
+        
+        function log(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            
+            statusDiv.innerHTML += logMessage + '<br>';
+            statusDiv.scrollTop = statusDiv.scrollHeight;
+            
+            // 更新状态样式
+            statusDiv.className = `status ${type}`;
+            
+            console.log(logMessage);
+        }
+        
+        function initRenderEngine() {
+            log("🚀 开始初始化 Core Render Web...");
+            
+            try {
+                // 检查桌面渲染层是否已加载
+                if (typeof window.DesktopRenderLayer === 'undefined') {
+                    log("❌ 桌面渲染层模块未正确加载", 'error');
+                    return false;
+                }
+                
+                log("✅ 桌面渲染层模块已加载");
+                
+                // 获取桌面渲染层 API
+                const renderLayerAPI = window.DesktopRenderLayer;
+                
+                // 获取 KuiklyRenderView 类
+                const KuiklyRenderView = renderLayerAPI.getKuiklyRenderViewClass();
+                const KuiklyRenderCoreExecuteMode = renderLayerAPI.getKuiklyRenderCoreExecuteModeClass();
+                
+                if (!KuiklyRenderView) {
+                    log("❌ 找不到 KuiklyRenderView 类", 'error');
+                    return false;
+                }
+                
+                log("✅ 找到 KuiklyRenderView 类");
+                
+                // 创建渲染视图实例
+                renderView = new KuiklyRenderView(KuiklyRenderCoreExecuteMode.JS, null);
+                
+                if (!renderView) {
+                    log("❌ 创建 KuiklyRenderView 实例失败", 'error');
+                    return false;
+                }
+                
+                log("✅ 创建 KuiklyRenderView 实例成功");
+                isInitialized = true;
+                
+                log("🎉 Core Render Web 初始化完成！", 'success');
+                return true;
+                
+            } catch (e) {
+                log(`❌ 初始化失败: ${e.message}`, 'error');
+                console.error(e);
+                return false;
+            }
+        }
+        
+        function renderHelloWorldPage() {
+            if (!isInitialized || !renderView) {
+                log("❌ 渲染引擎未初始化，请先点击'初始化渲染引擎'", 'error');
+                return false;
+            }
+            
+            log("🎨 开始渲染 HelloWorldPage...");
+            
+            try {
+                const container = document.getElementById('kuikly-render-container');
+                if (!container) {
+                    log("❌ 找不到渲染容器", 'error');
+                    return false;
+                }
+                
+                // 清空容器
+                container.innerHTML = '';
+                
+                // 设置容器 ID
+                container.id = 'kuikly-render-container';
+                
+                // 页面参数
+                const pageData = {
+                    platform: 'desktop',
+                    deviceWidth: 800,
+                    deviceHeight: 400,
+                    statusBarHeight: 0,
+                    osVersion: 'MacOS',
+                    activityWidth: 0,
+                    activityHeight: 0,
+                    safeAreaInsets: '0 0 0 0',
+                    appVersion: '1.0.0',
+                    param: {},
+                    density: 1
+                };
+                
+                log("📋 页面参数: " + JSON.stringify(pageData));
+                
+                // 初始化渲染视图
+                renderView.init(
+                    'kuikly-render-container',
+                    'HelloWorldPage',
+                    pageData,
+                    { first: 800, second: 400 } // size
+                );
+                
+                log("✅ HelloWorldPage 渲染初始化完成", 'success');
+                
+                // 触发页面显示事件
+                setTimeout(() => {
+                    renderView.resume();
+                    log("✅ 页面显示事件已触发", 'success');
+                }, 100);
+                
+                return true;
+                
+            } catch (e) {
+                log(`❌ 渲染失败: ${e.message}`, 'error');
+                console.error(e);
+                return false;
+            }
+        }
+        
+        function clearContainer() {
+            const container = document.getElementById('kuikly-render-container');
+            container.innerHTML = `
+                <div style="color: #666; text-align: center;">
+                    <p>渲染容器</p>
+                    <p>点击上方按钮开始测试</p>
+                </div>
+            `;
+            log("🧹 容器已清空");
+        }
+        
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            log("📄 页面加载完成");
+            
+            // 检查桌面渲染层模块
+            setTimeout(() => {
+                if (typeof window.DesktopRenderLayer !== 'undefined') {
+                    log("✅ 桌面渲染层模块已加载，可以开始测试", 'success');
+                } else {
+                    log("❌ 桌面渲染层模块加载失败", 'error');
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

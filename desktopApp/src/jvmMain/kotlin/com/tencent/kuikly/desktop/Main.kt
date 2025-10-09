@@ -239,7 +239,7 @@ fun main(args: Array<String>) {
         
         // 创建浏览器实例 - 使用桌面渲染引擎测试页面
         // 5. 使用桌面渲染引擎测试页面验证真实组件渲染
-        val testHtmlPath = java.io.File("../test_hello_world_render.html").absolutePath
+        val testHtmlPath = java.io.File("../test_core_render_web.html").absolutePath
         val testHtmlUrl = "file://$testHtmlPath"
         
         /*
