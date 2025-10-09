@@ -59,7 +59,7 @@ kotlin {
     val commonMain by sourceSets.getting {
         dependencies {
             implementation(project(":core"))
-            implementation(project(":compose"))
+            api(project(":compose"))
             implementation(project(":core-annotations"))
 //            compileOnly(project(":core-annotations"))
             // Chat Demo 相关依赖
