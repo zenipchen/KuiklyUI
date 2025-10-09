@@ -91,12 +91,8 @@
     <!-- 渲染容器 -->
     <div id="kuikly-render-container"></div>
     
-    <!-- 加载 core-render-web 渲染引擎 -->
-    <script src="core-render-web/base/build/kotlin-webpack/js/productionExecutable/KuiklyCore-render-web-base.js"></script>
-    <script src="core-render-web/h5/build/kotlin-webpack/js/productionExecutable/KuiklyCore-render-web-h5.js"></script>
-    
-    <!-- 加载真实的 Kuikly DSL -->
-    <script src="demo/build/outputs/kuikly/js/release/local/nativevue2.js"></script>
+    <!-- 加载桌面端纯渲染层 -->
+    <script src="desktopRenderHost.js"></script>
     
     <script>
         console.log('[Kuikly Desktop] 🧪 真实 Kuikly DSL 测试页面已加载');
@@ -109,21 +105,15 @@
             }
         }
         
-        // 检查 Kuikly DSL 是否加载成功
-        function checkKuiklyDSL() {
-            // 检查多种可能的 Kuikly 对象
-            if (typeof window.Kuikly !== 'undefined' || 
-                typeof window.callKotlinMethod !== 'undefined' ||
-                typeof window.com !== 'undefined' && window.com.tencent && window.com.tencent.kuikly) {
-                console.log('[Kuikly Desktop] ✅ Kuikly DSL 可用');
-                updateStatus('✅ Kuikly DSL 加载成功', 'success');
+        // 检查渲染层是否加载成功
+        function checkRenderHost() {
+            if (typeof window.renderContent === 'function') {
+                console.log('[Kuikly Desktop] ✅ 渲染层可用');
+                updateStatus('✅ 渲染层加载成功', 'success');
                 return true;
             } else {
-                console.log('[Kuikly Desktop] ⏳ 等待 Kuikly DSL 加载...');
-                console.log('[Kuikly Desktop] 调试信息:');
-                console.log('  - window.Kuikly:', typeof window.Kuikly);
-                console.log('  - window.callKotlinMethod:', typeof window.callKotlinMethod);
-                console.log('  - window.com:', typeof window.com);
+                console.log('[Kuikly Desktop] ⏳ 等待渲染层加载...');
+                updateStatus('⏳ 等待渲染层加载...', 'pending');
                 return false;
             }
         }
@@ -506,16 +496,16 @@
         
         // 检查 Kuikly DSL 加载状态
         setTimeout(() => {
-            if (checkKuiklyDSL()) {
-                updateStatus('✅ Kuikly DSL 加载成功，准备就绪', 'success');
+            if (checkRenderHost()) {
+                updateStatus('✅ 渲染层加载成功，准备就绪', 'success');
             } else {
-                updateStatus('⏳ 等待 Kuikly DSL 加载...', 'loading');
+                updateStatus('⏳ 等待渲染层加载...', 'loading');
                 // 继续检查
                 setTimeout(() => {
-                    if (checkKuiklyDSL()) {
-                        updateStatus('✅ Kuikly DSL 加载成功，准备就绪', 'success');
+                    if (checkRenderHost()) {
+                        updateStatus('✅ 渲染层加载成功，准备就绪', 'success');
                     } else {
-                        updateStatus('❌ Kuikly DSL 加载失败', 'error');
+                        updateStatus('❌ 渲染层加载失败', 'error');
                     }
                 }, 2000);
             }
