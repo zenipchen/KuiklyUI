@@ -123,8 +123,32 @@ class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
         size: SizeI
     ) {
         console.log("[Desktop Render Layer] 初始化渲染视图: container=$container, pageName=$pageName")
+        
+        // 确保 pageData 是一个正确的 Kotlin Map 对象
+        val kotlinPageData = if (pageData is kotlin.collections.Map<*, *>) {
+            pageData as Map<String, Any>
+        } else {
+            // 如果传入的不是 Kotlin Map，创建一个新的 Map
+            val newMap = mutableMapOf<String, Any>()
+            if (pageData != null) {
+                // 尝试从 JavaScript 对象转换为 Kotlin Map
+                try {
+                    val jsObject = pageData.asDynamic()
+                    for (key in js("Object.keys")(jsObject)) {
+                        val keyStr = key as String
+                        newMap[keyStr] = jsObject[keyStr]
+                    }
+                } catch (e: Exception) {
+                    console.warn("[Desktop Render Layer] 无法转换 pageData: ${e.message}")
+                }
+            }
+            newMap
+        }
+        
+        console.log("[Desktop Render Layer] 转换后的 pageData: $kotlinPageData")
+        
         // 使用 core-render-web 的委托器进行初始化
-        delegator.onAttach(container, pageName, pageData, size)
+        delegator.onAttach(container, pageName, kotlinPageData, size)
     }
 
     /**
