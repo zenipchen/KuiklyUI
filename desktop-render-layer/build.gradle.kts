@@ -16,6 +16,8 @@ kotlin {
         browser {
             webpackTask {
                 outputFileName = "desktopRenderLayer.js"
+                // 使用开发模式，禁用代码混淆
+                mode = org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
             }
         }
         binaries.executable()
