@@ -27,7 +27,7 @@ fun main() {
     window.asDynamic().getKuiklyRenderCoreExecuteModeClass = { -> api.getKuiklyRenderCoreExecuteModeClass() }
     
     console.log("DesktopRenderLayer API 已导出")
-    console.log("createRenderView 方法类型:", js("typeof window.createRenderView"))
+    console.log("createRenderViewDelegator 方法类型:", js("typeof window.createRenderViewDelegator"))
 }
 
 /**
@@ -64,6 +64,66 @@ private fun initGlobalObject() {
     // 设置 kuiklyWindow 和 kuiklyDocument
     window.asDynamic().kuiklyWindow = window
     window.asDynamic().kuiklyDocument = document
+    
+    // 初始化 core.nvi 命名空间
+    if (window.asDynamic().com == null) {
+        window.asDynamic().com = js("{}")
+    }
+    if (window.asDynamic().com.tencent == null) {
+        window.asDynamic().com.tencent = js("{}")
+    }
+    if (window.asDynamic().com.tencent.kuikly == null) {
+        window.asDynamic().com.tencent.kuikly = js("{}")
+    }
+    if (window.asDynamic().com.tencent.kuikly.core == null) {
+        window.asDynamic().com.tencent.kuikly.core = js("{}")
+    }
+    if (window.asDynamic().com.tencent.kuikly.core.nvi == null) {
+        window.asDynamic().com.tencent.kuikly.core.nvi = js("{}")
+    }
+    
+    // 注册 registerCallNative 函数
+    window.asDynamic().com.tencent.kuikly.core.nvi.registerCallNative = { pagerId: String, callback: dynamic ->
+        console.log("[Desktop Render Layer] 注册 callNative 回调: pagerId=$pagerId")
+        // 这里可以存储回调，用于后续的 callNative 调用
+        window.asDynamic().desktopCallNativeCallback = callback
+    }
+    
+    // 实现 renderContent 函数，用于处理来自 JVM 的调用
+    window.asDynamic().renderContent = { data: String ->
+        try {
+            val renderData = js("JSON.parse(data)")
+            console.log("[Desktop Render Layer] 收到渲染指令:", renderData)
+            
+            when (renderData.type) {
+                "nativeCall" -> {
+                    // 处理 callNative 调用
+                    val methodId = renderData.methodId
+                    val arg0 = renderData.arg0
+                    val arg1 = renderData.arg1
+                    val arg2 = renderData.arg2
+                    val arg3 = renderData.arg3
+                    val arg4 = renderData.arg4
+                    val arg5 = renderData.arg5
+                    
+                    console.log("[Desktop Render Layer] 处理 callNative: methodId=$methodId")
+                    
+                    // 调用存储的 callNative 回调
+                    val callback = window.asDynamic().desktopCallNativeCallback
+                    if (callback && js("typeof callback === 'function'")) {
+                        callback(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
+                    } else {
+                        console.warn("[Desktop Render Layer] callNative 回调未注册")
+                    }
+                }
+                else -> {
+                    console.log("[Desktop Render Layer] 未知的渲染指令类型:", renderData.type)
+                }
+            }
+        } catch (e: dynamic) {
+            console.error("[Desktop Render Layer] 处理渲染指令失败:", e)
+        }
+    }
 }
 
 /**
@@ -99,10 +159,7 @@ class DesktopRenderLayerAPI {
  * 桌面渲染视图委托器
  */
 class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
-    
-    // 使用 H5 的委托器实现
-    private val delegator = com.tencent.kuikly.core.render.web.runtime.web.expand.KuiklyRenderViewDelegator(this)
-    
+
     /**
      * 初始化渲染视图
      */
@@ -114,7 +171,10 @@ class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
     ) {
         delegator.onAttach(container, pageName, pageData, size)
     }
-    
+
+    // 使用 H5 的委托器实现
+    private val delegator = com.tencent.kuikly.core.render.web.runtime.web.expand.KuiklyRenderViewDelegator(this)
+
     /**
      * 页面显示
      */

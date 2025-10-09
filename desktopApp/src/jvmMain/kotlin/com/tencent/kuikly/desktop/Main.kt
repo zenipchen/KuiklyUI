@@ -449,6 +449,23 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
     }
     
     /**
+     * 全局 callNative 函数实现
+     * 这个函数会被注入到 Web 环境中，供 core-render-web 调用
+     */
+    fun globalCallNative(
+        methodId: Int,
+        arg0: Any?,
+        arg1: Any?,
+        arg2: Any?,
+        arg3: Any?,
+        arg4: Any?,
+        arg5: Any?
+    ): Any? {
+        println("[Kuikly Desktop] 🌐 全局 callNative 调用: methodId=$methodId")
+        return callNative(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
+    }
+    
+    /**
      * JVM → Web: 调用 Web 渲染层
      */
     fun callWebRender(type: String, data: Map<String, Any> = emptyMap()) {
@@ -505,6 +522,31 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
                     });
                 };
                 
+                // 全局 callNative 函数，供 core-render-web 调用
+                window.callNative = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
+                    console.log('[Kuikly Bridge] 全局 callNative 调用: methodId=' + methodId);
+                    
+                    var request = JSON.stringify({
+                        type: 'callNative',
+                        methodId: methodId,
+                        args: [arg0, arg1, arg2, arg3, arg4, arg5]
+                    });
+                    
+                    var result = null;
+                    window.cefQuery({
+                        request: request,
+                        onSuccess: function(response) {
+                            console.log('[Kuikly Bridge] callNative 调用成功:', response);
+                            result = response;
+                        },
+                        onFailure: function(error_code, error_message) {
+                            console.error('[Kuikly Bridge] callNative 调用失败:', error_message);
+                        }
+                    });
+                    
+                    return result;
+                };
+                
                 console.log('[Kuikly Bridge] ✅ JS Bridge 注入完成');
             })();
         """.trimIndent()
@@ -548,6 +590,30 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
                     }
                     
                     return "OK"
+                }
+                "callNative" -> {
+                    val methodId = json.get("methodId")?.asInt ?: 0
+                    val argsArray = json.getAsJsonArray("args")
+                    
+                    println("[Kuikly Desktop] 📞 callNative: methodId=$methodId")
+                    
+                    val arg0 = if (argsArray.size() > 0 && !argsArray[0].isJsonNull) argsArray[0].asString else null
+                    val arg1 = if (argsArray.size() > 1 && !argsArray[1].isJsonNull) argsArray[1].asString else null
+                    val arg2 = if (argsArray.size() > 2 && !argsArray[2].isJsonNull) argsArray[2].asString else null
+                    val arg3 = if (argsArray.size() > 3 && !argsArray[3].isJsonNull) argsArray[3].asString else null
+                    val arg4 = if (argsArray.size() > 4 && !argsArray[4].isJsonNull) argsArray[4].asString else null
+                    val arg5 = if (argsArray.size() > 5 && !argsArray[5].isJsonNull) argsArray[5].asString else null
+                    
+                    // 调用全局 callNative 函数
+                    try {
+                        val result = globalCallNative(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
+                        println("[Kuikly Desktop] ✅ globalCallNative 调用成功，结果: $result")
+                        return result?.toString() ?: "null"
+                    } catch (e: Exception) {
+                        println("[Kuikly Desktop] ❌ globalCallNative 调用失败: ${e.message}")
+                        e.printStackTrace()
+                        return "ERROR: ${e.message ?: "Internal error"}"
+                    }
                 }
                 "renderReady" -> {
                     println("[Kuikly Desktop] 🎉 Web 渲染层已就绪！")

@@ -132,16 +132,16 @@
             try {
                 const renderLayerAPI = window.DesktopRenderLayer;
                 
-                // 测试 createRenderView 方法
-                if (typeof renderLayerAPI.createRenderView !== 'function') {
-                    log("❌ createRenderView 方法不存在", 'error');
+                // 测试 createRenderViewDelegator 方法
+                if (typeof renderLayerAPI.createRenderViewDelegator !== 'function') {
+                    log("❌ createRenderViewDelegator 方法不存在", 'error');
                     return false;
                 }
                 
-                log("✅ createRenderView 方法存在");
+                log("✅ createRenderViewDelegator 方法存在");
                 
-                // 创建渲染视图实例
-                renderView = renderLayerAPI.createRenderView("JS");
+                // 创建渲染视图委托器实例
+                renderView = renderLayerAPI.createRenderViewDelegator();
                 
                 if (!renderView) {
                     log("❌ 创建渲染视图实例失败", 'error');
