@@ -2,6 +2,7 @@ import com.tencent.kuikly.core.render.web.KuiklyRenderView
 import com.tencent.kuikly.core.render.web.context.KuiklyRenderCoreExecuteMode
 import com.tencent.kuikly.core.render.web.expand.KuiklyRenderViewDelegatorDelegate
 import com.tencent.kuikly.core.render.web.ktx.SizeI
+import com.tencent.kuikly.core.render.web.runtime.web.expand.KuiklyRenderViewDelegator
 import kotlinx.browser.window
 import kotlinx.browser.document
 import kotlin.js.JsExport
@@ -103,14 +104,14 @@ class DesktopRenderLayerAPI {
 
 /**
  * 桌面渲染视图委托器
+ * 参考 h5App 的实现，正确桥接 core-render-web
  */
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-class DesktopRenderViewDelegator {
+class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
 
-    private var isInitialized = false
-    private var containerId: String? = null
-    private var pageName: String? = null
+    // 使用 H5 的委托器实现
+    private val delegator = KuiklyRenderViewDelegator(this)
 
     /**
      * 初始化渲染视图
@@ -122,34 +123,8 @@ class DesktopRenderViewDelegator {
         size: SizeI
     ) {
         console.log("[Desktop Render Layer] 初始化渲染视图: container=$container, pageName=$pageName")
-        
-        this.containerId = container.toString()
-        this.pageName = pageName
-        this.isInitialized = true
-        
-        // 创建简单的渲染内容
-        val containerElement = document.getElementById(containerId ?: "")
-        if (containerElement != null) {
-            containerElement.innerHTML = """
-                <div style="padding: 20px; font-family: Arial, sans-serif;">
-                    <h1>🎉 Kuikly Desktop 渲染成功！</h1>
-                    <p><strong>页面名称:</strong> $pageName</p>
-                    <p><strong>容器ID:</strong> $containerId</p>
-                    <p><strong>页面数据:</strong> ${JSON.stringify(pageData)}</p>
-                    <p><strong>尺寸:</strong> ${size.first} x ${size.second}</p>
-                    <div style="margin-top: 20px; padding: 15px; background-color: #f0f0f0; border-radius: 5px;">
-                        <h3>✅ 渲染层状态</h3>
-                        <p>• JS 渲染层已成功加载</p>
-                        <p>• JVM 桥接已建立</p>
-                        <p>• HelloWorldPage 已渲染</p>
-                    </div>
-                </div>
-            """.trimIndent()
-            
-            console.log("[Desktop Render Layer] ✅ 渲染内容已设置")
-        } else {
-            console.error("[Desktop Render Layer] ❌ 找不到容器元素: $containerId")
-        }
+        // 使用 core-render-web 的委托器进行初始化
+        delegator.onAttach(container, pageName, pageData, size)
     }
 
     /**
@@ -157,9 +132,7 @@ class DesktopRenderViewDelegator {
      */
     fun resume() {
         console.log("[Desktop Render Layer] 页面显示")
-        if (!isInitialized) {
-            console.warn("[Desktop Render Layer] ⚠️ 渲染视图未初始化")
-        }
+        delegator.onResume()
     }
     
     /**
@@ -167,6 +140,7 @@ class DesktopRenderViewDelegator {
      */
     fun pause() {
         console.log("[Desktop Render Layer] 页面隐藏")
+        delegator.onPause()
     }
     
     /**
@@ -174,9 +148,7 @@ class DesktopRenderViewDelegator {
      */
     fun detach() {
         console.log("[Desktop Render Layer] 页面销毁")
-        isInitialized = false
-        containerId = null
-        pageName = null
+        delegator.onDetach()
     }
     
     /**
@@ -184,5 +156,26 @@ class DesktopRenderViewDelegator {
      */
     fun sendEvent(event: String, data: Map<String, Any>) {
         console.log("[Desktop Render Layer] 发送事件: $event, data: $data")
+        delegator.sendEvent(event, data)
+    }
+
+    override fun coreExecuteMode(): KuiklyRenderCoreExecuteMode {
+        return KuiklyRenderCoreExecuteMode.JS
+    }
+
+    override fun onKuiklyRenderViewCreated() {
+        console.log("[Desktop Render Layer] KuiklyRenderView 已创建")
+    }
+
+    override fun onKuiklyRenderContentViewCreated() {
+        console.log("[Desktop Render Layer] KuiklyRenderContentView 已创建")
+    }
+    
+    override fun onPageLoadComplete(isSucceed: Boolean, errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason?, executeMode: KuiklyRenderCoreExecuteMode) {
+        console.log("[Desktop Render Layer] 页面加载完成: success=$isSucceed, errorReason=$errorReason")
+    }
+    
+    override fun onUnhandledException(throwable: Throwable, errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason, executeMode: KuiklyRenderCoreExecuteMode) {
+        console.error("[Desktop Render Layer] 未处理异常: ${throwable.message}", throwable)
     }
 }
