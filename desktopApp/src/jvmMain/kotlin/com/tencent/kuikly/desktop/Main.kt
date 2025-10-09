@@ -427,19 +427,19 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
         // 对于桌面端，大部分 Native 调用不需要返回值
         // 如果需要特定返回值，可以根据 methodId 进行特殊处理
         return when (methodId) {
-            1 -> "OK" // CREATE_RENDER_VIEW
-            2 -> "OK" // REMOVE_RENDER_VIEW
-            3 -> "OK" // INSERT_SUB_RENDER_VIEW
-            4 -> "OK" // SET_VIEW_PROP
-            5 -> "OK" // SET_RENDER_VIEW_FRAME
-            6 -> "OK" // CALCULATE_RENDER_VIEW_SIZE
-            7 -> "OK" // CALL_VIEW_METHOD
-            8 -> "OK" // REMOVE_SHADOW
-            9 -> "OK" // SET_SHADOW_PROP
-            10 -> "OK" // SET_SHADOW_FOR_VIEW
-            11 -> "OK" // SET_TIMEOUT
-            12 -> "OK" // CALL_SHADOW_METHOD
-            13 -> "OK" // SYNC_FLUSH_UI
+            1 -> null // CREATE_RENDER_VIEW
+            2 -> null // REMOVE_RENDER_VIEW
+            3 -> null // INSERT_SUB_RENDER_VIEW
+            4 -> null // SET_VIEW_PROP
+            5 -> null // SET_RENDER_VIEW_FRAME
+            6 -> null // CALCULATE_RENDER_VIEW_SIZE - 这个可能需要返回计算结果
+            7 -> null // CALL_VIEW_METHOD
+            8 -> null // REMOVE_SHADOW
+            9 -> null // SET_SHADOW_PROP
+            10 -> null // SET_SHADOW_FOR_VIEW
+            11 -> null // SET_TIMEOUT
+            12 -> null // CALL_SHADOW_METHOD
+            13 -> null // SYNC_FLUSH_UI
             else -> null
         }
     }
