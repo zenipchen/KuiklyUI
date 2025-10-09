@@ -34,7 +34,9 @@ kotlin {
                 }
                 
                 // Demo 模块 - 包含 HelloWorldPage 等示例页面
-                implementation(project(":demo"))
+                implementation(project(":demo")) {
+                    exclude(group = "org.jetbrains.kotlinx", module="kotlinx-coroutines-core")
+                }
                 
                 // 桌面端 Web 渲染模块
                 implementation(project(":desktopWebRender"))

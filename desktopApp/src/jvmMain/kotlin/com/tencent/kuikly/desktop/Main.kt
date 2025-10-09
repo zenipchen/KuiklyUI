@@ -3,7 +3,6 @@ package com.tencent.kuikly.desktop
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.tencent.kuikly.core.manager.BridgeManager
-import kotlinx.coroutines.Dispatchers
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.browser.CefBrowser
@@ -133,7 +132,7 @@ fun main(args: Array<String>) {
             println("[Kuikly Desktop] ✅ JCEF 上下文初始化完成")
         }
     })
-    
+
     // 设置 JCEF 参数以减少警告
     builder.addJcefArgs("--disable-logging")
     builder.addJcefArgs("--log-level=3") // 只显示错误和致命错误
