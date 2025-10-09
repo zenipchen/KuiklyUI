@@ -196,41 +196,197 @@
                     }
                 },
                 
-                renderContent: function(content) {
-                    console.log("[Desktop Render Engine] 收到渲染指令:", content);
-                    
-                    try {
-                        const renderData = JSON.parse(content);
-                        const type = renderData.type;
-                        
-                        switch (type) {
-                            case "init":
-                                console.log("[Desktop Render Engine] 初始化渲染引擎");
-                                const containerId = renderData.containerId || "kuikly-render-container";
-                                const config = renderData.config || {};
-                                return this.init(containerId, config);
-                                
-                            case "render":
-                                console.log("[Desktop Render Engine] 执行页面渲染");
-                                const pageName = renderData.pageName || "HelloWorldPage";
-                                const pageData = renderData.pageData || {};
-                                return this.renderPage(pageName, pageData);
-                                
-                            case "destroy":
-                                console.log("[Desktop Render Engine] 销毁渲染引擎");
-                                if (this.container) {
-                                    this.container.innerHTML = "";
-                                }
-                                break;
-                                
-                            default:
-                                console.warn("[Desktop Render Engine] 未知的渲染指令类型:", type);
-                        }
-                        
-                    } catch (e) {
-                        console.error("[Desktop Render Engine] 解析渲染指令失败:", e);
-                    }
-                }
+                 renderContent: function(content) {
+                     console.log("[Desktop Render Engine] 收到渲染指令:", content);
+                     
+                     try {
+                         const renderData = JSON.parse(content);
+                         const type = renderData.type;
+                         
+                         switch (type) {
+                             case "init":
+                                 console.log("[Desktop Render Engine] 初始化渲染引擎");
+                                 const containerId = renderData.containerId || "kuikly-render-container";
+                                 const config = renderData.config || {};
+                                 return this.init(containerId, config);
+                                 
+                             case "render":
+                                 console.log("[Desktop Render Engine] 执行页面渲染");
+                                 const pageName = renderData.pageName || "HelloWorldPage";
+                                 const pageData = renderData.pageData || {};
+                                 return this.renderPage(pageName, pageData);
+                                 
+                             case "nativeCall":
+                                 console.log("[Desktop Render Engine] 处理 Native 调用");
+                                 return this.handleNativeCall(renderData);
+                                 
+                             case "destroy":
+                                 console.log("[Desktop Render Engine] 销毁渲染引擎");
+                                 if (this.container) {
+                                     this.container.innerHTML = "";
+                                 }
+                                 break;
+                                 
+                             default:
+                                 console.warn("[Desktop Render Engine] 未知的渲染指令类型:", type);
+                         }
+                         
+                     } catch (e) {
+                         console.error("[Desktop Render Engine] 解析渲染指令失败:", e);
+                     }
+                 },
+                 
+                 handleNativeCall: function(nativeCallData) {
+                     const methodId = nativeCallData.methodId;
+                     const arg0 = nativeCallData.arg0;
+                     const arg1 = nativeCallData.arg1;
+                     const arg2 = nativeCallData.arg2;
+                     const arg3 = nativeCallData.arg3;
+                     const arg4 = nativeCallData.arg4;
+                     const arg5 = nativeCallData.arg5;
+                     
+                     console.log(`[Desktop Render Engine] 🔄 处理 Native 调用: methodId=${methodId}`);
+                     console.log(`[Desktop Render Engine] 📋 参数: arg0=${arg0}, arg1=${arg1}, arg2=${arg2}, arg3=${arg3}, arg4=${arg4}, arg5=${arg5}`);
+                     
+                     // 根据 methodId 处理不同的 Native 调用
+                     switch (methodId) {
+                         case 1: // CREATE_RENDER_VIEW
+                             console.log("[Desktop Render Engine] 创建渲染视图");
+                             this.createRenderView(arg0, arg1, arg2);
+                             break;
+                             
+                         case 2: // REMOVE_RENDER_VIEW
+                             console.log("[Desktop Render Engine] 移除渲染视图");
+                             this.removeRenderView(arg0, arg1);
+                             break;
+                             
+                         case 3: // INSERT_SUB_RENDER_VIEW
+                             console.log("[Desktop Render Engine] 插入子渲染视图");
+                             this.insertSubRenderView(arg0, arg1, arg2, arg3);
+                             break;
+                             
+                         case 4: // SET_VIEW_PROP
+                             console.log("[Desktop Render Engine] 设置视图属性");
+                             this.setViewProp(arg0, arg1, arg2, arg3, arg4, arg5);
+                             break;
+                             
+                         case 5: // SET_RENDER_VIEW_FRAME
+                             console.log("[Desktop Render Engine] 设置渲染视图框架");
+                             this.setRenderViewFrame(arg0, arg1, arg2, arg3, arg4, arg5);
+                             break;
+                             
+                         case 6: // CALCULATE_RENDER_VIEW_SIZE
+                             console.log("[Desktop Render Engine] 计算渲染视图大小");
+                             return this.calculateRenderViewSize(arg0, arg1, arg2, arg3);
+                             
+                         case 7: // CALL_VIEW_METHOD
+                             console.log("[Desktop Render Engine] 调用视图方法");
+                             this.callViewMethod(arg0, arg1, arg2, arg3);
+                             break;
+                             
+                         case 8: // REMOVE_SHADOW
+                             console.log("[Desktop Render Engine] 移除阴影");
+                             this.removeShadow(arg0, arg1);
+                             break;
+                             
+                         case 9: // SET_SHADOW_PROP
+                             console.log("[Desktop Render Engine] 设置阴影属性");
+                             this.setShadowProp(arg0, arg1, arg2, arg3);
+                             break;
+                             
+                         case 10: // SET_SHADOW_FOR_VIEW
+                             console.log("[Desktop Render Engine] 为视图设置阴影");
+                             this.setShadowForView(arg0, arg1);
+                             break;
+                             
+                         case 11: // SET_TIMEOUT
+                             console.log("[Desktop Render Engine] 设置超时");
+                             this.setTimeout(arg0, arg1, arg2);
+                             break;
+                             
+                         case 12: // CALL_SHADOW_METHOD
+                             console.log("[Desktop Render Engine] 调用阴影方法");
+                             this.callShadowMethod(arg0, arg1, arg2, arg3);
+                             break;
+                             
+                         case 13: // SYNC_FLUSH_UI
+                             console.log("[Desktop Render Engine] 同步刷新UI");
+                             this.syncFlushUI(arg0);
+                             break;
+                             
+                         default:
+                             console.warn(`[Desktop Render Engine] 未知的 Native 方法ID: ${methodId}`);
+                     }
+                     
+                     return "OK";
+                 },
+                 
+                 // Native 方法的具体实现（简化版本）
+                 createRenderView: function(instanceId, tag, viewName) {
+                     console.log(`[Desktop Render Engine] 创建视图: instanceId=${instanceId}, tag=${tag}, viewName=${viewName}`);
+                     // 这里可以创建实际的 DOM 元素
+                 },
+                 
+                 removeRenderView: function(instanceId, tag) {
+                     console.log(`[Desktop Render Engine] 移除视图: instanceId=${instanceId}, tag=${tag}`);
+                     // 这里可以移除对应的 DOM 元素
+                 },
+                 
+                 insertSubRenderView: function(instanceId, parentTag, childTag, index) {
+                     console.log(`[Desktop Render Engine] 插入子视图: instanceId=${instanceId}, parentTag=${parentTag}, childTag=${childTag}, index=${index}`);
+                     // 这里可以处理子视图的插入逻辑
+                 },
+                 
+                 setViewProp: function(instanceId, tag, propKey, propValue, isEvent, sync) {
+                     console.log(`[Desktop Render Engine] 设置属性: instanceId=${instanceId}, tag=${tag}, propKey=${propKey}, propValue=${propValue}, isEvent=${isEvent}, sync=${sync}`);
+                     // 这里可以设置 DOM 元素的属性
+                 },
+                 
+                 setRenderViewFrame: function(instanceId, tag, x, y, width, height) {
+                     console.log(`[Desktop Render Engine] 设置框架: instanceId=${instanceId}, tag=${tag}, x=${x}, y=${y}, width=${width}, height=${height}`);
+                     // 这里可以设置 DOM 元素的位置和大小
+                 },
+                 
+                 calculateRenderViewSize: function(instanceId, tag, width, height) {
+                     console.log(`[Desktop Render Engine] 计算大小: instanceId=${instanceId}, tag=${tag}, width=${width}, height=${height}`);
+                     // 这里可以计算并返回实际的大小
+                     return JSON.stringify({ width: width, height: height });
+                 },
+                 
+                 callViewMethod: function(instanceId, tag, method, params) {
+                     console.log(`[Desktop Render Engine] 调用方法: instanceId=${instanceId}, tag=${tag}, method=${method}, params=${params}`);
+                     // 这里可以调用对应的方法
+                 },
+                 
+                 removeShadow: function(instanceId, tag) {
+                     console.log(`[Desktop Render Engine] 移除阴影: instanceId=${instanceId}, tag=${tag}`);
+                     // 这里可以移除阴影效果
+                 },
+                 
+                 setShadowProp: function(instanceId, tag, propKey, propValue) {
+                     console.log(`[Desktop Render Engine] 设置阴影属性: instanceId=${instanceId}, tag=${tag}, propKey=${propKey}, propValue=${propValue}`);
+                     // 这里可以设置阴影属性
+                 },
+                 
+                 setShadowForView: function(instanceId, tag) {
+                     console.log(`[Desktop Render Engine] 设置阴影: instanceId=${instanceId}, tag=${tag}`);
+                     // 这里可以为视图设置阴影
+                 },
+                 
+                 setTimeout: function(instanceId, delayTimeMs, callbackId) {
+                     console.log(`[Desktop Render Engine] 设置超时: instanceId=${instanceId}, delayTimeMs=${delayTimeMs}, callbackId=${callbackId}`);
+                     // 这里可以设置超时回调
+                 },
+                 
+                 callShadowMethod: function(instanceId, tag, method, params) {
+                     console.log(`[Desktop Render Engine] 调用阴影方法: instanceId=${instanceId}, tag=${tag}, method=${method}, params=${params}`);
+                     // 这里可以调用阴影相关的方法
+                 },
+                 
+                 syncFlushUI: function(instanceId) {
+                     console.log(`[Desktop Render Engine] 同步刷新UI: instanceId=${instanceId}`);
+                     // 这里可以执行UI的同步刷新
+                 }
             };
             
             // 将渲染引擎暴露到全局作用域

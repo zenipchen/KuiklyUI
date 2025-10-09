@@ -388,7 +388,7 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
     
     /**
      * 实现 IKuiklyCoreEntry.Delegate 接口
-     * 处理来自 KuiklyCoreEntry 的 Native 调用
+     * 处理来自 KuiklyCoreEntry 的 Native 调用，并转发给 Web 渲染层
      */
     override fun callNative(
         methodId: Int,
@@ -400,12 +400,48 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
         arg5: Any?
     ): Any? {
         println("[Kuikly Desktop] 🔄 处理 Native 调用: methodId=$methodId")
+        println("[Kuikly Desktop] 📋 Native 调用参数: arg0=$arg0, arg1=$arg1, arg2=$arg2, arg3=$arg3, arg4=$arg4, arg5=$arg5")
         
-        // 这里可以处理来自 KuiklyCoreEntry 的 Native 调用
-        // 目前桌面端主要处理 Web 渲染，所以暂时返回 null
-        // 如果需要处理特定的 Native 调用，可以在这里添加逻辑
+        // 将 Native 调用转发给 Web 渲染层
+        try {
+            val nativeCallData = mapOf<String, Any>(
+                "methodId" to methodId,
+                "arg0" to (arg0 ?: ""),
+                "arg1" to (arg1 ?: ""),
+                "arg2" to (arg2 ?: ""),
+                "arg3" to (arg3 ?: ""),
+                "arg4" to (arg4 ?: ""),
+                "arg5" to (arg5 ?: "")
+            )
+            
+            // 调用 Web 渲染层处理 Native 调用
+            callWebRender("nativeCall", nativeCallData)
+            
+            println("[Kuikly Desktop] ✅ Native 调用已转发给 Web 渲染层")
+            
+        } catch (e: Exception) {
+            println("[Kuikly Desktop] ❌ 转发 Native 调用失败: ${e.message}")
+            e.printStackTrace()
+        }
         
-        return null
+        // 对于桌面端，大部分 Native 调用不需要返回值
+        // 如果需要特定返回值，可以根据 methodId 进行特殊处理
+        return when (methodId) {
+            1 -> "OK" // CREATE_RENDER_VIEW
+            2 -> "OK" // REMOVE_RENDER_VIEW
+            3 -> "OK" // INSERT_SUB_RENDER_VIEW
+            4 -> "OK" // SET_VIEW_PROP
+            5 -> "OK" // SET_RENDER_VIEW_FRAME
+            6 -> "OK" // CALCULATE_RENDER_VIEW_SIZE
+            7 -> "OK" // CALL_VIEW_METHOD
+            8 -> "OK" // REMOVE_SHADOW
+            9 -> "OK" // SET_SHADOW_PROP
+            10 -> "OK" // SET_SHADOW_FOR_VIEW
+            11 -> "OK" // SET_TIMEOUT
+            12 -> "OK" // CALL_SHADOW_METHOD
+            13 -> "OK" // SYNC_FLUSH_UI
+            else -> null
+        }
     }
     
     fun setBrowser(browser: CefBrowser) {
