@@ -3,6 +3,7 @@ package com.tencent.kuikly.desktop
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.tencent.kuikly.core.manager.BridgeManager
+import com.tencent.kuikly.core.IKuiklyCoreEntry
 import com.tencent.kuiklyx.coroutines.setKuiklyThreadScheduler
 import com.tencent.kuiklyx.coroutines.KuiklyThreadScheduler
 import kotlinx.coroutines.CoroutineScope
@@ -112,6 +113,9 @@ fun main(args: Array<String>) {
     try {
         BridgeManager.init()
         println("[Kuikly Desktop] ✅ BridgeManager 初始化完成")
+        
+        // 页面注册将通过 KuiklyCoreEntry 自动处理
+        println("[Kuikly Desktop] 📝 页面注册将通过 KuiklyCoreEntry 自动处理")
     } catch (e: Exception) {
         println("[Kuikly Desktop] ❌ BridgeManager 初始化失败: ${e.message}")
         e.printStackTrace()
@@ -356,9 +360,53 @@ fun main(args: Array<String>) {
  * 
  * 支持完整的 JCEF JS Bridge 功能
  */
-class KuiklyJSBridge {
+class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
     private var browser: CefBrowser? = null
     private val gson = Gson()
+    
+    // 参考 Android 实现：创建 KuiklyCoreEntry 实例
+    private val kuiklyCoreEntry: IKuiklyCoreEntry = createKuiklyCoreEntry()
+    
+    init {
+        // 设置委托，用于处理 Native 调用
+        kuiklyCoreEntry.delegate = this
+    }
+    
+    /**
+     * 创建 KuiklyCoreEntry 实例（参考 Android 实现）
+     */
+    private fun createKuiklyCoreEntry(): IKuiklyCoreEntry {
+        return try {
+            val kuiklyClass = Class.forName("com.tencent.kuikly.core.android.KuiklyCoreEntry")
+            kuiklyClass.newInstance() as IKuiklyCoreEntry
+        } catch (e: Exception) {
+            println("[Kuikly Desktop] ❌ 创建 KuiklyCoreEntry 失败: ${e.message}")
+            e.printStackTrace()
+            throw e
+        }
+    }
+    
+    /**
+     * 实现 IKuiklyCoreEntry.Delegate 接口
+     * 处理来自 KuiklyCoreEntry 的 Native 调用
+     */
+    override fun callNative(
+        methodId: Int,
+        arg0: Any?,
+        arg1: Any?,
+        arg2: Any?,
+        arg3: Any?,
+        arg4: Any?,
+        arg5: Any?
+    ): Any? {
+        println("[Kuikly Desktop] 🔄 处理 Native 调用: methodId=$methodId")
+        
+        // 这里可以处理来自 KuiklyCoreEntry 的 Native 调用
+        // 目前桌面端主要处理 Web 渲染，所以暂时返回 null
+        // 如果需要处理特定的 Native 调用，可以在这里添加逻辑
+        
+        return null
+    }
     
     fun setBrowser(browser: CefBrowser) {
         this.browser = browser
@@ -453,9 +501,16 @@ class KuiklyJSBridge {
                     val arg4 = if (argsArray.size() > 4 && !argsArray[4].isJsonNull) argsArray[4].asString else null
                     val arg5 = if (argsArray.size() > 5 && !argsArray[5].isJsonNull) argsArray[5].asString else null
                     
-                    BridgeManager.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
+                    // 参考 Android 实现：通过 KuiklyCoreEntry 处理调用
+                    try {
+                        kuiklyCoreEntry.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
+                        println("[Kuikly Desktop] ✅ KuiklyCoreEntry.callKotlinMethod 调用成功")
+                    } catch (e: Exception) {
+                        println("[Kuikly Desktop] ❌ KuiklyCoreEntry.callKotlinMethod 调用失败: ${e.message}")
+                        e.printStackTrace()
+                        return "ERROR: ${e.message ?: "Internal error"}"
+                    }
                     
-                    println("[Kuikly Desktop] ✅ BridgeManager.callKotlinMethod 调用成功")
                     return "OK"
                 }
                 "renderReady" -> {
