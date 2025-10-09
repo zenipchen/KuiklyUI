@@ -200,5 +200,27 @@
     
     <!-- 加载 desktop-render-layer -->
     <script src="desktop-render-layer/build/kotlin-webpack/js/productionExecutable/desktopRenderLayer.js"></script>
+    <script>
+        // 手动调用初始化函数
+        console.log('[Kuikly Desktop] 检查可用的函数...');
+        console.log('initDesktopRenderLayer:', typeof initDesktopRenderLayer);
+        console.log('createRenderViewDelegator:', typeof createRenderViewDelegator);
+        console.log('window.DesktopRenderLayer:', typeof window.DesktopRenderLayer);
+        console.log('window.createRenderViewDelegator:', typeof window.createRenderViewDelegator);
+        
+        if (typeof initDesktopRenderLayer === 'function') {
+            console.log('[Kuikly Desktop] 手动调用初始化函数...');
+            initDesktopRenderLayer();
+        } else {
+            console.warn('[Kuikly Desktop] initDesktopRenderLayer 函数未找到');
+        }
+        
+        // 检查初始化后的状态
+        setTimeout(() => {
+            console.log('[Kuikly Desktop] 初始化后检查...');
+            console.log('window.createRenderViewDelegator:', typeof window.createRenderViewDelegator);
+            console.log('window.DesktopRenderLayer:', typeof window.DesktopRenderLayer);
+        }, 1000);
+    </script>
 </body>
 </html>
