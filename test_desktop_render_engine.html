@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuikly Desktop - 桌面渲染引擎测试</title>
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        
+        #kuikly-render-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            background: linear-gradient(135deg, #e0f7fa 0%, #e8eaf6 100%);
+        }
+        
+        .status-message {
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+        
+        .status-message .success { color: #4CAF50; }
+        .status-message .error { color: #F44336; }
+        .status-message .pending { color: #FFC107; }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 状态显示 -->
+    <div id="status-display" class="status-message">
+        <span class="pending">⏳</span> 页面加载中...
+    </div>
+    
+    <!-- 渲染容器 -->
+    <div id="kuikly-render-container"></div>
+    
+    <!-- 加载桌面渲染引擎 -->
+    <script src="desktop-render-engine/build/kotlin-webpack/js/productionExecutable/desktopRenderEngine.js"></script>
+    
+    <script>
+        console.log('[Kuikly Desktop] 🧪 桌面渲染引擎测试页面已加载');
+        
+        // 更新状态显示
+        function updateStatus(message, type) {
+            const statusElement = document.getElementById('status-display');
+            if (statusElement) {
+                statusElement.innerHTML = `<span class="${type}">${type === 'success' ? '✅' : type === 'error' ? '❌' : '⏳'}</span> ${message}`;
+            }
+        }
+        
+        // 检查桌面渲染引擎是否加载成功
+        function checkDesktopRenderEngine() {
+            if (typeof window.desktopRenderEngine !== 'undefined' && 
+                typeof window.renderContent === 'function') {
+                console.log('[Kuikly Desktop] ✅ 桌面渲染引擎可用');
+                updateStatus('✅ 桌面渲染引擎加载成功', 'success');
+                return true;
+            } else {
+                console.log('[Kuikly Desktop] ⏳ 等待桌面渲染引擎加载...');
+                updateStatus('⏳ 等待桌面渲染引擎加载...', 'pending');
+                return false;
+            }
+        }
+        
+        console.log('[Kuikly Desktop] ✅ renderContent 函数定义完成');
+        
+        // 检查桌面渲染引擎加载状态
+        setTimeout(() => {
+            if (checkDesktopRenderEngine()) {
+                updateStatus('✅ 桌面渲染引擎加载成功，准备就绪', 'success');
+            } else {
+                updateStatus('⏳ 等待桌面渲染引擎加载...', 'loading');
+                // 继续检查
+                setTimeout(() => {
+                    if (checkDesktopRenderEngine()) {
+                        updateStatus('✅ 桌面渲染引擎加载成功，准备就绪', 'success');
+                    } else {
+                        updateStatus('❌ 桌面渲染引擎加载失败', 'error');
+                    }
+                }, 2000);
+            }
+        }, 1000);
+        
+        // 通知 JVM 端页面已就绪
+        setTimeout(() => {
+            if (window.cefQuery) {
+                window.cefQuery({
+                    request: JSON.stringify({ type: 'renderReady' }),
+                    onSuccess: function(response) {
+                        console.log('[Kuikly Desktop] ✅ 已通知 JVM 端页面就绪');
+                    },
+                    onFailure: function(error_code, error_message) {
+                        console.error('[Kuikly Desktop] ❌ 通知 JVM 失败:', error_message);
+                    }
+                });
+            } else {
+                console.log('[Kuikly Desktop] ⚠️ JS Bridge 未就绪');
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

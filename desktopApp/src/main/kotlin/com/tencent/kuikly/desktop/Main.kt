@@ -202,9 +202,9 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例 - 使用真实 Kuikly DSL 测试页面
-        // 5. 使用真实 Kuikly DSL 测试页面验证 pager 组件渲染
-        val testHtmlPath = java.io.File("../test_real_kuikly_dsl.html").absolutePath
+        // 创建浏览器实例 - 使用桌面渲染引擎测试页面
+        // 5. 使用桌面渲染引擎测试页面验证真实组件渲染
+        val testHtmlPath = java.io.File("../test_desktop_render_engine.html").absolutePath
         val testHtmlUrl = "file://$testHtmlPath"
         
         /*
@@ -437,20 +437,22 @@ class KuiklyJSBridge {
                         "height" to 600
                     ))
                     
-                    // 延迟发送真实的 Kuikly DSL 渲染指令
-                    Thread {
-                        Thread.sleep(3000) // 等待 3 秒，确保 Kuikly DSL 加载完成
-                        println("[Kuikly Desktop] 🎨 发送 HelloWorldPage 渲染指令...")
-                        callWebRender("kuikly-dsl", mapOf(
-                            "dslType" to "HelloWorldPage",
-                            "pageName" to "HelloWorldPage",
-                            "pageData" to mapOf(
-                                "title" to "Hello World Page",
-                                "description" to "桌面端 HelloWorldPage 渲染测试",
-                                "version" to "1.0.0"
-                            )
-                        ))
-                    }.start()
+                   // 延迟发送 HelloWorldPage 渲染指令
+                   Thread {
+                       Thread.sleep(3000) // 等待 3 秒，确保渲染引擎加载完成
+                       println("[Kuikly Desktop] 🎨 发送 HelloWorldPage 渲染指令...")
+                       callWebRender("render", mapOf(
+                           "pageName" to "HelloWorldPage",
+                           "pageData" to mapOf(
+                               "title" to "Hello World Page",
+                               "description" to "桌面端 HelloWorldPage 渲染测试",
+                               "version" to "1.0.0",
+                               "platform" to "desktop",
+                               "pageViewWidth" to 800,
+                               "pageViewHeight" to 600
+                           )
+                       ))
+                   }.start()
                     
                     return "OK"
                 }
