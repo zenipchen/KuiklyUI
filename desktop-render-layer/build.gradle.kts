@@ -22,10 +22,14 @@ kotlin {
         }
         binaries.executable()
     }
-}
-
-dependencies {
-    "jsMainImplementation"(project(":core"))
-    "jsMainImplementation"(project(":core-render-web:base"))
-    "jsMainImplementation"(project(":core-render-web:h5"))
+    
+    sourceSets {
+        val jsMain by getting {
+            dependencies {
+                implementation(project(":core"))
+                implementation(project(":core-render-web:base"))
+                implementation(project(":core-render-web:h5"))
+            }
+        }
+    }
 }
