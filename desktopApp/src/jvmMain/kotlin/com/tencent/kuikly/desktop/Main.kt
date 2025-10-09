@@ -3,6 +3,8 @@ package com.tencent.kuikly.desktop
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.tencent.kuikly.core.manager.BridgeManager
+import com.tencent.kuiklyx.coroutines.initKuiklyCoroutines
+import com.tencent.kuiklyx.coroutines.JVMKuiklyThreadScheduler
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.browser.CefBrowser
@@ -109,6 +111,17 @@ fun main(args: Array<String>) {
         println("[Kuikly Desktop] ✅ BridgeManager 初始化完成")
     } catch (e: Exception) {
         println("[Kuikly Desktop] ❌ BridgeManager 初始化失败: ${e.message}")
+        e.printStackTrace()
+    }
+    
+    // 2. 初始化 Kuikly 协程系统
+    println("[Kuikly Desktop] 🧵 初始化 Kuikly 协程系统...")
+    try {
+        // 调用跨平台初始化方法
+        initKuiklyCoroutines()
+        println("[Kuikly Desktop] ✅ Kuikly 协程系统初始化完成")
+    } catch (e: Exception) {
+        println("[Kuikly Desktop] ❌ Kuikly 协程系统初始化失败: ${e.message}")
         e.printStackTrace()
     }
     

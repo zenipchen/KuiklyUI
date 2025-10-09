@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    kotlin("multiplatform")
     application
 }
 
@@ -12,27 +12,37 @@ repositories {
     mavenLocal()
 }
 
-dependencies {
-    // 核心依赖 - 排除有问题的 coroutines
-    implementation(project(":core")) {
-        exclude(group = "com.tencent.kuiklyx-open", module = "coroutines")
-    }
-    implementation(project(":compose")) {
-        exclude(group = "com.tencent.kuiklyx-open", module = "coroutines")
+kotlin {
+    jvm {
+        withJava()
     }
     
-    // Demo 模块 - 包含 HelloWorldPage 等示例页面
-    implementation(project(":demo"))
-    
-    // 桌面端 Web 渲染模块
-    implementation(project(":desktopWebRender"))
-    
-    // JCEF (Java Chromium Embedded Framework)
-    implementation("me.friwi:jcefmaven:122.1.10")
-    implementation("org.slf4j:slf4j-simple:2.0.9")
-    
-    // JSON 解析
-    implementation("com.google.code.gson:gson:2.10.1")
+    sourceSets {
+        val jvmMain by getting {
+            dependencies {
+                // 核心依赖 - 排除有问题的 coroutines
+                implementation(project(":core")) {
+                    exclude(group = "com.tencent.kuiklyx-open", module = "coroutines")
+                }
+                implementation(project(":compose")) {
+                    exclude(group = "com.tencent.kuiklyx-open", module = "coroutines")
+                }
+                
+                // Demo 模块 - 包含 HelloWorldPage 等示例页面
+                implementation(project(":demo"))
+                
+                // 桌面端 Web 渲染模块
+                implementation(project(":desktopWebRender"))
+                
+                // JCEF (Java Chromium Embedded Framework)
+                implementation("me.friwi:jcefmaven:122.1.10")
+                implementation("org.slf4j:slf4j-simple:2.0.9")
+                
+                // JSON 解析
+                implementation("com.google.code.gson:gson:2.10.1")
+            }
+        }
+    }
 }
 
 application {
