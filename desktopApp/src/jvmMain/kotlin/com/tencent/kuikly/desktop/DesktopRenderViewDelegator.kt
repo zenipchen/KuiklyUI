@@ -29,11 +29,15 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
     // 页面实例管理
     private val pageInstances = mutableMapOf<String, Pager>()
     
+    // 对齐 Android 的 pageId 分配机制
+    // 每个 DesktopRenderViewDelegator 实例都有唯一的 instanceId（即 pageId）
+    private val instanceId: String = instanceIdProducer++.toString()
+    
     init {
         kuiklyCoreEntry.delegate = this
         // 确保页面注册被触发
         kuiklyCoreEntry.triggerRegisterPages()
-        println("[Desktop Render] ✅ 页面注册已触发")
+        println("[Desktop Render] ✅ 页面注册已触发，instanceId: $instanceId")
     }
     
     /**
@@ -89,7 +93,7 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                         window.cefQuery({
                             request: JSON.stringify({
                                 type: 'renderReady',
-                                pageId: 'HelloWorldPage'
+                                pageId: '$instanceId'
                             }),
                             onSuccess: function(response) {
                                 console.log('[Desktop Render] ✅ 已通知 JVM 端渲染层就绪');
@@ -99,7 +103,8 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                                     console.log('[Desktop Render] 🚀 开始创建 HelloWorldPage...');
                                     if (window.callKotlinMethod) {
                                         // CREATE_INSTANCE: arg0=pagerId, arg1=pageName, arg2=pageData
-                                        const pagerId = 'HelloWorldPage_' + Date.now();
+                                        // 使用与 Android 一致的 pageId 分配机制
+                                        const pagerId = '$instanceId';
                                         const result = window.callKotlinMethod(1, pagerId, 'HelloWorldPage', '{}');
                                         console.log('[Desktop Render] 📄 HelloWorldPage 创建结果:', result);
                                         
@@ -163,32 +168,6 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                 }
                 
                 return result;
-            };
-            
-            // 提供 callNative 函数，供 JVM 调用 JS 渲染层
-            window.callNative = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
-                console.log('[Desktop Render] 🌐 callNative 被调用! methodId=' + methodId);
-                console.log('[Desktop Render] 🌐 callNative 参数: arg0=' + arg0 + ', arg1=' + arg1 + ', arg2=' + arg2);
-                console.log('[Desktop Render] 🌐 callNative 完整参数:', [methodId, arg0, arg1, arg2, arg3, arg4, arg5]);
-                
-                // 检查是否有注册的 callNative 回调
-                if (window.desktopCallNativeCallback && typeof window.desktopCallNativeCallback === 'function') {
-                    console.log('[Desktop Render] ✅ 找到注册的 callNative 回调，开始调用...');
-                    try {
-                        var result = window.desktopCallNativeCallback(methodId, arg0, arg1, arg2, arg3, arg4, arg5);
-                        console.log('[Desktop Render] ✅ callNative 回调执行成功，结果:', result);
-                        return result;
-                    } catch (e) {
-                        console.error('[Desktop Render] ❌ callNative 回调执行失败:', e);
-                        console.error('[Desktop Render] ❌ 错误堆栈:', e.stack);
-                        return null;
-                    }
-                } else {
-                    console.warn('[Desktop Render] ⚠️ 没有找到注册的 callNative 回调');
-                    console.log('[Desktop Render] 🔍 window.desktopCallNativeCallback 类型:', typeof window.desktopCallNativeCallback);
-                    console.log('[Desktop Render] 🔍 window.desktopCallNativeCallback 值:', window.desktopCallNativeCallback);
-                    return null;
-                }
             };
             
             // 注册 registerCallNative 函数，供 core-render-web 注册回调
@@ -412,6 +391,10 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
     companion object {
         
         private val kuiklyClass = Class.forName("com.tencent.kuikly.core.android.KuiklyCoreEntry")
+        
+        // 对齐 Android 的全局 pageId 分配机制
+        // 全局递增的 instanceIdProducer，确保每个实例都有唯一的 pageId
+        private var instanceIdProducer = 0L
         
         fun newKuiklyCoreEntryInstance(): IKuiklyCoreEntry {
             return kuiklyClass.newInstance() as IKuiklyCoreEntry
