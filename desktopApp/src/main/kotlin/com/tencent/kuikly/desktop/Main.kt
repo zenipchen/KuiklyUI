@@ -190,9 +190,9 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例 - 使用测试页面
-        // 5. 使用测试页面验证渲染功能
-        val testHtmlPath = java.io.File("../test_render.html").absolutePath
+        // 创建浏览器实例 - 使用简单测试页面
+        // 5. 使用简单测试页面验证基本功能
+        val testHtmlPath = java.io.File("../test_simple.html").absolutePath
         val testHtmlUrl = "file://$testHtmlPath"
         
         /*
@@ -293,8 +293,8 @@ fun main(args: Array<String>) {
         """.trimIndent()
         */
         
-        // 6. 加载测试页面
-        println("[Kuikly Desktop] 📄 正在加载测试页面...")
+        // 6. 加载简单测试页面
+        println("[Kuikly Desktop] 📄 正在加载简单测试页面...")
         val browser = client.createBrowser(testHtmlUrl, false, false)
         
         // 将浏览器添加到窗口
@@ -420,16 +420,19 @@ class KuiklyJSBridge {
                     
                     // 测试：发送初始化指令到 Web 渲染层
                     callWebRender("init", mapOf(
-                        "pageName" to "desktop",
+                        "pageName" to "kuikly_dsl_desktop",
                         "width" to 800,
                         "height" to 600
                     ))
                     
-                    // 延迟发送测试渲染指令
+                    // 延迟发送 Kuikly DSL 测试渲染指令
                     Thread {
                         Thread.sleep(2000) // 等待 2 秒
-                        println("[Kuikly Desktop] 🧪 发送测试渲染指令...")
-                        callWebRender("test", emptyMap())
+                        println("[Kuikly Desktop] 🎨 发送 Kuikly DSL 测试渲染指令...")
+                        callWebRender("test", mapOf(
+                            "dslType" to "kuikly",
+                            "content" to "Kuikly DSL 渲染测试"
+                        ))
                     }.start()
                     
                     return "OK"
