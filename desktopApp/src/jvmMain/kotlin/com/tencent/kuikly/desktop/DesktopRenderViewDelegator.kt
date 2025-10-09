@@ -307,23 +307,59 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
         callback: CefQueryCallback?
     ): Boolean {
         try {
+            println("[Desktop Render] 📨 收到 CEF 查询: $request")
+            
+            // 检查请求是否为空或无效
+            if (request.isBlank() || request == "null") {
+                println("[Desktop Render] ⚠️ 收到空请求")
+                callback?.failure(-1, "Empty request")
+                return true
+            }
+            
             val requestData = gson.fromJson(request, com.google.gson.JsonObject::class.java)
             val type = requestData.get("type")?.asString
+            
+            println("[Desktop Render] 📋 请求类型: $type")
             
             when (type) {
                 "callKotlinMethod" -> {
                     val methodId = requestData.get("methodId")?.asInt ?: 0
                     val args = requestData.getAsJsonArray("args")
                     
+                    println("[Desktop Render] 📞 处理 callKotlinMethod: methodId=$methodId, argsCount=${args?.size() ?: 0}")
+                    
+                    // 安全地解析参数，处理 JsonNull
+                    val safeArgs = mutableListOf<Any?>()
+                    if (args != null) {
+                        for (i in 0 until args.size()) {
+                            val arg = args[i]
+                            safeArgs.add(
+                                when {
+                                    arg.isJsonNull -> null
+                                    arg.isJsonPrimitive -> {
+                                        val primitive = arg.asJsonPrimitive
+                                        when {
+                                            primitive.isString -> primitive.asString
+                                            primitive.isNumber -> primitive.asString // 保持为字符串
+                                            primitive.isBoolean -> primitive.asString
+                                            else -> primitive.asString
+                                        }
+                                    }
+                                    else -> arg.toString()
+                                }
+                            )
+                        }
+                    }
+                    
                     // callKotlinMethod 现在返回 Unit，不需要处理返回值
                     callKotlinMethod(
                         methodId,
-                        if (args.size() > 0) args[0].asString else null,
-                        if (args.size() > 1) args[1].asString else null,
-                        if (args.size() > 2) args[2].asString else null,
-                        if (args.size() > 3) args[3].asString else null,
-                        if (args.size() > 4) args[4].asString else null,
-                        if (args.size() > 5) args[5].asString else null
+                        safeArgs.getOrNull(0),
+                        safeArgs.getOrNull(1),
+                        safeArgs.getOrNull(2),
+                        safeArgs.getOrNull(3),
+                        safeArgs.getOrNull(4),
+                        safeArgs.getOrNull(5)
                     )
                     
                     callback?.success("OK")
@@ -342,6 +378,7 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
             }
         } catch (e: Exception) {
             println("[Desktop Render] ❌ 处理 CEF 查询失败: ${e.message}")
+            e.printStackTrace()
             callback?.failure(-1, e.message ?: "Internal error")
             return true
         }
