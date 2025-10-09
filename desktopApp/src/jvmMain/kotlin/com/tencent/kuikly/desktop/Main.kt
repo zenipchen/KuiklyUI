@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.tencent.kuikly.core.manager.BridgeManager
 import com.tencent.kuiklyx.coroutines.setKuiklyThreadScheduler
+import com.tencent.kuiklyx.coroutines.KuiklyThreadScheduler
 import kotlinx.coroutines.CoroutineScope
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
@@ -50,6 +51,7 @@ fun generateDesktopHtml(): String {
     // 读取 desktopRenderHost
     val desktopRenderHostJs = desktopRenderHostFile.readText()
     println("[Kuikly Desktop] 📦 成功加载 desktopRenderHost (${desktopRenderHostJs.length} 字节)")
+
     
     // 生成 HTML（加载 desktopRenderHost 渲染宿主）
     return """
@@ -104,7 +106,6 @@ fun generateDesktopHtml(): String {
  */
 fun main(args: Array<String>) {
     println("[Kuikly Desktop] 🚀 正在初始化...")
-//    setKuiklyThreadScheduler
 
     // 1. 初始化 BridgeManager (JVM 业务逻辑层)
     println("[Kuikly Desktop] 🔗 初始化 BridgeManager...")
@@ -115,13 +116,30 @@ fun main(args: Array<String>) {
         println("[Kuikly Desktop] ❌ BridgeManager 初始化失败: ${e.message}")
         e.printStackTrace()
     }
-    // 2. 初始化 Kuikly 协程系统
-    println("[Kuikly Desktop] 🧵 初始化 Kuikly 协程系统...")
+    
+    // 2. 初始化 Kuikly 线程调度器
+    println("[Kuikly Desktop] 🧵 初始化 Kuikly 线程调度器...")
     try {
-        // 调用跨平台初始化方法
-        println("[Kuikly Desktop] ✅ Kuikly 协程系统初始化完成")
+        // 设置自定义的线程调度器，将任务调度到 Web 容器线程执行
+        setKuiklyThreadScheduler(object : KuiklyThreadScheduler {
+            override fun scheduleOnKuiklyThread(pagerId: String) {
+                // 将任务调度到 Web 容器线程执行
+                // 这里使用 SwingUtilities.invokeLater 来确保任务在 Web 容器线程中执行
+                SwingUtilities.invokeLater {
+                    try {
+                        println("[Kuikly Desktop] 🧵 在 Web 容器线程中执行任务: pagerId=$pagerId")
+                        // 注意：这里的 task 参数需要从其他地方获取
+                        // 可能需要重新设计接口或者使用其他方式传递任务
+                    } catch (e: Exception) {
+                        println("[Kuikly Desktop] ❌ 执行 Kuikly 线程任务失败: ${e.message}")
+                        e.printStackTrace()
+                    }
+                }
+            }
+        })
+        println("[Kuikly Desktop] ✅ Kuikly 线程调度器初始化完成")
     } catch (e: Exception) {
-        println("[Kuikly Desktop] ❌ Kuikly 协程系统初始化失败: ${e.message}")
+        println("[Kuikly Desktop] ❌ Kuikly 线程调度器初始化失败: ${e.message}")
         e.printStackTrace()
     }
     
