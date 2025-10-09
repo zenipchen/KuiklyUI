@@ -263,15 +263,15 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                    console.log('[Desktop Render] 🌐 JVM 正在调用 JS callNative: methodId=$methodId');
                    console.log('[Desktop Render] 🌐 JVM 传递的参数: arg0=$arg0, arg1=$arg1, arg2=$arg2, arg3=$arg3, arg4=$arg4, arg5=$arg5');
                    
-                   // 检查 window.callNative 是否存在
-                   console.log('[Desktop Render] 🔍 检查 window.callNative 类型:', typeof window.callNative);
+                   // 检查 callNative 是否存在
+                   console.log('[Desktop Render] 🔍 检查 callNative 类型:', typeof callNative);
                    console.log('[Desktop Render] 🔍 window.callNative 函数:', window.callNative);
                    
                    // 直接调用 JS 端的 callNative 函数
-                   if (typeof window.callNative === 'function') {
+                   if (typeof callNative === 'function') {
                        console.log('[Desktop Render] ✅ 开始调用 window.callNative...');
                        try {
-                           var result = window.callNative($methodId, $arg0, $arg1, $arg2, $arg3, $arg4, $arg5);
+                           var result = callNative($methodId, $arg0, $arg1, $arg2, $arg3, $arg4, $arg5);
                            console.log('[Desktop Render] ✅ window.callNative 调用完成，结果:', result);
                            return result;
                        } catch (e) {
@@ -280,7 +280,7 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                            return null;
                        }
                    } else {
-                       console.warn('[Desktop Render] ⚠️ window.callNative 函数未找到');
+                       console.warn('[Desktop Render] ⚠️ callNative 函数未找到');
                        console.log('[Desktop Render] 🔍 可用的 window 属性:', Object.keys(window).filter(k => k.includes('call') || k.includes('Native')));
                        return null;
                    }
