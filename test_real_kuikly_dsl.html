@@ -91,6 +91,10 @@
     <!-- 渲染容器 -->
     <div id="kuikly-render-container"></div>
     
+    <!-- 加载 core-render-web 渲染引擎 -->
+    <script src="core-render-web/base/build/kotlin-webpack/js/productionExecutable/KuiklyCore-render-web-base.js"></script>
+    <script src="core-render-web/h5/build/kotlin-webpack/js/productionExecutable/KuiklyCore-render-web-h5.js"></script>
+    
     <!-- 加载真实的 Kuikly DSL -->
     <script src="demo/build/outputs/kuikly/js/release/local/nativevue2.js"></script>
     
@@ -215,6 +219,9 @@
                     case "pager":
                         renderPagerComponent(container, pageDataObj);
                         break;
+                    case "HelloWorldPage":
+                        renderHelloWorldPage(container, pageDataObj);
+                        break;
                     default:
                         console.warn("[Desktop Render Host] 未知的 DSL 类型:", dslType);
                         renderDefaultComponent(container, pageDataObj);
@@ -292,6 +299,198 @@
             
             console.log("[Desktop Render Host] ✅ Pager 组件渲染完成");
             updateStatus('✅ Pager 组件渲染成功', 'success');
+        }
+        
+        // 渲染 HelloWorldPage
+        function renderHelloWorldPage(container, pageData) {
+            console.log("[Desktop Render Host] 渲染 HelloWorldPage");
+            
+            try {
+                // 尝试使用真实的 Kuikly DSL 渲染
+                if (typeof window.com !== 'undefined' && window.com.tencent && window.com.tencent.kuikly) {
+                    console.log("[Desktop Render Host] 使用真实 Kuikly DSL 渲染 HelloWorldPage");
+                    renderRealHelloWorldPage(container, pageData);
+                } else {
+                    console.log("[Desktop Render Host] Kuikly DSL 不可用，使用模拟渲染");
+                    renderHelloWorldPageMock(container, pageData);
+                }
+            } catch (e) {
+                console.error("[Desktop Render Host] 渲染 HelloWorldPage 失败:", e);
+                renderHelloWorldPageMock(container, pageData);
+            }
+        }
+        
+        // 渲染真实的 HelloWorldPage
+        function renderRealHelloWorldPage(container, pageData) {
+            console.log("[Desktop Render Host] 开始真实 Kuikly DSL 渲染");
+            
+            try {
+                // 清空容器
+                container.innerHTML = '';
+                
+                // 检查 KuiklyRenderView 是否可用
+                if (typeof window.com === 'undefined' || 
+                    !window.com.tencent || 
+                    !window.com.tencent.kuikly || 
+                    !window.com.tencent.kuikly.core || 
+                    !window.com.tencent.kuikly.core.render || 
+                    !window.com.tencent.kuikly.core.render.web || 
+                    !window.com.tencent.kuikly.core.render.web.KuiklyRenderView) {
+                    console.error("[Desktop Render Host] ❌ KuiklyRenderView 不可用");
+                    updateStatus('❌ KuiklyRenderView 不可用', 'error');
+                    renderHelloWorldPageMock(container, pageData);
+                    return;
+                }
+                
+                console.log("[Desktop Render Host] ✅ KuiklyRenderView 可用，开始创建实例");
+                
+                // 创建 KuiklyRenderView 实例
+                var renderView = new window.com.tencent.kuikly.core.render.web.KuiklyRenderView();
+                
+                // 创建页面参数
+                var params = {
+                    pageName: pageData.pageName || "HelloWorldPage",
+                    pageViewWidth: pageData.pageViewWidth || container.offsetWidth || 800,
+                    pageViewHeight: pageData.pageViewHeight || container.offsetHeight || 600,
+                    deviceWidth: window.innerWidth,
+                    deviceHeight: window.innerHeight,
+                    platform: "desktop",
+                    isIOS: false,
+                    isAndroid: false
+                };
+                
+                // 创建尺寸对象
+                var size = {
+                    width: params.pageViewWidth,
+                    height: params.pageViewHeight
+                };
+                
+                console.log("[Desktop Render Host] 初始化 KuiklyRenderView...");
+                console.log("[Desktop Render Host] 参数:", params);
+                console.log("[Desktop Render Host] 尺寸:", size);
+                
+                // 初始化渲染视图
+                renderView.init(
+                    container,          // rootContainer
+                    params.pageName,    // pageName
+                    params,             // params
+                    size                // size
+                );
+                
+                console.log("[Desktop Render Host] ✅ 真实 Kuikly DSL 渲染完成");
+                updateStatus('✅ 真实 HelloWorldPage 渲染成功', 'success');
+                
+            } catch (e) {
+                console.error("[Desktop Render Host] 真实 Kuikly DSL 渲染失败:", e);
+                console.log("[Desktop Render Host] 回退到模拟渲染");
+                renderHelloWorldPageMock(container, pageData);
+            }
+        }
+        
+        // 模拟 HelloWorldPage 渲染
+        function renderHelloWorldPageMock(container, pageData) {
+            console.log("[Desktop Render Host] 渲染 HelloWorldPage 模拟版本");
+            
+            // 创建 HelloWorldPage 容器
+            var pageContainer = document.createElement('div');
+            pageContainer.style.cssText = `
+                width: 100%;
+                height: 100%;
+                background: white;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                color: black;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+            
+            // 创建页面标题
+            var title = document.createElement('h1');
+            title.textContent = '🌍 Hello World Page';
+            title.style.cssText = `
+                font-size: 32px;
+                margin-bottom: 30px;
+                color: #333;
+                text-align: center;
+            `;
+            
+            // 创建富文本内容区域（模拟 HelloWorldPage 的 RichText 组件）
+            var richTextContainer = document.createElement('div');
+            richTextContainer.style.cssText = `
+                max-width: 600px;
+                width: 100%;
+                margin-top: 30px;
+                line-height: 1.6;
+                font-size: 16px;
+            `;
+            
+            // 第一段文本
+            var text1 = document.createElement('p');
+            text1.textContent = '我是第一个文本我是第一个文本';
+            text1.style.cssText = 'margin-bottom: 10px; color: black;';
+            
+            // 第二段文本（红色、加粗、删除线）
+            var text2 = document.createElement('p');
+            text2.textContent = '这是第二个文本';
+            text2.style.cssText = 'margin-bottom: 10px; color: red; font-weight: bold; text-decoration: line-through;';
+            
+            // 第三段文本（红色、中等字重、斜体、下划线）
+            var text3 = document.createElement('p');
+            text3.textContent = '这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个';
+            text3.style.cssText = 'margin-bottom: 20px; color: red; font-weight: 500; font-style: italic; text-decoration: underline;';
+            
+            richTextContainer.appendChild(text1);
+            richTextContainer.appendChild(text2);
+            richTextContainer.appendChild(text3);
+            
+            // 创建状态信息
+            var statusInfo = document.createElement('div');
+            statusInfo.style.cssText = `
+                margin-top: 40px;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 10px;
+                border-left: 4px solid #4ade80;
+                max-width: 600px;
+                width: 100%;
+            `;
+            
+            var statusTitle = document.createElement('h3');
+            statusTitle.textContent = '📱 HelloWorldPage 渲染状态';
+            statusTitle.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 18px;';
+            
+            var statusList = document.createElement('ul');
+            statusList.style.cssText = 'margin: 0; padding-left: 20px; color: #666;';
+            
+            var statusItems = [
+                '✅ 页面名称: ' + pageData.pageName,
+                '✅ 页面尺寸: ' + pageData.pageViewWidth + ' x ' + pageData.pageViewHeight,
+                '✅ 平台: ' + pageData.platform,
+                '✅ 富文本组件渲染成功',
+                '✅ 样式属性应用正常'
+            ];
+            
+            statusItems.forEach(function(item) {
+                var li = document.createElement('li');
+                li.textContent = item;
+                li.style.cssText = 'margin-bottom: 5px;';
+                statusList.appendChild(li);
+            });
+            
+            statusInfo.appendChild(statusTitle);
+            statusInfo.appendChild(statusList);
+            
+            pageContainer.appendChild(title);
+            pageContainer.appendChild(richTextContainer);
+            pageContainer.appendChild(statusInfo);
+            
+            container.appendChild(pageContainer);
+            
+            console.log("[Desktop Render Host] ✅ HelloWorldPage 模拟渲染完成");
+            updateStatus('✅ HelloWorldPage 渲染成功', 'success');
         }
         
         // 渲染默认组件

@@ -440,13 +440,13 @@ class KuiklyJSBridge {
                     // 延迟发送真实的 Kuikly DSL 渲染指令
                     Thread {
                         Thread.sleep(3000) // 等待 3 秒，确保 Kuikly DSL 加载完成
-                        println("[Kuikly Desktop] 🎨 发送真实 Kuikly DSL 渲染指令...")
+                        println("[Kuikly Desktop] 🎨 发送 HelloWorldPage 渲染指令...")
                         callWebRender("kuikly-dsl", mapOf(
-                            "dslType" to "pager",
-                            "pageName" to "kuikly_pager_desktop",
+                            "dslType" to "HelloWorldPage",
+                            "pageName" to "HelloWorldPage",
                             "pageData" to mapOf(
-                                "title" to "Kuikly Pager 测试",
-                                "description" to "桌面端 Pager 组件渲染测试",
+                                "title" to "Hello World Page",
+                                "description" to "桌面端 HelloWorldPage 渲染测试",
                                 "version" to "1.0.0"
                             )
                         ))
