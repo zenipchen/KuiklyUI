@@ -15,6 +15,7 @@ import org.cef.handler.CefMessageRouterHandlerAdapter
 import org.cef.network.CefRequest
 import java.awt.BorderLayout
 import java.awt.Dimension
+import java.io.File
 import javax.swing.JFrame
 import javax.swing.SwingUtilities
 import javax.swing.WindowConstants
@@ -293,9 +294,10 @@ fun main(args: Array<String>) {
         """.trimIndent()
         */
         
-        // 6. 加载简单测试页面
-        println("[Kuikly Desktop] 📄 正在加载简单测试页面...")
-        val browser = client.createBrowser(testHtmlUrl, false, false)
+        // 6. 加载真实 Kuikly DSL 测试页面
+        println("[Kuikly Desktop] 📄 正在加载真实 Kuikly DSL 测试页面...")
+        val realKuiklyDslHtmlUrl = "file://${File("test_real_kuikly_dsl.html").absolutePath}"
+        val browser = client.createBrowser(realKuiklyDslHtmlUrl, false, false)
         
         // 将浏览器添加到窗口
         frame.add(browser.uiComponent, BorderLayout.CENTER)
@@ -417,24 +419,29 @@ class KuiklyJSBridge {
                 }
                 "renderReady" -> {
                     println("[Kuikly Desktop] 🎉 Web 渲染层已就绪！")
-                    
+
                     // 测试：发送初始化指令到 Web 渲染层
                     callWebRender("init", mapOf(
                         "pageName" to "kuikly_dsl_desktop",
                         "width" to 800,
                         "height" to 600
                     ))
-                    
-                    // 延迟发送 Kuikly DSL 测试渲染指令
+
+                    // 延迟发送真实的 Kuikly DSL 渲染指令
                     Thread {
-                        Thread.sleep(2000) // 等待 2 秒
-                        println("[Kuikly Desktop] 🎨 发送 Kuikly DSL 测试渲染指令...")
-                        callWebRender("test", mapOf(
-                            "dslType" to "kuikly",
-                            "content" to "Kuikly DSL 渲染测试"
+                        Thread.sleep(3000) // 等待 3 秒，确保 Kuikly DSL 加载完成
+                        println("[Kuikly Desktop] 🎨 发送真实 Kuikly DSL 渲染指令...")
+                        callWebRender("kuikly-dsl", mapOf(
+                            "dslType" to "pager",
+                            "pageName" to "kuikly_pager_desktop",
+                            "pageData" to mapOf(
+                                "title" to "Kuikly Pager 测试",
+                                "description" to "桌面端 Pager 组件渲染测试",
+                                "version" to "1.0.0"
+                            )
                         ))
                     }.start()
-                    
+
                     return "OK"
                 }
                 else -> {
