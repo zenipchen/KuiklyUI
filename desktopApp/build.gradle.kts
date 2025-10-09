@@ -35,7 +35,7 @@ kotlin {
                 
                 // Demo 模块 - 包含 HelloWorldPage 等示例页面
                 implementation(project(":demo")) {
-                    exclude(group = "org.jetbrains.kotlinx", module="kotlinx-coroutines-core")
+                    exclude(group = "org.jetbrains.kotlinx", module="kotlinx-coroutines-core-jvm")
                 }
                 
                 // 桌面端 Web 渲染模块
@@ -47,7 +47,7 @@ kotlin {
                 
                 // JSON 解析
                 implementation("com.google.code.gson:gson:2.10.1")
-                api("com.tencent.kuiklyx-open:coroutines:1.3.0-2.0.21") {
+                api("com.tencent.kuiklyx-open:coroutines:1.5.0-2.0.21") {
                     exclude(group = "com.tencent.kuikly-open", module = "core")
                     exclude(group = "com.tencent.kuikly-open", module = "core-annotations")
                 }

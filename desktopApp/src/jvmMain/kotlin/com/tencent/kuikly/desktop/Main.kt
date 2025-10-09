@@ -3,6 +3,8 @@ package com.tencent.kuikly.desktop
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.tencent.kuikly.core.manager.BridgeManager
+import com.tencent.kuiklyx.coroutines.setKuiklyThreadScheduler
+import kotlinx.coroutines.CoroutineScope
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.browser.CefBrowser
@@ -28,7 +30,8 @@ fun generateDesktopHtml(): String {
     val desktopRenderHostPath = "../desktopRenderHost/build/dist/js/productionExecutable/desktopRenderHost.js"
     
     val desktopRenderHostFile = java.io.File(desktopRenderHostPath)
-    
+
+
     if (!desktopRenderHostFile.exists()) {
         println("[Kuikly Desktop] ⚠️ 未找到 desktopRenderHost 编译产物")
         println("[Kuikly Desktop] 💡 请运行: ./gradlew :desktopRenderHost:jsBrowserProductionWebpack")
