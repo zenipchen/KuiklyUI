@@ -162,8 +162,8 @@ fun main(args: Array<String>) {
         // 创建浏览器客户端
         val client = cefApp.createClient()
         
-        // 创建 JS Bridge 处理器
-        val bridge = KuiklyJSBridge()
+        // 创建桌面端渲染委托器
+        val renderDelegator = DesktopRenderViewDelegator()
         
         // 配置消息路由器（用于 Web → JVM 通信）
         val msgRouter = CefMessageRouter.create()
@@ -177,10 +177,10 @@ fun main(args: Array<String>) {
                 callback: CefQueryCallback?
             ): Boolean {
                 // 处理来自 Web 的调用
-                if (request != null) {
-                    val result = bridge.handleWebCall(request)
-                    callback?.success(result)
-                    return true
+                if (request != null && browser != null) {
+                    return renderDelegator.handleCefQuery(
+                        browser, frame, queryId.toInt(), request, persistent, callback
+                    )
                 }
                 return false
             }
@@ -196,9 +196,9 @@ fun main(args: Array<String>) {
                 canGoForward: Boolean
             ) {
                 if (!isLoading && browser != null) {
-                    println("[Kuikly Desktop] ✅ 页面加载完成，正在注入 JS Bridge...")
-                    bridge.setBrowser(browser)
-                    bridge.injectBridge()
+                    println("[Kuikly Desktop] ✅ 页面加载完成，正在初始化渲染层...")
+                    renderDelegator.setBrowser(browser)
+                    renderDelegator.initRenderLayer()
                 }
             }
             
@@ -344,6 +344,8 @@ fun main(args: Array<String>) {
  * 
  * 支持完整的 JCEF JS Bridge 功能
  */
+// 旧的 KuiklyJSBridge 类已被 DesktopRenderViewDelegator 替换
+/*
 class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
     private var browser: CefBrowser? = null
     private val gson = Gson()
@@ -580,4 +582,5 @@ class KuiklyJSBridge : IKuiklyCoreEntry.Delegate {
         }
     }
 }
+*/
 
