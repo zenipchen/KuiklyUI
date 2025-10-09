@@ -22,7 +22,7 @@ fun main() {
     window.asDynamic().DesktopRenderLayer = api
     
     // 直接导出方法到全局对象
-    window.asDynamic().createRenderView = { executeMode: String -> api.createRenderView(executeMode) }
+    window.asDynamic().createRenderViewDelegator = { -> api.createRenderViewDelegator() }
     window.asDynamic().getKuiklyRenderViewClass = { -> api.getKuiklyRenderViewClass() }
     window.asDynamic().getKuiklyRenderCoreExecuteModeClass = { -> api.getKuiklyRenderCoreExecuteModeClass() }
     
@@ -31,17 +31,12 @@ fun main() {
 }
 
 /**
- * 全局导出的创建渲染视图方法
+ * 全局导出的创建渲染视图委托器方法
  */
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-fun createRenderView(executeMode: String = "JS"): dynamic {
-    val mode = when (executeMode) {
-        "JS" -> KuiklyRenderCoreExecuteMode.JS
-        else -> KuiklyRenderCoreExecuteMode.JS
-    }
-    
-    return KuiklyRenderView(mode, DesktopRenderViewDelegate())
+fun createRenderViewDelegator(): dynamic {
+    return DesktopRenderViewDelegator()
 }
 
 /**
@@ -79,15 +74,10 @@ private fun initGlobalObject() {
 class DesktopRenderLayerAPI {
     
     /**
-     * 创建 KuiklyRenderView 实例
+     * 创建 KuiklyRenderViewDelegator 实例
      */
-    fun createRenderView(executeMode: String = "JS"): dynamic {
-        val mode = when (executeMode) {
-            "JS" -> KuiklyRenderCoreExecuteMode.JS
-            else -> KuiklyRenderCoreExecuteMode.JS
-        }
-        
-        return KuiklyRenderView(mode, DesktopRenderViewDelegate())
+    fun createRenderViewDelegator(): dynamic {
+        return DesktopRenderViewDelegator()
     }
     
     /**
@@ -106,19 +96,70 @@ class DesktopRenderLayerAPI {
 }
 
 /**
- * 桌面渲染视图委托
+ * 桌面渲染视图委托器
  */
-class DesktopRenderViewDelegate : KuiklyRenderViewDelegatorDelegate {
+class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
     
+    // 使用 H5 的委托器实现
+    private val delegator = com.tencent.kuikly.core.render.web.runtime.web.expand.KuiklyRenderViewDelegator(this)
+    
+    /**
+     * 初始化渲染视图
+     */
+    fun init(
+        container: Any,
+        pageName: String,
+        pageData: Map<String, Any>,
+        size: SizeI
+    ) {
+        delegator.onAttach(container, pageName, pageData, size)
+    }
+    
+    /**
+     * 页面显示
+     */
+    fun resume() {
+        delegator.onResume()
+    }
+    
+    /**
+     * 页面隐藏
+     */
+    fun pause() {
+        delegator.onPause()
+    }
+    
+    /**
+     * 页面销毁
+     */
+    fun detach() {
+        delegator.onDetach()
+    }
+    
+    /**
+     * 发送事件
+     */
+    fun sendEvent(event: String, data: Map<String, Any>) {
+        delegator.sendEvent(event, data)
+    }
+
     override fun coreExecuteMode(): KuiklyRenderCoreExecuteMode {
         return KuiklyRenderCoreExecuteMode.JS
     }
-    
+
     override fun onKuiklyRenderViewCreated() {
         console.log("[Desktop Render Layer] KuiklyRenderView 已创建")
     }
-    
+
     override fun onKuiklyRenderContentViewCreated() {
         console.log("[Desktop Render Layer] KuiklyRenderContentView 已创建")
+    }
+    
+    override fun onPageLoadComplete(isSucceed: Boolean, errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason?, executeMode: KuiklyRenderCoreExecuteMode) {
+        console.log("[Desktop Render Layer] 页面加载完成: success=$isSucceed, errorReason=$errorReason")
+    }
+    
+    override fun onUnhandledException(throwable: Throwable, errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason, executeMode: KuiklyRenderCoreExecuteMode) {
+        console.error("[Desktop Render Layer] 未处理异常: ${throwable.message}", throwable)
     }
 }

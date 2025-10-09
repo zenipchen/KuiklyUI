@@ -91,20 +91,20 @@
             
             try {
                 // 检查全局方法是否可用
-                if (typeof window.createRenderView !== 'function') {
-                    log("❌ 全局 createRenderView 方法未加载，请等待模块加载完成", 'error');
+                if (typeof window.createRenderViewDelegator !== 'function') {
+                    log("❌ 全局 createRenderViewDelegator 方法未加载，请等待模块加载完成", 'error');
                     return false;
                 }
                 
                 log("✅ 全局方法已加载");
-                log(`可用方法: createRenderView, getKuiklyRenderViewClass, getKuiklyRenderCoreExecuteModeClass`);
+                log(`可用方法: createRenderViewDelegator, getKuiklyRenderViewClass, getKuiklyRenderCoreExecuteModeClass`);
                 
-                // 测试创建渲染视图
-                renderView = window.createRenderView("JS");
+                // 测试创建渲染视图委托器
+                renderView = window.createRenderViewDelegator();
                 if (renderView) {
-                    log("✅ 成功创建 KuiklyRenderView 实例", 'success');
+                    log("✅ 成功创建 KuiklyRenderViewDelegator 实例", 'success');
                 } else {
-                    log("❌ 创建 KuiklyRenderView 实例失败", 'error');
+                    log("❌ 创建 KuiklyRenderViewDelegator 实例失败", 'error');
                     return false;
                 }
                 
@@ -201,37 +201,11 @@
                 
                 log("📋 页面参数: " + JSON.stringify(pageData));
                 
-                // 尝试找到 init 方法（可能被压缩）
-                let initMethod = null;
-                
-                // 首先尝试原始方法名
+                // 使用委托器的 init 方法
                 if (typeof renderView.init === 'function') {
-                    initMethod = renderView.init;
-                    log("✅ 找到原始 init 方法");
-                } else {
-                    // 尝试压缩后的方法名
-                    const methods = Object.getOwnPropertyNames(renderView);
-                    log(`可用方法: ${methods.join(',')}`);
-                    
-                    // 尝试常见的压缩方法名
-                    for (const methodName of methods) {
-                        if (typeof renderView[methodName] === 'function') {
-                            try {
-                                // 这里我们假设第一个函数就是 init 方法
-                                initMethod = renderView[methodName];
-                                log(`✅ 找到可能的 init 方法: ${methodName}`);
-                                break;
-                            } catch (e) {
-                                // 继续尝试下一个方法
-                            }
-                        }
-                    }
-                }
-                
-                if (initMethod) {
                     try {
                         // 初始化渲染视图
-                        initMethod.call(renderView,
+                        renderView.init(
                             'kuikly-render-container',
                             'HelloWorldPage',
                             pageData,
@@ -254,7 +228,8 @@
                         log(`❌ 调用 init 方法失败: ${e.message}`, 'error');
                     }
                 } else {
-                    log("❌ 找不到 init 方法", 'error');
+                    log("❌ renderView.init 方法不存在", 'error');
+                    log(`可用方法: ${Object.getOwnPropertyNames(renderView).join(',')}`);
                 }
                 
                 return true;

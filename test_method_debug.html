@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方法调试测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>方法调试测试</h1>
+    <div id="status" class="status info">正在加载...</div>
+    
+    <!-- 引入桌面渲染层 JS 文件 -->
+    <script src="desktop-render-layer/build/kotlin-webpack/js/productionExecutable/desktopRenderLayer.js"></script>
+    
+    <script>
+        function log(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            
+            statusDiv.innerHTML += logMessage + '<br>';
+            statusDiv.className = `status ${type}`;
+            
+            console.log(logMessage);
+        }
+        
+        // 页面加载完成后检查
+        window.addEventListener('load', function() {
+            log("📄 页面加载完成");
+            
+            // 等待模块加载
+            setTimeout(() => {
+                log("🔍 开始检查 DesktopRenderLayer...");
+                
+                if (typeof window.DesktopRenderLayer === 'undefined') {
+                    log("❌ window.DesktopRenderLayer 未定义", 'error');
+                    return;
+                }
+                
+                log("✅ window.DesktopRenderLayer 已定义");
+                
+                const api = window.DesktopRenderLayer;
+                log(`API 类型: ${typeof api}`);
+                log(`API 构造函数: ${api.constructor.name}`);
+                
+                // 检查所有属性
+                const props = Object.getOwnPropertyNames(api);
+                log(`API 属性: ${props.join(', ')}`);
+                
+                // 检查原型链
+                const proto = Object.getPrototypeOf(api);
+                const protoProps = Object.getOwnPropertyNames(proto);
+                log(`原型属性: ${protoProps.join(', ')}`);
+                
+                // 检查方法
+                if (typeof api.createRenderView === 'function') {
+                    log("✅ createRenderView 方法存在", 'success');
+                    
+                    try {
+                        const renderView = api.createRenderView();
+                        log(`✅ 成功调用 createRenderView，返回类型: ${typeof renderView}`, 'success');
+                    } catch (e) {
+                        log(`❌ 调用 createRenderView 失败: ${e.message}`, 'error');
+                    }
+                } else {
+                    log("❌ createRenderView 方法不存在", 'error');
+                    log(`createRenderView 类型: ${typeof api.createRenderView}`);
+                }
+                
+                // 检查其他方法
+                if (typeof api.getKuiklyRenderViewClass === 'function') {
+                    log("✅ getKuiklyRenderViewClass 方法存在", 'success');
+                } else {
+                    log("❌ getKuiklyRenderViewClass 方法不存在", 'error');
+                }
+                
+                if (typeof api.getKuiklyRenderCoreExecuteModeClass === 'function') {
+                    log("✅ getKuiklyRenderCoreExecuteModeClass 方法存在", 'success');
+                } else {
+                    log("❌ getKuiklyRenderCoreExecuteModeClass 方法不存在", 'error');
+                }
+                
+            }, 1000);
+        });
+        
+        // 错误处理
+        window.addEventListener('error', function(e) {
+            log(`❌ 脚本加载错误: ${e.message}`, 'error');
+        });
+    </script>
+</body>
+</html>
