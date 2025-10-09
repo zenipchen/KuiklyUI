@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuikly Desktop - Simple Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 { font-size: 48px; margin-bottom: 20px; }
+        p { font-size: 20px; margin-bottom: 10px; opacity: 0.9; }
+        .status { margin-top: 30px; padding: 15px 30px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        .success { color: #4ade80; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Kuikly Desktop</h1>
+        <p>简单测试页面</p>
+        <p>验证基本页面加载功能</p>
+        
+        <div class="status">
+            <span class="success">✅</span> 页面加载成功
+        </div>
+    </div>
+    
+    <script>
+        console.log('[Kuikly Desktop] 🧪 简单测试页面已加载');
+        
+        // 定义 renderContent 函数
+        window.renderContent = function(content) {
+            console.log("[Desktop Render Host] 收到渲染指令:", content);
+            
+            try {
+                var renderData = JSON.parse(content);
+                var type = renderData.type;
+                
+                switch(type) {
+                    case "init":
+                        console.log("[Desktop Render Host] 初始化渲染视图");
+                        break;
+                    case "destroy":
+                        console.log("[Desktop Render Host] 销毁渲染视图");
+                        break;
+                    case "event":
+                        console.log("[Desktop Render Host] 发送事件:", renderData.event);
+                        break;
+                    case "test":
+                        console.log("[Desktop Render Host] 执行测试渲染");
+                        // 添加测试元素到页面
+                        var container = document.querySelector('.container');
+                        if (container) {
+                            var testElement = document.createElement('div');
+                            testElement.style.cssText = 'margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; border: 2px solid #4ade80;';
+                            testElement.innerHTML = '<h3 style="color: #4ade80; margin: 0 0 10px 0;">🎨 Kuikly DSL 测试</h3><p style="margin: 0; font-size: 16px;">渲染指令: ' + (renderData.dslType || 'default') + '</p><p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">内容: ' + (renderData.content || '测试内容') + '</p>';
+                            container.appendChild(testElement);
+                            console.log("[Desktop Render Host] ✅ 测试元素已添加到页面");
+                        }
+                        break;
+                    default:
+                        console.warn("[Desktop Render Host] 未知的渲染指令类型:", type);
+                }
+            } catch (e) {
+                console.error("[Desktop Render Host] 解析渲染指令失败:", e);
+            }
+        };
+        
+        console.log('[Kuikly Desktop] ✅ renderContent 函数定义完成');
+        
+        // 通知 JVM 端页面已就绪
+        setTimeout(() => {
+            if (window.cefQuery) {
+                window.cefQuery({
+                    request: JSON.stringify({ type: 'renderReady' }),
+                    onSuccess: function(response) {
+                        console.log('[Kuikly Desktop] ✅ 已通知 JVM 端页面就绪');
+                    },
+                    onFailure: function(error_code, error_message) {
+                        console.error('[Kuikly Desktop] ❌ 通知 JVM 失败:', error_message);
+                    }
+                });
+            } else {
+                console.log('[Kuikly Desktop] ⚠️ JS Bridge 未就绪');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

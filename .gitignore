@@ -46,4 +46,6 @@ proto/**/*.kt
 /compose/compose.podspec
 /core/core.podspec
 /desktopApp/jcef-bundle/
-/bin
+/desktopApp/bin
+/desktopWebRender/bin
+/jcef-bundle
