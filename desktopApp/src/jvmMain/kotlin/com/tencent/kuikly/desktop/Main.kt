@@ -222,10 +222,9 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例 - 使用桌面渲染引擎测试页面
-        // 5. 使用桌面渲染引擎测试页面验证真实组件渲染
-        val testHtmlPath = java.io.File("../test_desktop_render_complete.html").absolutePath
-        val testHtmlUrl = "file://$testHtmlPath"
+        // 创建浏览器实例 - 使用本地网页加载 Web 渲染层
+        val webRenderHtmlPath = java.io.File("../desktop_render_web.html").absolutePath
+        val webRenderHtmlUrl = "file://$webRenderHtmlPath"
         
         /*
         val htmlContent_old = """
@@ -325,9 +324,9 @@ fun main(args: Array<String>) {
         """.trimIndent()
         */
         
-        // 6. 加载简单测试页面
-        println("[Kuikly Desktop] 📄 正在加载简单测试页面...")
-        val browser = client.createBrowser(testHtmlUrl, false, false)
+        // 6. 加载本地网页（包含 Web 渲染层）
+        println("[Kuikly Desktop] 📄 正在加载本地网页（Web 渲染层）...")
+        val browser = client.createBrowser(webRenderHtmlUrl, false, false)
         
         // 将浏览器添加到窗口
         frame.add(browser.uiComponent, BorderLayout.CENTER)
