@@ -235,7 +235,7 @@ fun main(args: Array<String>) {
         
         // 创建浏览器实例 - 使用桌面渲染引擎测试页面
         // 5. 使用桌面渲染引擎测试页面验证真实组件渲染
-        val testHtmlPath = java.io.File("../test_callKotlinMethod.html").absolutePath
+        val testHtmlPath = java.io.File("../test_simple_debug.html").absolutePath
         val testHtmlUrl = "file://$testHtmlPath"
         
         /*

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuikly Desktop - callKotlinMethod 测试</title>
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .test-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        
+        .test-button:hover {
+            background: #2980b9;
+        }
+        
+        .test-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .log-area {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 callKotlinMethod 测试页面</h1>
+        
+        <div class="status info">
+            <strong>说明：</strong>这个页面用于测试 Web 端调用 JVM 端的 callKotlinMethod 功能
+        </div>
+        
+        <div class="test-section">
+            <h3>📞 测试 callKotlinMethod 调用</h3>
+            <p>点击下面的按钮来测试不同的 callKotlinMethod 调用：</p>
+            
+            <button class="test-button" onclick="testCallKotlinMethod(1, 'Hello', 'World', 'Test', null, null, null)">
+                测试 methodId=1 (Hello World)
+            </button>
+            
+            <button class="test-button" onclick="testCallKotlinMethod(2, 'Page', 'Load', 'Test', null, null, null)">
+                测试 methodId=2 (Page Load)
+            </button>
+            
+            <button class="test-button" onclick="testCallKotlinMethod(3, 'Custom', 'Test', 'Data', 'Extra', 'Info', 'More')">
+                测试 methodId=3 (6个参数)
+            </button>
+            
+            <button class="test-button" onclick="testCallKotlinMethod(0, null, null, null, null, null, null)">
+                测试 methodId=0 (空参数)
+            </button>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔍 检查 JS Bridge 状态</h3>
+            <button class="test-button" onclick="checkJSBridge()">
+                检查 JS Bridge 是否可用
+            </button>
+            <div id="bridge-status"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 日志输出</h3>
+            <button class="test-button" onclick="clearLogs()">清空日志</button>
+            <div id="log-area" class="log-area"></div>
+        </div>
+    </div>
+
+    <script>
+        // 日志函数
+        function log(message, type = 'info') {
+            const logArea = document.getElementById('log-area');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logArea.appendChild(logEntry);
+            logArea.scrollTop = logArea.scrollHeight;
+            console.log(`[Kuikly Test] ${message}`);
+        }
+        
+        function clearLogs() {
+            document.getElementById('log-area').innerHTML = '';
+        }
+        
+        // 检查 JS Bridge 状态
+        function checkJSBridge() {
+            const statusDiv = document.getElementById('bridge-status');
+            
+            if (typeof window.cefQuery === 'function') {
+                statusDiv.innerHTML = '<div class="status success">✅ window.cefQuery 可用</div>';
+                log('✅ window.cefQuery 可用', 'success');
+            } else {
+                statusDiv.innerHTML = '<div class="status error">❌ window.cefQuery 不可用</div>';
+                log('❌ window.cefQuery 不可用', 'error');
+            }
+            
+            if (typeof window.callKotlinMethod === 'function') {
+                statusDiv.innerHTML += '<div class="status success">✅ window.callKotlinMethod 可用</div>';
+                log('✅ window.callKotlinMethod 可用', 'success');
+            } else {
+                statusDiv.innerHTML += '<div class="status error">❌ window.callKotlinMethod 不可用</div>';
+                log('❌ window.callKotlinMethod 不可用', 'error');
+            }
+        }
+        
+        // 测试 callKotlinMethod 调用
+        function testCallKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
+            log(`🚀 开始测试 callKotlinMethod: methodId=${methodId}`, 'info');
+            log(`📝 参数: [${arg0}, ${arg1}, ${arg2}, ${arg3}, ${arg4}, ${arg5}]`, 'info');
+            
+            if (typeof window.callKotlinMethod === 'function') {
+                try {
+                    window.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5);
+                    log(`✅ callKotlinMethod 调用已发送`, 'success');
+                } catch (error) {
+                    log(`❌ callKotlinMethod 调用失败: ${error.message}`, 'error');
+                }
+            } else {
+                log(`❌ window.callKotlinMethod 函数不存在`, 'error');
+            }
+        }
+        
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            log('🎉 页面加载完成', 'success');
+            
+            // 延迟检查 JS Bridge，等待注入完成
+            setTimeout(() => {
+                log('🔍 检查 JS Bridge 状态...', 'info');
+                checkJSBridge();
+            }, 1000);
+        });
+        
+        // 监听来自 JVM 的响应（如果有的话）
+        window.addEventListener('message', function(event) {
+            log(`📨 收到消息: ${JSON.stringify(event.data)}`, 'info');
+        });
+    </script>
+</body>
+</html>
