@@ -38,9 +38,6 @@ kotlin {
                     exclude(group = "org.jetbrains.kotlinx", module="kotlinx-coroutines-core-jvm")
                 }
                 
-                // 桌面端 Web 渲染模块
-                implementation(project(":desktopWebRender"))
-                
                 // JCEF (Java Chromium Embedded Framework)
                 implementation("me.friwi:jcefmaven:122.1.10")
                 implementation("org.slf4j:slf4j-simple:2.0.9")
