@@ -104,13 +104,13 @@ class DesktopRenderLayerAPI {
 
 /**
  * 桌面渲染视图委托器
- * 参考 h5App 的实现，正确桥接 core-render-web
+ * 参考 h5App 的实现，正确继承 KuiklyRenderViewDelegatorDelegate 并桥接 core-render-web
  */
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
 
-    // 使用 H5 的委托器实现
+    // 使用 core-render-web 的委托器实现
     private val delegator = KuiklyRenderViewDelegator(this)
 
     /**
@@ -159,23 +159,32 @@ class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
         delegator.sendEvent(event, data)
     }
 
-    override fun coreExecuteMode(): KuiklyRenderCoreExecuteMode {
-        return KuiklyRenderCoreExecuteMode.JS
-    }
-
+    // 实现 KuiklyRenderViewDelegatorDelegate 接口
     override fun onKuiklyRenderViewCreated() {
         console.log("[Desktop Render Layer] KuiklyRenderView 已创建")
     }
 
     override fun onKuiklyRenderContentViewCreated() {
-        console.log("[Desktop Render Layer] KuiklyRenderContentView 已创建")
+        console.log("[Desktop Render Layer] KuiklyRenderView 内容视图已创建")
     }
-    
-    override fun onPageLoadComplete(isSucceed: Boolean, errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason?, executeMode: KuiklyRenderCoreExecuteMode) {
-        console.log("[Desktop Render Layer] 页面加载完成: success=$isSucceed, errorReason=$errorReason")
+
+    override fun onPageLoadComplete(
+        isSucceed: Boolean,
+        errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason?,
+        executeMode: KuiklyRenderCoreExecuteMode
+    ) {
+        console.log("[Desktop Render Layer] 页面加载完成: succeed=$isSucceed, mode=$executeMode")
+        if (!isSucceed && errorReason != null) {
+            console.error("[Desktop Render Layer] 页面加载失败: $errorReason")
+        }
     }
-    
-    override fun onUnhandledException(throwable: Throwable, errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason, executeMode: KuiklyRenderCoreExecuteMode) {
-        console.error("[Desktop Render Layer] 未处理异常: ${throwable.message}", throwable)
+
+    override fun onUnhandledException(
+        throwable: Throwable,
+        errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason,
+        executeMode: KuiklyRenderCoreExecuteMode
+    ) {
+        console.error("[Desktop Render Layer] 未处理异常: ${throwable.message}, reason: $errorReason, mode: $executeMode")
+        throwable.printStackTrace()
     }
 }
