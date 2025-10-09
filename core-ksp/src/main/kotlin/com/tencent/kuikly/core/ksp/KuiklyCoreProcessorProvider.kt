@@ -130,6 +130,9 @@ class CoreProcessor(
                     AndroidTargetEntryBuilder()
                 }
             }
+            outputSourceSet.jvmFamily() -> {
+                JVMTargetEntryBuilder()
+            }
             outputSourceSet.iosFamily() -> {
                 if (enableMultiModule) {
                     IOSMultiTargetEntryBuilder(isMainModule, subModules, moduleId)

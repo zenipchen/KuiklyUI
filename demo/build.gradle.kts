@@ -134,6 +134,9 @@ kotlin {
         license = "MIT"
         extraSpecAttributes["resources"] = "['src/commonMain/assets/**']"
     }
+    
+    // JVM toolchain configuration
+    jvmToolchain(17)
 }
 
 ksp {

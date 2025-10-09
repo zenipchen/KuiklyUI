@@ -21,6 +21,9 @@ dependencies {
         exclude(group = "com.tencent.kuiklyx-open", module = "coroutines")
     }
     
+    // Demo 模块 - 包含 HelloWorldPage 等示例页面
+    implementation(project(":demo"))
+    
     // 桌面端 Web 渲染模块
     implementation(project(":desktopWebRender"))
     

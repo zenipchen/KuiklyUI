@@ -415,12 +415,12 @@ class KuiklyJSBridge {
                     
                     println("[Kuikly Desktop] 📞 callKotlinMethod: methodId=$methodId")
                     
-                    val arg0 = if (argsArray.size() > 0) argsArray[0]?.asString else null
-                    val arg1 = if (argsArray.size() > 1) argsArray[1]?.asString else null
-                    val arg2 = if (argsArray.size() > 2) argsArray[2]?.asString else null
-                    val arg3 = if (argsArray.size() > 3) argsArray[3]?.asString else null
-                    val arg4 = if (argsArray.size() > 4) argsArray[4]?.asString else null
-                    val arg5 = if (argsArray.size() > 5) argsArray[5]?.asString else null
+                    val arg0 = if (argsArray.size() > 0 && !argsArray[0].isJsonNull) argsArray[0].asString else null
+                    val arg1 = if (argsArray.size() > 1 && !argsArray[1].isJsonNull) argsArray[1].asString else null
+                    val arg2 = if (argsArray.size() > 2 && !argsArray[2].isJsonNull) argsArray[2].asString else null
+                    val arg3 = if (argsArray.size() > 3 && !argsArray[3].isJsonNull) argsArray[3].asString else null
+                    val arg4 = if (argsArray.size() > 4 && !argsArray[4].isJsonNull) argsArray[4].asString else null
+                    val arg5 = if (argsArray.size() > 5 && !argsArray[5].isJsonNull) argsArray[5].asString else null
                     
                     BridgeManager.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
                     
