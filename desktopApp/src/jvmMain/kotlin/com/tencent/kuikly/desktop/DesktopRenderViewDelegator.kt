@@ -170,13 +170,6 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                 return result;
             };
             
-            // 注册 registerCallNative 函数，供 core-render-web 注册回调
-            window.com = window.com || {};
-            window.com.tencent = window.com.tencent || {};
-            window.com.tencent.kuikly = window.com.tencent.kuikly || {};
-            window.com.tencent.kuikly.core = window.com.tencent.kuikly.core || {};
-            window.com.tencent.kuikly.core.nvi = window.com.tencent.kuikly.core.nvi || {};
-            
             console.log('[Desktop Render] ✅ JS Bridge 注入完成');
         """.trimIndent()
         
