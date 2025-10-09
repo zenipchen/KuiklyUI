@@ -202,9 +202,9 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例 - 使用简单测试页面
-        // 5. 使用简单测试页面验证基本功能
-        val testHtmlPath = java.io.File("../test_simple.html").absolutePath
+        // 创建浏览器实例 - 使用真实 Kuikly DSL 测试页面
+        // 5. 使用真实 Kuikly DSL 测试页面验证 pager 组件渲染
+        val testHtmlPath = java.io.File("../test_real_kuikly_dsl.html").absolutePath
         val testHtmlUrl = "file://$testHtmlPath"
         
         /*
@@ -437,13 +437,18 @@ class KuiklyJSBridge {
                         "height" to 600
                     ))
                     
-                    // 延迟发送 Kuikly DSL 测试渲染指令
+                    // 延迟发送真实的 Kuikly DSL 渲染指令
                     Thread {
-                        Thread.sleep(2000) // 等待 2 秒
-                        println("[Kuikly Desktop] 🎨 发送 Kuikly DSL 测试渲染指令...")
-                        callWebRender("test", mapOf(
-                            "dslType" to "kuikly",
-                            "content" to "Kuikly DSL 渲染测试"
+                        Thread.sleep(3000) // 等待 3 秒，确保 Kuikly DSL 加载完成
+                        println("[Kuikly Desktop] 🎨 发送真实 Kuikly DSL 渲染指令...")
+                        callWebRender("kuikly-dsl", mapOf(
+                            "dslType" to "pager",
+                            "pageName" to "kuikly_pager_desktop",
+                            "pageData" to mapOf(
+                                "title" to "Kuikly Pager 测试",
+                                "description" to "桌面端 Pager 组件渲染测试",
+                                "version" to "1.0.0"
+                            )
                         ))
                     }.start()
                     
