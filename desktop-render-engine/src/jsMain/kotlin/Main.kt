@@ -5,11 +5,13 @@ import com.tencent.kuikly.core.render.web.runtime.web.expand.KuiklyRenderViewDel
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.Element
+import kotlin.js.JsExport
 
 /**
  * 桌面端渲染引擎主入口
  * 专门为桌面应用设计的 Kuikly 渲染引擎
  */
+@JsExport
 fun main() {
     console.log("##### Kuikly Desktop Render Engine #####")
     
@@ -22,6 +24,13 @@ fun main() {
     
     console.log("✅ 桌面渲染引擎初始化完成")
 }
+
+// 全局初始化函数
+@JsExport
+fun initializeDesktopRenderEngine() {
+    main()
+}
+
 
 /**
  * 桌面端渲染引擎

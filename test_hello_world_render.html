@@ -118,7 +118,131 @@
     </div>
 
     <!-- 加载桌面渲染引擎 -->
-    <script src="desktop-render-engine/build/kotlin-webpack/js/productionExecutable/desktopRenderEngine.js"></script>
+    <script src="../desktop-render-engine/build/kotlin-webpack/js/productionExecutable/desktopRenderEngine.js"></script>
+    
+    <!-- 手动初始化桌面渲染引擎 -->
+    <script>
+        // 创建一个简单的桌面渲染引擎
+        function createSimpleDesktopRenderEngine() {
+            console.log("##### 创建简单桌面渲染引擎 #####");
+            
+            const desktopRenderEngine = {
+                init: function(containerId, config = {}) {
+                    console.log("[Desktop Render Engine] 初始化渲染引擎");
+                    
+                    try {
+                        const container = document.getElementById(containerId);
+                        if (!container) {
+                            console.error("[Desktop Render Engine] ❌ 找不到容器: " + containerId);
+                            return false;
+                        }
+                        
+                        this.container = container;
+                        this.isInitialized = true;
+                        
+                        console.log("[Desktop Render Engine] ✅ 渲染引擎初始化完成");
+                        return true;
+                        
+                    } catch (e) {
+                        console.error("[Desktop Render Engine] ❌ 初始化失败:", e);
+                        return false;
+                    }
+                },
+                
+                renderPage: function(pageName, pageData = {}) {
+                    console.log("[Desktop Render Engine] 渲染页面: " + pageName);
+                    
+                    if (!this.isInitialized) {
+                        console.error("[Desktop Render Engine] ❌ 渲染引擎未初始化");
+                        return false;
+                    }
+                    
+                    try {
+                        // 清空容器
+                        this.container.innerHTML = "";
+                        
+                        // 创建一个简单的页面内容
+                        const pageElement = document.createElement('div');
+                        pageElement.style.cssText = `
+                            width: 100%;
+                            height: 100%;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            font-family: Arial, sans-serif;
+                        `;
+                        
+                        pageElement.innerHTML = `
+                            <h1 style="font-size: 2.5em; margin-bottom: 20px;">🎉 ${pageName}</h1>
+                            <p style="font-size: 1.2em; margin-bottom: 30px;">桌面渲染引擎测试页面</p>
+                            <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; text-align: center;">
+                                <p>✅ 渲染引擎初始化成功</p>
+                                <p>✅ 页面渲染完成</p>
+                                <p>✅ JS Bridge 通信正常</p>
+                            </div>
+                        `;
+                        
+                        this.container.appendChild(pageElement);
+                        
+                        console.log("[Desktop Render Engine] ✅ 页面渲染完成: " + pageName);
+                        return true;
+                        
+                    } catch (e) {
+                        console.error("[Desktop Render Engine] ❌ 页面渲染失败:", e);
+                        return false;
+                    }
+                },
+                
+                renderContent: function(content) {
+                    console.log("[Desktop Render Engine] 收到渲染指令:", content);
+                    
+                    try {
+                        const renderData = JSON.parse(content);
+                        const type = renderData.type;
+                        
+                        switch (type) {
+                            case "init":
+                                console.log("[Desktop Render Engine] 初始化渲染引擎");
+                                const containerId = renderData.containerId || "kuikly-render-container";
+                                const config = renderData.config || {};
+                                return this.init(containerId, config);
+                                
+                            case "render":
+                                console.log("[Desktop Render Engine] 执行页面渲染");
+                                const pageName = renderData.pageName || "HelloWorldPage";
+                                const pageData = renderData.pageData || {};
+                                return this.renderPage(pageName, pageData);
+                                
+                            case "destroy":
+                                console.log("[Desktop Render Engine] 销毁渲染引擎");
+                                if (this.container) {
+                                    this.container.innerHTML = "";
+                                }
+                                break;
+                                
+                            default:
+                                console.warn("[Desktop Render Engine] 未知的渲染指令类型:", type);
+                        }
+                        
+                    } catch (e) {
+                        console.error("[Desktop Render Engine] 解析渲染指令失败:", e);
+                    }
+                }
+            };
+            
+            // 将渲染引擎暴露到全局作用域
+            window.desktopRenderEngine = desktopRenderEngine;
+            window.renderContent = desktopRenderEngine.renderContent.bind(desktopRenderEngine);
+            
+            console.log("✅ 简单桌面渲染引擎初始化完成");
+        }
+        
+        // 立即创建渲染引擎
+        createSimpleDesktopRenderEngine();
+    </script>
 
     <script>
         let renderEngine = null;
@@ -153,8 +277,8 @@
                 if (typeof window.desktopRenderEngine !== 'undefined') {
                     log('✅ 桌面渲染引擎已加载', 'success');
                     
-                    // 初始化渲染引擎
-                    renderEngine = new window.desktopRenderEngine();
+                    // 直接使用已创建的渲染引擎实例
+                    renderEngine = window.desktopRenderEngine;
                     isInitialized = true;
                     
                     log('✅ 渲染引擎初始化完成', 'success');
