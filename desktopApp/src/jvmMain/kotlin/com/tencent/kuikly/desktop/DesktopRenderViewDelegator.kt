@@ -248,6 +248,7 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
     
     /**
      * 处理来自 JVM 的调用
+     * 直接调用 JS 函数，简化调用流程
      */
     override fun callNative(
         methodId: Int,
@@ -262,32 +263,24 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
         
         val browser = this.browser ?: return null
         
+        // 直接调用 JS 的 callNative 函数
         val jsCode = """
-            console.log('[Desktop Render] 🌐 执行 callNative: methodId=$methodId');
+            console.log('[Desktop Render] 🌐 直接调用 JS callNative: methodId=$methodId');
             
-            // 优先使用 desktopRenderView 实例
-            if (window.desktopRenderView && typeof window.desktopRenderView.sendEvent === 'function') {
-                console.log('[Desktop Render] ✅ 使用 desktopRenderView 发送事件');
-                
-                // 解析参数
-                var eventData = null;
+            // 直接调用 JS 端的 callNative 函数
+            if (typeof window.callNative === 'function') {
+                console.log('[Desktop Render] ✅ 调用 window.callNative');
                 try {
-                    if (arg0) {
-                        eventData = JSON.parse(arg0);
-                    }
+                    var result = window.callNative($methodId, $arg0, $arg1, $arg2, $arg3, $arg4, $arg5);
+                    console.log('[Desktop Render] ✅ callNative 调用结果:', result);
+                    return result;
                 } catch (e) {
-                    console.warn('[Desktop Render] ⚠️ 无法解析事件数据:', e);
+                    console.error('[Desktop Render] ❌ callNative 调用失败:', e);
+                    return null;
                 }
-                
-                // 发送事件到 JS 渲染层
-                if (eventData && eventData.type) {
-                    window.desktopRenderView.sendEvent(eventData.type, eventData);
-                }
-            } else if (typeof window.desktopCallNativeCallback === 'function') {
-                console.log('[Desktop Render] ✅ 使用 desktopCallNativeCallback');
-                window.desktopCallNativeCallback($methodId, $arg0, $arg1, $arg2, $arg3, $arg4, $arg5);
             } else {
-                console.warn('[Desktop Render] ⚠️ callNative 回调未注册，desktopRenderView 不可用');
+                console.warn('[Desktop Render] ⚠️ window.callNative 函数未找到');
+                return null;
             }
         """.trimIndent()
         
