@@ -1,7 +1,7 @@
 package com.tencent.kuikly.desktop.render
 
-import com.tencent.kuikly.core.render.web.KuiklyRenderView
 import com.tencent.kuikly.core.render.web.ktx.SizeI
+import com.tencent.kuikly.core.render.web.runtime.web.expand.KuiklyRenderViewDelegator
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.Element
@@ -29,7 +29,7 @@ fun main() {
  */
 class DesktopRenderEngine {
     
-    private var currentRenderView: KuiklyRenderView? = null
+    private var currentDelegator: KuiklyRenderViewDelegator? = null
     private var currentContainer: Element? = null
     private var isInitialized = false
     
@@ -74,8 +74,9 @@ class DesktopRenderEngine {
             // 销毁当前渲染视图
             destroyCurrentPage()
             
-            // 创建新的渲染视图
-            val renderView = KuiklyRenderView()
+            // 创建桌面渲染委托器
+            val desktopDelegate = DesktopRenderViewDelegate()
+            val delegator = KuiklyRenderViewDelegator(desktopDelegate)
             
             // 准备页面参数
             val params = preparePageParams(pageName, pageData)
@@ -84,15 +85,18 @@ class DesktopRenderEngine {
             console.log("[Desktop Render Engine] 页面参数:", params)
             console.log("[Desktop Render Engine] 页面尺寸:", size)
             
-            // 初始化渲染视图
-            renderView.init(
-                currentContainer!!,  // rootContainer
+            // 初始化渲染委托器
+            delegator.onAttach(
+                currentContainer!!,  // container
                 pageName,            // pageName
-                params,              // params
+                params,              // pageData
                 size                 // size
             )
             
-            currentRenderView = renderView
+            // 触发恢复
+            delegator.onResume()
+            
+            currentDelegator = delegator
             
             console.log("[Desktop Render Engine] ✅ 页面渲染完成: $pageName")
             return true
@@ -110,8 +114,8 @@ class DesktopRenderEngine {
         console.log("[Desktop Render Engine] 销毁当前页面")
         
         try {
-            currentRenderView?.destroy()
-            currentRenderView = null
+            currentDelegator?.onDetach()
+            currentDelegator = null
             
             // 清空容器
             currentContainer?.innerHTML = ""
@@ -194,5 +198,51 @@ class DesktopRenderEngine {
         val height = (pageData["pageViewHeight"] as? Number)?.toInt() ?: container.clientHeight ?: 600
         
         return SizeI(width, height)
+    }
+}
+
+/**
+ * 桌面端渲染视图委托器
+ * 实现 KuiklyRenderViewDelegatorDelegate 接口
+ */
+class DesktopRenderViewDelegate : com.tencent.kuikly.core.render.web.expand.KuiklyRenderViewDelegatorDelegate {
+    
+    override fun registerExternalRenderView(kuiklyRenderExport: com.tencent.kuikly.core.render.web.IKuiklyRenderExport) {
+        console.log("[Desktop Render Engine] 注册外部渲染视图")
+        // 桌面端暂时不需要注册额外的视图
+    }
+    
+    override fun registerExternalModule(kuiklyRenderExport: com.tencent.kuikly.core.render.web.IKuiklyRenderExport) {
+        console.log("[Desktop Render Engine] 注册外部模块")
+        // 桌面端暂时不需要注册额外的模块
+    }
+    
+    override fun registerViewExternalPropHandler(kuiklyRenderExport: com.tencent.kuikly.core.render.web.IKuiklyRenderExport) {
+        console.log("[Desktop Render Engine] 注册视图外部属性处理器")
+        // 桌面端暂时不需要注册额外的属性处理器
+    }
+    
+    override fun coreExecuteMode(): com.tencent.kuikly.core.render.web.context.KuiklyRenderCoreExecuteMode {
+        return com.tencent.kuikly.core.render.web.context.KuiklyRenderCoreExecuteMode.JS
+    }
+    
+    override fun syncRenderingWhenPageAppear(): Boolean {
+        return true
+    }
+    
+    override fun onKuiklyRenderViewCreated() {
+        console.log("[Desktop Render Engine] KuiklyRenderView 已创建")
+    }
+    
+    override fun onKuiklyRenderContentViewCreated() {
+        console.log("[Desktop Render Engine] KuiklyRenderContentView 已创建")
+    }
+    
+    override fun onPageLoadComplete(success: Boolean, errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason?, executeMode: com.tencent.kuikly.core.render.web.context.KuiklyRenderCoreExecuteMode) {
+        console.log("[Desktop Render Engine] 页面加载完成: success=$success, errorReason=$errorReason")
+    }
+    
+    override fun onUnhandledException(throwable: Throwable, errorReason: com.tencent.kuikly.core.render.web.exception.ErrorReason, executeMode: com.tencent.kuikly.core.render.web.context.KuiklyRenderCoreExecuteMode) {
+        console.error("[Desktop Render Engine] 未处理的异常:", throwable)
     }
 }
