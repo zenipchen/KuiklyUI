@@ -42,4 +42,7 @@ include(":desktopApp")
 // Desktop Web Render module (纯渲染层)
 include(":desktopWebRender")
 
+// Desktop Render Host (桌面端渲染宿主)
+include(":desktopRenderHost")
+
 rootProject.buildFileName = buildFileName

@@ -20,46 +20,42 @@ import javax.swing.SwingUtilities
 import javax.swing.WindowConstants
 
 /**
- * 生成桌面端专用的 HTML（加载 h5App 渲染层，但不加载 demo 业务逻辑 JS）
- * 业务逻辑由 JVM 端的 demo 模块提供
+ * 生成桌面端专用的 HTML（加载 desktopRenderHost 渲染宿主）
+ * 业务逻辑由 JVM 端的 demo 模块提供，Web 端仅负责渲染
  */
 fun generateDesktopHtml(): String {
-    // 加载 core-render-web 渲染引擎（不加载 h5App，因为它包含业务逻辑）
-    val renderWebBasePath = "../core-render-web/base/build/kotlin-webpack/js/productionExecutable/KuiklyCore-render-web-base.js"
-    val renderWebH5Path = "../core-render-web/h5/build/kotlin-webpack/js/productionExecutable/KuiklyCore-render-web-h5.js"
+    // 加载 desktopRenderHost（包含 core-render-web 渲染引擎的桌面端宿主）
+    val desktopRenderHostPath = "../desktopRenderHost/build/dist/js/productionExecutable/desktopRenderHost.js"
     
-    val renderWebBaseFile = java.io.File(renderWebBasePath)
-    val renderWebH5File = java.io.File(renderWebH5Path)
+    val desktopRenderHostFile = java.io.File(desktopRenderHostPath)
     
-    if (!renderWebBaseFile.exists() || !renderWebH5File.exists()) {
-        println("[Kuikly Desktop] ⚠️ 未找到 core-render-web 编译产物")
-        println("[Kuikly Desktop] 💡 请运行: ./gradlew :core-render-web:h5:jsBrowserProductionWebpack")
+    if (!desktopRenderHostFile.exists()) {
+        println("[Kuikly Desktop] ⚠️ 未找到 desktopRenderHost 编译产物")
+        println("[Kuikly Desktop] 💡 请运行: ./gradlew :desktopRenderHost:jsBrowserProductionWebpack")
         return """
             <!DOCTYPE html>
             <html><head><meta charset="UTF-8"><title>Kuikly Desktop - Error</title></head>
             <body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
                 <div style="text-align:center;">
-                    <h2>❌ core-render-web 未找到</h2>
-                    <p>请运行: ./gradlew :core-render-web:h5:jsBrowserProductionWebpack</p>
+                    <h2>❌ desktopRenderHost 未找到</h2>
+                    <p>请运行: ./gradlew :desktopRenderHost:jsBrowserProductionWebpack</p>
                 </div>
             </body></html>
         """.trimIndent()
     }
     
-    // 读取 core-render-web 渲染引擎
-    val renderWebBaseJs = renderWebBaseFile.readText()
-    val renderWebH5Js = renderWebH5File.readText()
-    println("[Kuikly Desktop] 📦 成功加载 core-render-web base (${renderWebBaseJs.length} 字节)")
-    println("[Kuikly Desktop] 📦 成功加载 core-render-web h5 (${renderWebH5Js.length} 字节)")
+    // 读取 desktopRenderHost
+    val desktopRenderHostJs = desktopRenderHostFile.readText()
+    println("[Kuikly Desktop] 📦 成功加载 desktopRenderHost (${desktopRenderHostJs.length} 字节)")
     
-    // 生成 HTML（仅加载 core-render-web 渲染引擎，不加载业务逻辑）
+    // 生成 HTML（加载 desktopRenderHost 渲染宿主）
     return """
         <!DOCTYPE html>
         <html lang="zh-CN">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Kuikly Desktop - Pure Render Layer</title>
+            <title>Kuikly Desktop - Render Host</title>
             <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
                 body, html {
@@ -67,7 +63,7 @@ fun generateDesktopHtml(): String {
                     height: 100%;
                     overflow: hidden;
                 }
-                #root {
+                #kuikly-render-container {
                     width: 100%;
                     height: 100%;
                 }
@@ -80,45 +76,13 @@ fun generateDesktopHtml(): String {
             </style>
         </head>
         <body>
-            <div id="root"></div>
+            <div id="kuikly-render-container"></div>
             
-            <!-- 加载 core-render-web 基础渲染引擎 -->
+            <!-- 加载 desktopRenderHost -->
             <script>
-                console.log('[Kuikly Desktop] 🚀 加载 core-render-web base...');
-                $renderWebBaseJs
-                console.log('[Kuikly Desktop] ✅ core-render-web base 加载完成');
-            </script>
-            
-            <!-- 加载 core-render-web h5 扩展 -->
-            <script>
-                console.log('[Kuikly Desktop] 🚀 加载 core-render-web h5...');
-                $renderWebH5Js
-                console.log('[Kuikly Desktop] ✅ core-render-web h5 加载完成');
-            </script>
-            
-            <!-- 初始化纯渲染层 -->
-            <script>
-                console.log('[Kuikly Desktop] 🔧 初始化纯渲染层...');
-                console.log('[Kuikly Desktop] 💡 业务逻辑运行在 JVM 端');
-                console.log('[Kuikly Desktop] 💡 Web 端仅负责 DOM 渲染');
-                
-                // 等待 JVM 端通过 JS Bridge 初始化渲染层
-                window.addEventListener('load', function() {
-                    console.log('[Kuikly Desktop] ⏳ 等待 JVM 端初始化渲染层...');
-                    
-                    // 通知 JVM 端渲染层已就绪
-                    if (window.cefQuery) {
-                        window.cefQuery({
-                            request: JSON.stringify({ type: 'renderLayerReady' }),
-                            onSuccess: function(response) {
-                                console.log('[Kuikly Desktop] ✅ 已通知 JVM 端渲染层就绪');
-                            },
-                            onFailure: function(error_code, error_message) {
-                                console.error('[Kuikly Desktop] ❌ 通知 JVM 失败:', error_message);
-                            }
-                        });
-                    }
-                });
+                console.log('[Kuikly Desktop] 🚀 加载 desktopRenderHost...');
+                $desktopRenderHostJs
+                console.log('[Kuikly Desktop] ✅ desktopRenderHost 加载完成');
             </script>
         </body>
         </html>
@@ -226,9 +190,10 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例 - 使用内嵌的 HTML 作为渲染层
-        // 5. 生成桌面端专用 HTML（包含 h5App 渲染层）
-        val htmlContent = generateDesktopHtml()
+        // 创建浏览器实例 - 使用测试页面
+        // 5. 使用测试页面验证渲染功能
+        val testHtmlPath = java.io.File("../test_render.html").absolutePath
+        val testHtmlUrl = "file://$testHtmlPath"
         
         /*
         val htmlContent_old = """
@@ -328,10 +293,9 @@ fun main(args: Array<String>) {
         """.trimIndent()
         */
         
-        // 6. 使用 data URI 加载 HTML
-        val dataUri = "data:text/html;charset=utf-8," + java.net.URLEncoder.encode(htmlContent, "UTF-8")
-        println("[Kuikly Desktop] 📄 正在加载 Web 渲染层...")
-        val browser = client.createBrowser(dataUri, false, false)
+        // 6. 加载测试页面
+        println("[Kuikly Desktop] 📄 正在加载测试页面...")
+        val browser = client.createBrowser(testHtmlUrl, false, false)
         
         // 将浏览器添加到窗口
         frame.add(browser.uiComponent, BorderLayout.CENTER)
@@ -355,6 +319,31 @@ class KuiklyJSBridge {
     
     fun setBrowser(browser: CefBrowser) {
         this.browser = browser
+    }
+    
+    /**
+     * JVM → Web: 调用 Web 渲染层
+     */
+    fun callWebRender(type: String, data: Map<String, Any> = emptyMap()) {
+        val browser = this.browser ?: run {
+            println("[Kuikly Desktop] ❌ Browser 未初始化，无法调用 Web 渲染层")
+            return
+        }
+        
+        val renderData = mapOf(
+            "type" to type
+        ) + data
+        
+        val jsCode = """
+            if (typeof renderContent === 'function') {
+                renderContent('${gson.toJson(renderData)}');
+            } else {
+                console.error('[Kuikly Desktop] renderContent 函数未找到');
+            }
+        """.trimIndent()
+        
+        browser.executeJavaScript(jsCode, "", 0)
+        println("[Kuikly Desktop] 📤 已发送渲染指令到 Web 层: $type")
     }
     
     /**
@@ -424,6 +413,25 @@ class KuiklyJSBridge {
                     BridgeManager.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
                     
                     println("[Kuikly Desktop] ✅ BridgeManager.callKotlinMethod 调用成功")
+                    return "OK"
+                }
+                "renderReady" -> {
+                    println("[Kuikly Desktop] 🎉 Web 渲染层已就绪！")
+                    
+                    // 测试：发送初始化指令到 Web 渲染层
+                    callWebRender("init", mapOf(
+                        "pageName" to "desktop",
+                        "width" to 800,
+                        "height" to 600
+                    ))
+                    
+                    // 延迟发送测试渲染指令
+                    Thread {
+                        Thread.sleep(2000) // 等待 2 秒
+                        println("[Kuikly Desktop] 🧪 发送测试渲染指令...")
+                        callWebRender("test", emptyMap())
+                    }.start()
+                    
                     return "OK"
                 }
                 else -> {
