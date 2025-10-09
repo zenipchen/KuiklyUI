@@ -138,6 +138,10 @@
                 container.innerHTML = '';
                 container.id = 'kuikly-render-container';
                 
+                // 添加调试信息
+                console.log('[Debug] 容器清空后的内容:', container.innerHTML);
+                console.log('[Debug] 容器大小:', container.offsetWidth, 'x', container.offsetHeight);
+                
                 // 页面参数
                 const pageData = {
                     platform: 'desktop',
@@ -165,6 +169,20 @@
                     );
                     
                     updateStatus('✅ HelloWorldPage 渲染初始化完成');
+                    
+                    // 检查渲染后的容器内容
+                    setTimeout(() => {
+                        console.log('[Debug] 渲染后容器内容:', container.innerHTML);
+                        console.log('[Debug] 渲染后容器子元素数量:', container.children.length);
+                        console.log('[Debug] 渲染后容器大小:', container.offsetWidth, 'x', container.offsetHeight);
+                        
+                        // 检查是否有任何可见元素
+                        const visibleElements = container.querySelectorAll('*');
+                        console.log('[Debug] 容器中的可见元素数量:', visibleElements.length);
+                        visibleElements.forEach((el, index) => {
+                            console.log(`[Debug] 元素 ${index}:`, el.tagName, el.className, el.textContent?.substring(0, 50));
+                        });
+                    }, 200);
                     
                     // 触发页面显示事件
                     setTimeout(() => {

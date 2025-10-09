@@ -165,15 +165,6 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                 return result;
             };
             
-            // 提供 callNative 函数，供 JVM 调用 JS 渲染层
-            window.callNative = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
-                console.log('[Desktop Render] 🌐 callNative 调用: methodId=' + methodId);
-                
-                // 这里应该调用 core-render-web 的 callNative 实现
-                // 暂时返回 null，实际实现需要调用 core-render-web 的 callNative
-                return null;
-            };
-            
             // 注册 registerCallNative 函数，供 core-render-web 注册回调
             window.com = window.com || {};
             window.com.tencent = window.com.tencent || {};
@@ -181,11 +172,6 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
             window.com.tencent.kuikly.core = window.com.tencent.kuikly.core || {};
             window.com.tencent.kuikly.core.nvi = window.com.tencent.kuikly.core.nvi || {};
             
-            window.com.tencent.kuikly.core.nvi.registerCallNative = function(pagerId, callback) {
-                console.log('[Desktop Render] 📝 注册 callNative 回调: pagerId=' + pagerId);
-                // 存储回调，用于后续的 callNative 调用
-                window.desktopCallNativeCallback = callback;
-            };
             
             console.log('[Desktop Render] ✅ JS Bridge 注入完成');
         """.trimIndent()
@@ -251,47 +237,53 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
         }
     }
     
-    /**
-     * 处理来自 JVM 的调用
-     * 直接调用 JS 函数，简化调用流程
-     */
-    override fun callNative(
-        methodId: Int,
-        arg0: Any?,
-        arg1: Any?,
-        arg2: Any?,
-        arg3: Any?,
-        arg4: Any?,
-        arg5: Any?
-    ): Any? {
-        println("[Desktop Render] 🌐 处理 callNative: methodId=$methodId")
-        
-        val browser = this.browser ?: return null
-        
-        // 直接调用 JS 的 callNative 函数
-        val jsCode = """
-            console.log('[Desktop Render] 🌐 直接调用 JS callNative: methodId=$methodId');
-            
-            // 直接调用 JS 端的 callNative 函数
-            if (typeof window.callNative === 'function') {
-                console.log('[Desktop Render] ✅ 调用 window.callNative');
-                try {
-                    var result = window.callNative($methodId, $arg0, $arg1, $arg2, $arg3, $arg4, $arg5);
-                    console.log('[Desktop Render] ✅ callNative 调用结果:', result);
-                    return result;
-                } catch (e) {
-                    console.error('[Desktop Render] ❌ callNative 调用失败:', e);
-                    return null;
-                }
-            } else {
-                console.warn('[Desktop Render] ⚠️ window.callNative 函数未找到');
-                return null;
-            }
-        """.trimIndent()
-        
-        browser.executeJavaScript(jsCode, "", 0)
-        return null
-    }
+           /**
+            * 处理来自 JVM 的调用
+            * 直接调用 JS 函数，简化调用流程
+            */
+           override fun callNative(
+               methodId: Int,
+               arg0: Any?,
+               arg1: Any?,
+               arg2: Any?,
+               arg3: Any?,
+               arg4: Any?,
+               arg5: Any?
+           ): Any? {
+               println("[Desktop Render] 🌐 处理 callNative: methodId=$methodId, arg0=$arg0, arg1=$arg1, arg2=$arg2")
+               
+               val browser = this.browser ?: return null
+               
+               // 直接调用 JS 的 callNative 函数
+               val jsCode = """
+                   console.log('[Desktop Render] 🌐 直接调用 JS callNative: methodId=$methodId');
+                   console.log('[Desktop Render] 🌐 参数: arg0=$arg0, arg1=$arg1, arg2=$arg2, arg3=$arg3, arg4=$arg4, arg5=$arg5');
+                   
+                   // 检查 window.callNative 是否存在
+                   console.log('[Desktop Render] 🔍 检查 window.callNative 类型:', typeof window.callNative);
+                   
+                   // 直接调用 JS 端的 callNative 函数
+                   if (typeof window.callNative === 'function') {
+                       console.log('[Desktop Render] ✅ 调用 window.callNative');
+                       try {
+                           var result = window.callNative($methodId, $arg0, $arg1, $arg2, $arg3, $arg4, $arg5);
+                           console.log('[Desktop Render] ✅ callNative 调用结果:', result);
+                           return result;
+                       } catch (e) {
+                           console.error('[Desktop Render] ❌ callNative 调用失败:', e);
+                           console.error('[Desktop Render] ❌ 错误堆栈:', e.stack);
+                           return null;
+                       }
+                   } else {
+                       console.warn('[Desktop Render] ⚠️ window.callNative 函数未找到');
+                       console.log('[Desktop Render] 🔍 可用的 window 属性:', Object.keys(window).filter(k => k.includes('call') || k.includes('Native')));
+                       return null;
+                   }
+               """.trimIndent()
+               
+               browser.executeJavaScript(jsCode, "", 0)
+               return null
+           }
     
     /**
      * 处理 CEF 查询

@@ -22,8 +22,7 @@ import com.tencent.kuikly.core.base.ViewBuilder
 import com.tencent.kuikly.core.pager.Pager
 import com.tencent.kuikly.core.reactive.collection.ObservableList
 import com.tencent.kuikly.core.reactive.handler.observableList
-import com.tencent.kuikly.core.views.RichText
-import com.tencent.kuikly.core.views.Span
+import com.tencent.kuikly.core.views.View
 
 /**
  * Created by kam on 2022/7/28.
@@ -45,34 +44,8 @@ internal class HelloWorldPage : Pager() {
                 flexDirectionColumn()
                 autoDarkEnable(false)
             }
-            RichText {
-                attr {
-                    marginTop(30f)
-                    lines(3)
-                    textOverFlowTail()
-                    color(Color.BLACK)
-                    fontSize(16f)
-//                    lineBreakMargin(20f)
-                }
-                Span {
-                    text("我是第一个文本我是第一个文本")
-                }
-                Span {
-                    color(Color.RED)
-                    fontSize(16f)
-                    text("这是第二个文本")
-                    fontWeightBold()
-                    textDecorationLineThrough()
-                }
-                Span {
-                    color(Color.RED)
-                    fontSize(16f)
-                    text("这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个这是第三个文这是第三个")
-                    fontWeightMedium()
-                    fontStyleItalic()
-                    textDecorationUnderLine()
-                }
-            }
+            // 尝试完全空的页面
+            // 不添加任何子组件，只返回空的 ViewBuilder
 
         }
     }
