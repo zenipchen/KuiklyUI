@@ -3,6 +3,7 @@ package com.tencent.kuikly.desktop
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.tencent.kuikly.core.manager.BridgeManager
+import kotlinx.coroutines.Dispatchers
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.browser.CefBrowser
@@ -102,7 +103,6 @@ fun generateDesktopHtml(): String {
 fun main(args: Array<String>) {
     println("[Kuikly Desktop] 🚀 正在初始化...")
 //    setKuiklyThreadScheduler
-//    DefaultKuiklyThreadScheduler
 
     // 1. 初始化 BridgeManager (JVM 业务逻辑层)
     println("[Kuikly Desktop] 🔗 初始化 BridgeManager...")

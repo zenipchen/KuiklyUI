@@ -14,7 +14,12 @@ repositories {
 
 kotlin {
     jvm {
-        withJava()
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+                freeCompilerArgs += "-Xjvm-default=all"
+            }
+        }
     }
     
     sourceSets {
@@ -40,6 +45,10 @@ kotlin {
                 
                 // JSON 解析
                 implementation("com.google.code.gson:gson:2.10.1")
+                api("com.tencent.kuiklyx-open:coroutines:1.3.0-2.0.21") {
+                    exclude(group = "com.tencent.kuikly-open", module = "core")
+                    exclude(group = "com.tencent.kuikly-open", module = "core-annotations")
+                }
             }
         }
     }
