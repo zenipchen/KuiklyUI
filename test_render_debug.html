@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuikly Desktop - Debug Render</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .log {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .warning {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kuikly Desktop 渲染层调试</h1>
+        <div id="status">正在加载...</div>
+        <div id="log" class="log"></div>
+        <button onclick="testRender()">测试渲染</button>
+        <button onclick="clearLog()">清空日志</button>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        const status = document.getElementById('status');
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            log.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function clearLog() {
+            log.innerHTML = '';
+        }
+        
+        function updateStatus(message) {
+            status.textContent = message;
+            addLog(`状态: ${message}`, 'info');
+        }
+        
+        // 检查函数是否存在
+        function checkFunctions() {
+            addLog('=== 检查函数可用性 ===');
+            addLog(`window.initDesktopRenderLayer: ${typeof window.initDesktopRenderLayer}`, 
+                   typeof window.initDesktopRenderLayer === 'function' ? 'success' : 'error');
+            addLog(`window.createRenderViewDelegator: ${typeof window.createRenderViewDelegator}`, 
+                   typeof window.createRenderViewDelegator === 'function' ? 'success' : 'error');
+            addLog(`window.DesktopRenderLayer: ${typeof window.DesktopRenderLayer}`, 
+                   typeof window.DesktopRenderLayer === 'object' ? 'success' : 'warning');
+        }
+        
+        function testRender() {
+            addLog('=== 开始测试渲染 ===');
+            
+            try {
+                // 检查函数
+                if (typeof window.createRenderViewDelegator !== 'function') {
+                    throw new Error('createRenderViewDelegator 函数不存在');
+                }
+                
+                addLog('✅ createRenderViewDelegator 函数存在', 'success');
+                
+                // 创建渲染视图委托器
+                const renderView = window.createRenderViewDelegator();
+                if (!renderView) {
+                    throw new Error('无法创建渲染视图委托器');
+                }
+                
+                addLog('✅ 渲染视图委托器创建成功', 'success');
+                addLog(`renderView 类型: ${typeof renderView}`, 'info');
+                addLog(`renderView.init 类型: ${typeof renderView.init}`, 'info');
+                addLog(`renderView.resume 类型: ${typeof renderView.resume}`, 'info');
+                
+                // 创建测试容器
+                const container = document.createElement('div');
+                container.id = 'test-container';
+                container.style.cssText = 'width: 100%; height: 200px; border: 2px solid #ccc; background: #f9f9f9;';
+                document.body.appendChild(container);
+                
+                // 测试数据
+                const pageData = {
+                    platform: 'desktop',
+                    deviceWidth: 800,
+                    deviceHeight: 600,
+                    statusBarHeight: 0,
+                    osVersion: 'MacOS',
+                    activityWidth: 800,
+                    activityHeight: 600,
+                    safeAreaInsets: '0 0 0 0',
+                    appVersion: '1.0.0',
+                    param: {},
+                    density: 1
+                };
+                
+                addLog('开始初始化渲染视图...', 'info');
+                
+                // 初始化渲染视图
+                if (typeof renderView.init === 'function') {
+                    renderView.init(
+                        'test-container',
+                        'HelloWorldPage',
+                        pageData,
+                        [800, 600]
+                    );
+                    addLog('✅ 渲染视图初始化完成', 'success');
+                    
+                    // 触发显示
+                    setTimeout(() => {
+                        if (typeof renderView.resume === 'function') {
+                            renderView.resume();
+                            addLog('✅ 页面显示事件已触发', 'success');
+                        } else {
+                            addLog('⚠️ resume 方法不可用', 'warning');
+                        }
+                    }, 100);
+                    
+                } else {
+                    throw new Error('renderView.init 方法不存在');
+                }
+                
+            } catch (error) {
+                addLog(`❌ 测试失败: ${error.message}`, 'error');
+                console.error('渲染测试失败:', error);
+            }
+        }
+        
+        // 页面加载完成后检查
+        window.addEventListener('load', function() {
+            updateStatus('页面加载完成');
+            checkFunctions();
+            
+            // 等待 JS 文件加载
+            setTimeout(() => {
+                checkFunctions();
+                updateStatus('准备就绪');
+            }, 1000);
+        });
+    </script>
+    
+    <!-- 加载 desktop-render-layer -->
+    <script src="desktop-render-layer/build/kotlin-webpack/js/productionExecutable/desktopRenderLayer.js"></script>
+    <script>
+        // 手动调用初始化
+        if (typeof window.initDesktopRenderLayer === 'function') {
+            addLog('手动调用 initDesktopRenderLayer...', 'info');
+            window.initDesktopRenderLayer();
+        } else {
+            addLog('⚠️ initDesktopRenderLayer 函数未找到', 'warning');
+        }
+    </script>
+</body>
+</html>

@@ -31,6 +31,9 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
     
     init {
         kuiklyCoreEntry.delegate = this
+        // 确保页面注册被触发
+        kuiklyCoreEntry.triggerRegisterPages()
+        println("[Desktop Render] ✅ 页面注册已触发")
     }
     
     /**
@@ -95,13 +98,15 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                                 setTimeout(function() {
                                     console.log('[Desktop Render] 🚀 开始创建 HelloWorldPage...');
                                     if (window.callKotlinMethod) {
-                                        const result = window.callKotlinMethod(1, 'HelloWorldPage', null, null, null, null, null);
+                                        // CREATE_INSTANCE: arg0=pagerId, arg1=pageName, arg2=pageData
+                                        const pagerId = 'HelloWorldPage_' + Date.now();
+                                        const result = window.callKotlinMethod(1, pagerId, 'HelloWorldPage', '{}');
                                         console.log('[Desktop Render] 📄 HelloWorldPage 创建结果:', result);
                                         
-                                        // 获取页面数据
+                                        // 获取页面数据 - UPDATE_INSTANCE: arg0=pagerId, arg1=event, arg2=data
                                         setTimeout(function() {
                                             console.log('[Desktop Render] 📊 获取页面数据...');
-                                            const pageData = window.callKotlinMethod(2, 'HelloWorldPage', null, null, null, null, null);
+                                            const pageData = window.callKotlinMethod(2, pagerId, 'getPageData', '{}');
                                             console.log('[Desktop Render] 📊 页面数据:', pageData);
                                         }, 100);
                                     }

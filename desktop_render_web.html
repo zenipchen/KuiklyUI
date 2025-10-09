@@ -89,8 +89,14 @@
         function checkDependencies() {
             updateStatus('检查依赖...');
             
+            console.log('[Debug] 检查函数可用性:');
+            console.log('  - window.initDesktopRenderLayer:', typeof window.initDesktopRenderLayer);
+            console.log('  - window.createRenderViewDelegator:', typeof window.createRenderViewDelegator);
+            console.log('  - window.DesktopRenderLayer:', typeof window.DesktopRenderLayer);
+            console.log('  - window.callKotlinMethod:', typeof window.callKotlinMethod);
+            
             // 检查 desktop-render-layer 是否加载
-            if (typeof callKotlinMethod === 'function') {
+            if (typeof window.createRenderViewDelegator === 'function') {
                 updateStatus('✅ Web 渲染层已加载');
                 return true;
             } else {
@@ -104,11 +110,21 @@
             updateStatus('初始化渲染层...');
             
             try {
+                console.log('[Debug] 开始创建渲染视图委托器...');
+                
                 // 创建渲染视图委托器
                 const renderView = window.createRenderViewDelegator();
                 if (!renderView) {
                     throw new Error('无法创建渲染视图委托器');
                 }
+                
+                console.log('[Debug] 渲染视图委托器创建成功:', renderView);
+                console.log('[Debug] renderView 方法检查:');
+                console.log('  - init:', typeof renderView.init);
+                console.log('  - resume:', typeof renderView.resume);
+                console.log('  - pause:', typeof renderView.pause);
+                console.log('  - detach:', typeof renderView.detach);
+                console.log('  - sendEvent:', typeof renderView.sendEvent);
                 
                 updateStatus('✅ 渲染视图委托器创建成功');
                 
