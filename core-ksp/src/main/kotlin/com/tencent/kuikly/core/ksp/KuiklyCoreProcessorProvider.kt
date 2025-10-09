@@ -25,6 +25,7 @@ import impl.KuiklyCoreAbsEntryBuilder
 import impl.IOSTargetEntryBuilder
 import impl.OhOsTargetEntryBuilder
 import impl.OhOsTargetMultiEntryBuilder
+import impl.JVMTargetEntryBuilder
 import impl.PageInfo
 import impl.submodule.AndroidMultiEntryBuilder
 import impl.submodule.IOSMultiTargetEntryBuilder

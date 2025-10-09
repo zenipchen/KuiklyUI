@@ -66,16 +66,17 @@ class JVMTargetEntryBuilder : KuiklyCoreAbsEntryBuilder() {
         val codeBlock = CodeBlock.builder()
         codeBlock.addStatement("if (!hadRegisterNativeBridge) {")
         codeBlock.addStatement("BridgeManager.init()")
-        codeBlock.addStatement("BridgeManager.registerNativeBridge(arg0 as String, NativeBridge())")
         codeBlock.addStatement("")
         
-        // Add page registrations
+        // Add page registrations BEFORE registering native bridge
         pagesAnnotations.forEach { info ->
             codeBlock.addStatement("BridgeManager.registerPageRouter(\"${info.pageName}\") {")
             codeBlock.addStatement("${info.pageFullName}()")
             codeBlock.addStatement("}")
         }
         
+        codeBlock.addStatement("")
+        codeBlock.addStatement("BridgeManager.registerNativeBridge(arg0 as String, NativeBridge())")
         codeBlock.addStatement("hadRegisterNativeBridge = true")
         codeBlock.addStatement("}")
         codeBlock.addStatement("")
