@@ -90,19 +90,23 @@
             log("🚀 开始初始化桌面渲染层...");
             
             try {
-                // 检查桌面渲染层是否已加载
-                if (typeof window.DesktopRenderLayer === 'undefined') {
-                    log("❌ 桌面渲染层模块未正确加载", 'error');
+                // 检查全局方法是否可用
+                if (typeof window.createRenderView !== 'function') {
+                    log("❌ 全局 createRenderView 方法未加载，请等待模块加载完成", 'error');
                     return false;
                 }
                 
-                log("✅ 桌面渲染层模块已加载");
+                log("✅ 全局方法已加载");
+                log(`可用方法: createRenderView, getKuiklyRenderViewClass, getKuiklyRenderCoreExecuteModeClass`);
                 
-                // 获取桌面渲染层 API
-                const renderLayerAPI = window.DesktopRenderLayer;
-                
-                log("✅ 获取到 DesktopRenderLayer API");
-                log(`API 方法: ${Object.getOwnPropertyNames(renderLayerAPI)}`);
+                // 测试创建渲染视图
+                renderView = window.createRenderView("JS");
+                if (renderView) {
+                    log("✅ 成功创建 KuiklyRenderView 实例", 'success');
+                } else {
+                    log("❌ 创建 KuiklyRenderView 实例失败", 'error');
+                    return false;
+                }
                 
                 isInitialized = true;
                 document.getElementById('testBtn').disabled = false;
@@ -197,31 +201,60 @@
                 
                 log("📋 页面参数: " + JSON.stringify(pageData));
                 
-                // 检查渲染视图的方法
+                // 尝试找到 init 方法（可能被压缩）
+                let initMethod = null;
+                
+                // 首先尝试原始方法名
                 if (typeof renderView.init === 'function') {
-                    // 初始化渲染视图
-                    renderView.init(
-                        'kuikly-render-container',
-                        'HelloWorldPage',
-                        pageData,
-                        { first: 800, second: 400 } // size
-                    );
-                    
-                    log("✅ HelloWorldPage 渲染初始化完成", 'success');
-                    
-                    // 触发页面显示事件
-                    setTimeout(() => {
-                        if (typeof renderView.resume === 'function') {
-                            renderView.resume();
-                            log("✅ 页面显示事件已触发", 'success');
-                        } else {
-                            log("⚠️ resume 方法不存在", 'info');
-                        }
-                    }, 100);
-                    
+                    initMethod = renderView.init;
+                    log("✅ 找到原始 init 方法");
                 } else {
-                    log("❌ renderView.init 方法不存在", 'error');
-                    log(`可用方法: ${Object.getOwnPropertyNames(renderView)}`);
+                    // 尝试压缩后的方法名
+                    const methods = Object.getOwnPropertyNames(renderView);
+                    log(`可用方法: ${methods.join(',')}`);
+                    
+                    // 尝试常见的压缩方法名
+                    for (const methodName of methods) {
+                        if (typeof renderView[methodName] === 'function') {
+                            try {
+                                // 这里我们假设第一个函数就是 init 方法
+                                initMethod = renderView[methodName];
+                                log(`✅ 找到可能的 init 方法: ${methodName}`);
+                                break;
+                            } catch (e) {
+                                // 继续尝试下一个方法
+                            }
+                        }
+                    }
+                }
+                
+                if (initMethod) {
+                    try {
+                        // 初始化渲染视图
+                        initMethod.call(renderView,
+                            'kuikly-render-container',
+                            'HelloWorldPage',
+                            pageData,
+                            [800, 400] // SizeI as Pair<Int, Int>
+                        );
+                        
+                        log("✅ HelloWorldPage 渲染初始化完成", 'success');
+                        
+                        // 触发页面显示事件
+                        setTimeout(() => {
+                            if (typeof renderView.resume === 'function') {
+                                renderView.resume();
+                                log("✅ 页面显示事件已触发", 'success');
+                            } else {
+                                log("⚠️ resume 方法不可用，跳过页面显示事件");
+                            }
+                        }, 100);
+                        
+                    } catch (e) {
+                        log(`❌ 调用 init 方法失败: ${e.message}`, 'error');
+                    }
+                } else {
+                    log("❌ 找不到 init 方法", 'error');
                 }
                 
                 return true;

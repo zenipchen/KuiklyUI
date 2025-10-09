@@ -18,7 +18,48 @@ fun main() {
     initGlobalObject()
     
     // 导出渲染层 API 到全局对象
-    window.asDynamic().DesktopRenderLayer = DesktopRenderLayerAPI()
+    val api = DesktopRenderLayerAPI()
+    window.asDynamic().DesktopRenderLayer = api
+    
+    // 直接导出方法到全局对象
+    window.asDynamic().createRenderView = { executeMode: String -> api.createRenderView(executeMode) }
+    window.asDynamic().getKuiklyRenderViewClass = { -> api.getKuiklyRenderViewClass() }
+    window.asDynamic().getKuiklyRenderCoreExecuteModeClass = { -> api.getKuiklyRenderCoreExecuteModeClass() }
+    
+    console.log("DesktopRenderLayer API 已导出")
+    console.log("createRenderView 方法类型:", js("typeof window.createRenderView"))
+}
+
+/**
+ * 全局导出的创建渲染视图方法
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+fun createRenderView(executeMode: String = "JS"): dynamic {
+    val mode = when (executeMode) {
+        "JS" -> KuiklyRenderCoreExecuteMode.JS
+        else -> KuiklyRenderCoreExecuteMode.JS
+    }
+    
+    return KuiklyRenderView(mode, DesktopRenderViewDelegate())
+}
+
+/**
+ * 全局导出的获取 KuiklyRenderView 类方法
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+fun getKuiklyRenderViewClass(): dynamic {
+    return KuiklyRenderView::class.js
+}
+
+/**
+ * 全局导出的获取 KuiklyRenderCoreExecuteMode 类方法
+ */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+fun getKuiklyRenderCoreExecuteModeClass(): dynamic {
+    return KuiklyRenderCoreExecuteMode::class.js
 }
 
 /**
