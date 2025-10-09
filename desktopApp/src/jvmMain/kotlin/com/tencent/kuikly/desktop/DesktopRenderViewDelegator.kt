@@ -165,13 +165,38 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                 return result;
             };
             
+            // 提供 callNative 函数，供 JVM 调用 JS 渲染层
+            window.callNative = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
+                console.log('[Desktop Render] 🌐 callNative 被调用! methodId=' + methodId);
+                console.log('[Desktop Render] 🌐 callNative 参数: arg0=' + arg0 + ', arg1=' + arg1 + ', arg2=' + arg2);
+                console.log('[Desktop Render] 🌐 callNative 完整参数:', [methodId, arg0, arg1, arg2, arg3, arg4, arg5]);
+                
+                // 检查是否有注册的 callNative 回调
+                if (window.desktopCallNativeCallback && typeof window.desktopCallNativeCallback === 'function') {
+                    console.log('[Desktop Render] ✅ 找到注册的 callNative 回调，开始调用...');
+                    try {
+                        var result = window.desktopCallNativeCallback(methodId, arg0, arg1, arg2, arg3, arg4, arg5);
+                        console.log('[Desktop Render] ✅ callNative 回调执行成功，结果:', result);
+                        return result;
+                    } catch (e) {
+                        console.error('[Desktop Render] ❌ callNative 回调执行失败:', e);
+                        console.error('[Desktop Render] ❌ 错误堆栈:', e.stack);
+                        return null;
+                    }
+                } else {
+                    console.warn('[Desktop Render] ⚠️ 没有找到注册的 callNative 回调');
+                    console.log('[Desktop Render] 🔍 window.desktopCallNativeCallback 类型:', typeof window.desktopCallNativeCallback);
+                    console.log('[Desktop Render] 🔍 window.desktopCallNativeCallback 值:', window.desktopCallNativeCallback);
+                    return null;
+                }
+            };
+            
             // 注册 registerCallNative 函数，供 core-render-web 注册回调
             window.com = window.com || {};
             window.com.tencent = window.com.tencent || {};
             window.com.tencent.kuikly = window.com.tencent.kuikly || {};
             window.com.tencent.kuikly.core = window.com.tencent.kuikly.core || {};
             window.com.tencent.kuikly.core.nvi = window.com.tencent.kuikly.core.nvi || {};
-            
             
             console.log('[Desktop Render] ✅ JS Bridge 注入完成');
         """.trimIndent()
@@ -206,36 +231,39 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
         }
     }
     
-    /**
-     * 处理来自 JS 的调用
-     * 直接委托给 KuiklyCoreEntry 处理，就像 Android 的 KuiklyRenderJvmContextHandler
-     */
-    fun callKotlinMethod(
-        methodId: Int,
-        arg0: Any?,
-        arg1: Any?,
-        arg2: Any?,
-        arg3: Any?,
-        arg4: Any?,
-        arg5: Any?
-    ) {
-        println("[Desktop Render] 📞 处理 callKotlinMethod: methodId=$methodId")
-        
-        try {
-            // 直接委托给 KuiklyCoreEntry 处理，这是正确的架构
-            kuiklyCoreEntry.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
-        } catch (t: Throwable) {
-            // 这里catch的异常类型是故意设置成Throwable的，因为callKotlinMethod运行的是KTV业务代码
-            // 因此需要catch顶层的类型异常，保证能catch到业务异常.
-            // 在catch到异常后, debug包下抛出异常, release模式下打印error日志并且做上报
-            // 为啥不用Thread.UncaughtExceptionHandler来捕获线程异常：
-            // 使用UncaughtExceptionHandler来捕获的话，当异常发生时，KTV线程已经挂掉了，因此所有KTV页面都使用不了
-            // 使用try-catch的话，能保证KTV线程一直存活，KTV页面之间的异常不会影响到彼此
-            println("[Desktop Render] ❌ callKotlinMethod 异常: ${t.message}")
-            t.printStackTrace()
-            // TODO: 实现异常通知机制，类似 Android 的 notifyException(t, ErrorReason.CALL_KOTLIN)
-        }
-    }
+           /**
+            * 处理来自 JS 的调用
+            * 直接委托给 KuiklyCoreEntry 处理，就像 Android 的 KuiklyRenderJvmContextHandler
+            */
+           fun callKotlinMethod(
+               methodId: Int,
+               arg0: Any?,
+               arg1: Any?,
+               arg2: Any?,
+               arg3: Any?,
+               arg4: Any?,
+               arg5: Any?
+           ) {
+               println("[Desktop Render] 📞 处理 callKotlinMethod: methodId=$methodId")
+               println("[Desktop Render] 📞 callKotlinMethod 参数: arg0=$arg0, arg1=$arg1, arg2=$arg2, arg3=$arg3, arg4=$arg4, arg5=$arg5")
+               
+               try {
+                   println("[Desktop Render] 📞 开始调用 kuiklyCoreEntry.callKotlinMethod...")
+                   // 直接委托给 KuiklyCoreEntry 处理，这是正确的架构
+                   kuiklyCoreEntry.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
+                   println("[Desktop Render] 📞 kuiklyCoreEntry.callKotlinMethod 调用完成")
+               } catch (t: Throwable) {
+                   // 这里catch的异常类型是故意设置成Throwable的，因为callKotlinMethod运行的是KTV业务代码
+                   // 因此需要catch顶层的类型异常，保证能catch到业务异常.
+                   // 在catch到异常后, debug包下抛出异常, release模式下打印error日志并且做上报
+                   // 为啥不用Thread.UncaughtExceptionHandler来捕获线程异常：
+                   // 使用UncaughtExceptionHandler来捕获的话，当异常发生时，KTV线程已经挂掉了，因此所有KTV页面都使用不了
+                   // 使用try-catch的话，能保证KTV线程一直存活，KTV页面之间的异常不会影响到彼此
+                   println("[Desktop Render] ❌ callKotlinMethod 异常: ${t.message}")
+                   t.printStackTrace()
+                   // TODO: 实现异常通知机制，类似 Android 的 notifyException(t, ErrorReason.CALL_KOTLIN)
+               }
+           }
     
            /**
             * 处理来自 JVM 的调用
@@ -250,27 +278,32 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                arg4: Any?,
                arg5: Any?
            ): Any? {
-               println("[Desktop Render] 🌐 处理 callNative: methodId=$methodId, arg0=$arg0, arg1=$arg1, arg2=$arg2")
+               println("[Desktop Render] 🌐 JVM callNative 被调用: methodId=$methodId")
+               println("[Desktop Render] 🌐 JVM callNative 参数: arg0=$arg0, arg1=$arg1, arg2=$arg2, arg3=$arg3, arg4=$arg4, arg5=$arg5")
                
-               val browser = this.browser ?: return null
+               val browser = this.browser ?: run {
+                   println("[Desktop Render] ❌ browser 为 null，无法调用 JS")
+                   return null
+               }
                
                // 直接调用 JS 的 callNative 函数
                val jsCode = """
-                   console.log('[Desktop Render] 🌐 直接调用 JS callNative: methodId=$methodId');
-                   console.log('[Desktop Render] 🌐 参数: arg0=$arg0, arg1=$arg1, arg2=$arg2, arg3=$arg3, arg4=$arg4, arg5=$arg5');
+                   console.log('[Desktop Render] 🌐 JVM 正在调用 JS callNative: methodId=$methodId');
+                   console.log('[Desktop Render] 🌐 JVM 传递的参数: arg0=$arg0, arg1=$arg1, arg2=$arg2, arg3=$arg3, arg4=$arg4, arg5=$arg5');
                    
                    // 检查 window.callNative 是否存在
                    console.log('[Desktop Render] 🔍 检查 window.callNative 类型:', typeof window.callNative);
+                   console.log('[Desktop Render] 🔍 window.callNative 函数:', window.callNative);
                    
                    // 直接调用 JS 端的 callNative 函数
                    if (typeof window.callNative === 'function') {
-                       console.log('[Desktop Render] ✅ 调用 window.callNative');
+                       console.log('[Desktop Render] ✅ 开始调用 window.callNative...');
                        try {
                            var result = window.callNative($methodId, $arg0, $arg1, $arg2, $arg3, $arg4, $arg5);
-                           console.log('[Desktop Render] ✅ callNative 调用结果:', result);
+                           console.log('[Desktop Render] ✅ window.callNative 调用完成，结果:', result);
                            return result;
                        } catch (e) {
-                           console.error('[Desktop Render] ❌ callNative 调用失败:', e);
+                           console.error('[Desktop Render] ❌ window.callNative 调用失败:', e);
                            console.error('[Desktop Render] ❌ 错误堆栈:', e.stack);
                            return null;
                        }
@@ -281,7 +314,9 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                    }
                """.trimIndent()
                
+               println("[Desktop Render] 🌐 正在执行 JS 代码...")
                browser.executeJavaScript(jsCode, "", 0)
+               println("[Desktop Render] 🌐 JS 代码执行完成")
                return null
            }
     
