@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>桌面渲染层完整测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .container { display: flex; gap: 20px; }
+        .left-panel { flex: 1; }
+        .right-panel { flex: 1; }
+        #render-container { 
+            border: 2px solid #ccc; 
+            min-height: 400px; 
+            padding: 10px; 
+            background-color: #f9f9f9;
+        }
+        button { 
+            padding: 10px 15px; 
+            margin: 5px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>桌面渲染层完整测试</h1>
+    
+    <div class="container">
+        <div class="left-panel">
+            <h2>控制面板</h2>
+            <div id="status" class="status info">正在加载...</div>
+            
+            <div>
+                <button onclick="initRenderEngine()">初始化渲染引擎</button>
+                <button onclick="testCreateRenderView()" id="testBtn" disabled>测试创建渲染视图</button>
+                <button onclick="testRenderHelloWorld()" id="renderBtn" disabled>渲染 HelloWorldPage</button>
+                <button onclick="clearContainer()">清空容器</button>
+            </div>
+            
+            <h3>测试步骤：</h3>
+            <ol>
+                <li>点击"初始化渲染引擎"</li>
+                <li>点击"测试创建渲染视图"</li>
+                <li>点击"渲染 HelloWorldPage"</li>
+            </ol>
+        </div>
+        
+        <div class="right-panel">
+            <h2>渲染容器</h2>
+            <div id="render-container">
+                <div style="color: #666; text-align: center;">
+                    <p>渲染容器</p>
+                    <p>点击左侧按钮开始测试</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 引入桌面渲染层 JS 文件 -->
+    <script src="desktop-render-layer/build/kotlin-webpack/js/productionExecutable/desktopRenderLayer.js"></script>
+    
+    <script>
+        let renderView = null;
+        let isInitialized = false;
+        
+        function log(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            
+            statusDiv.innerHTML += logMessage + '<br>';
+            statusDiv.scrollTop = statusDiv.scrollHeight;
+            
+            statusDiv.className = `status ${type}`;
+            
+            console.log(logMessage);
+        }
+        
+        function initRenderEngine() {
+            log("🚀 开始初始化桌面渲染层...");
+            
+            try {
+                // 检查桌面渲染层是否已加载
+                if (typeof window.DesktopRenderLayer === 'undefined') {
+                    log("❌ 桌面渲染层模块未正确加载", 'error');
+                    return false;
+                }
+                
+                log("✅ 桌面渲染层模块已加载");
+                
+                // 获取桌面渲染层 API
+                const renderLayerAPI = window.DesktopRenderLayer;
+                
+                log("✅ 获取到 DesktopRenderLayer API");
+                log(`API 方法: ${Object.getOwnPropertyNames(renderLayerAPI)}`);
+                
+                isInitialized = true;
+                document.getElementById('testBtn').disabled = false;
+                
+                log("🎉 桌面渲染层初始化完成！", 'success');
+                return true;
+                
+            } catch (e) {
+                log(`❌ 初始化失败: ${e.message}`, 'error');
+                console.error(e);
+                return false;
+            }
+        }
+        
+        function testCreateRenderView() {
+            if (!isInitialized) {
+                log("❌ 渲染引擎未初始化，请先点击'初始化渲染引擎'", 'error');
+                return false;
+            }
+            
+            log("🧪 开始测试创建渲染视图...");
+            
+            try {
+                const renderLayerAPI = window.DesktopRenderLayer;
+                
+                // 测试 createRenderView 方法
+                if (typeof renderLayerAPI.createRenderView !== 'function') {
+                    log("❌ createRenderView 方法不存在", 'error');
+                    return false;
+                }
+                
+                log("✅ createRenderView 方法存在");
+                
+                // 创建渲染视图实例
+                renderView = renderLayerAPI.createRenderView("JS");
+                
+                if (!renderView) {
+                    log("❌ 创建渲染视图实例失败", 'error');
+                    return false;
+                }
+                
+                log("✅ 成功创建渲染视图实例", 'success');
+                log(`渲染视图类型: ${typeof renderView}`);
+                log(`渲染视图方法: ${Object.getOwnPropertyNames(renderView)}`);
+                
+                document.getElementById('renderBtn').disabled = false;
+                
+                return true;
+                
+            } catch (e) {
+                log(`❌ 测试失败: ${e.message}`, 'error');
+                console.error(e);
+                return false;
+            }
+        }
+        
+        function testRenderHelloWorld() {
+            if (!renderView) {
+                log("❌ 渲染视图未创建，请先点击'测试创建渲染视图'", 'error');
+                return false;
+            }
+            
+            log("🎨 开始渲染 HelloWorldPage...");
+            
+            try {
+                const container = document.getElementById('render-container');
+                if (!container) {
+                    log("❌ 找不到渲染容器", 'error');
+                    return false;
+                }
+                
+                // 清空容器
+                container.innerHTML = '';
+                
+                // 设置容器 ID
+                container.id = 'kuikly-render-container';
+                
+                // 页面参数
+                const pageData = {
+                    platform: 'desktop',
+                    deviceWidth: 800,
+                    deviceHeight: 400,
+                    statusBarHeight: 0,
+                    osVersion: 'MacOS',
+                    activityWidth: 0,
+                    activityHeight: 0,
+                    safeAreaInsets: '0 0 0 0',
+                    appVersion: '1.0.0',
+                    param: {},
+                    density: 1
+                };
+                
+                log("📋 页面参数: " + JSON.stringify(pageData));
+                
+                // 检查渲染视图的方法
+                if (typeof renderView.init === 'function') {
+                    // 初始化渲染视图
+                    renderView.init(
+                        'kuikly-render-container',
+                        'HelloWorldPage',
+                        pageData,
+                        { first: 800, second: 400 } // size
+                    );
+                    
+                    log("✅ HelloWorldPage 渲染初始化完成", 'success');
+                    
+                    // 触发页面显示事件
+                    setTimeout(() => {
+                        if (typeof renderView.resume === 'function') {
+                            renderView.resume();
+                            log("✅ 页面显示事件已触发", 'success');
+                        } else {
+                            log("⚠️ resume 方法不存在", 'info');
+                        }
+                    }, 100);
+                    
+                } else {
+                    log("❌ renderView.init 方法不存在", 'error');
+                    log(`可用方法: ${Object.getOwnPropertyNames(renderView)}`);
+                }
+                
+                return true;
+                
+            } catch (e) {
+                log(`❌ 渲染失败: ${e.message}`, 'error');
+                console.error(e);
+                return false;
+            }
+        }
+        
+        function clearContainer() {
+            const container = document.getElementById('render-container');
+            container.innerHTML = `
+                <div style="color: #666; text-align: center;">
+                    <p>渲染容器</p>
+                    <p>点击左侧按钮开始测试</p>
+                </div>
+            `;
+            log("🧹 容器已清空");
+        }
+        
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            log("📄 页面加载完成");
+            
+            // 检查桌面渲染层模块
+            setTimeout(() => {
+                if (typeof window.DesktopRenderLayer !== 'undefined') {
+                    log("✅ 桌面渲染层模块已加载，可以开始测试", 'success');
+                } else {
+                    log("❌ 桌面渲染层模块加载失败", 'error');
+                }
+            }, 500);
+        });
+        
+        // 错误处理
+        window.addEventListener('error', function(e) {
+            log(`❌ 脚本加载错误: ${e.message}`, 'error');
+        });
+    </script>
+</body>
+</html>

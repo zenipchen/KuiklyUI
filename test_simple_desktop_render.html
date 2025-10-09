@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单桌面渲染层测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>简单桌面渲染层测试</h1>
+    <div id="status" class="status info">正在加载...</div>
+    
+    <!-- 引入桌面渲染层 JS 文件 -->
+    <script src="desktop-render-layer/build/kotlin-webpack/js/productionExecutable/desktopRenderLayer.js"></script>
+    
+    <script>
+        function log(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            
+            statusDiv.innerHTML += logMessage + '<br>';
+            statusDiv.className = `status ${type}`;
+            
+            console.log(logMessage);
+        }
+        
+        // 页面加载完成后检查
+        window.addEventListener('load', function() {
+            log("📄 页面加载完成");
+            
+            // 检查所有可能的全局对象
+            log("检查全局对象:");
+            log(`window.DesktopRenderLayer: ${typeof window.DesktopRenderLayer}`);
+            log(`window.kuiklyWindow: ${typeof window.kuiklyWindow}`);
+            log(`window.kuiklyDocument: ${typeof window.kuiklyDocument}`);
+            
+            // 检查是否有 console.log 输出
+            setTimeout(() => {
+                if (typeof window.DesktopRenderLayer !== 'undefined') {
+                    log("✅ 桌面渲染层模块已加载", 'success');
+                } else {
+                    log("❌ 桌面渲染层模块未加载", 'error');
+                    log("尝试手动调用 main 函数...", 'info');
+                    
+                    // 尝试手动调用 main 函数
+                    try {
+                        if (typeof window.main === 'function') {
+                            window.main();
+                            log("✅ 手动调用 main 函数成功", 'success');
+                        } else {
+                            log("❌ main 函数不存在", 'error');
+                        }
+                    } catch (e) {
+                        log(`❌ 手动调用 main 函数失败: ${e.message}`, 'error');
+                    }
+                }
+            }, 2000);
+        });
+        
+        // 错误处理
+        window.addEventListener('error', function(e) {
+            log(`❌ 脚本加载错误: ${e.message}`, 'error');
+        });
+    </script>
+</body>
+</html>

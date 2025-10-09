@@ -4,6 +4,8 @@ import com.tencent.kuikly.core.render.web.expand.KuiklyRenderViewDelegatorDelega
 import com.tencent.kuikly.core.render.web.ktx.SizeI
 import kotlinx.browser.window
 import kotlinx.browser.document
+import kotlin.js.JsExport
+import kotlin.js.ExperimentalJsExport
 
 /**
  * 桌面渲染层入口
@@ -31,12 +33,14 @@ private fun initGlobalObject() {
 /**
  * 桌面渲染层 API
  */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 class DesktopRenderLayerAPI {
     
     /**
      * 创建 KuiklyRenderView 实例
      */
-    fun createRenderView(executeMode: String = "JS"): KuiklyRenderView {
+    fun createRenderView(executeMode: String = "JS"): dynamic {
         val mode = when (executeMode) {
             "JS" -> KuiklyRenderCoreExecuteMode.JS
             else -> KuiklyRenderCoreExecuteMode.JS
