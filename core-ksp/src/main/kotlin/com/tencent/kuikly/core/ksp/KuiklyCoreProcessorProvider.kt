@@ -19,7 +19,13 @@ import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeSpec
 import com.tencent.kuikly.core.annotations.Page
 import impl.AndroidTargetEntryBuilder
 import impl.KuiklyCoreAbsEntryBuilder
@@ -51,12 +57,8 @@ class CoreProcessor(
 
     private var isInitialInvocation = true
     private var coreEntryGenerated = false
-    private val hotPreviewProcessor = HotPreviewProcessor(codeGenerator, logger)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        // 先处理 HotPreview 注解，生成预览 Pager 类
-        hotPreviewProcessor.process(resolver)
-
         val newFiles = resolver.getNewFiles()
         if (!isInitialInvocation || newFiles.firstOrNull() == null) {
             // * A subsequent invocation is for processing generated files. We do not need to process these.
@@ -95,10 +97,12 @@ class CoreProcessor(
         val pageClassDeclarations = mutableListOf<PageInfo>()
         val moduleSet = packBundleByModuleId.split("&").toSet()
         
-        // 添加 HotPreview 生成的页面信息
-        val hotPreviewPageInfos = hotPreviewProcessor.getGeneratedPageInfos()
-        logger.info("CoreProcessor: Adding ${hotPreviewPageInfos.size} HotPreview generated pages to registry")
-        pageClassDeclarations.addAll(hotPreviewPageInfos)
+        // 处理 HotPreview 注解，只在有新建文件时处理
+        val hotPreviewPageInfos = processHotPreviewAnnotations(resolver)
+        if (hotPreviewPageInfos.isNotEmpty()) {
+            logger.info("CoreProcessor: Adding ${hotPreviewPageInfos.size} HotPreview generated pages to registry")
+            pageClassDeclarations.addAll(hotPreviewPageInfos)
+        }
         
         // 处理原有的 @Page 注解
         resolver.getSymbolsWithAnnotation(Page::class.qualifiedName!!)
@@ -124,6 +128,88 @@ class CoreProcessor(
             
         logger.info("CoreProcessor: Total pages for registry: ${pageClassDeclarations.size}")
         return absEntryBuilder.build(pageClassDeclarations)
+    }
+
+    /**
+     * 处理 HotPreview 注解，只在需要时生成文件
+     */
+    private fun processHotPreviewAnnotations(resolver: Resolver): List<PageInfo> {
+        val symbols = resolver.getSymbolsWithAnnotation("de.drick.compose.hotpreview.HotPreview")
+        if (symbols.none()) {
+            return emptyList()
+        }
+
+        logger.info("CoreProcessor: Found ${symbols.count()} HotPreview annotations")
+        val pageInfos = mutableListOf<PageInfo>()
+
+        symbols.forEach { symbol ->
+            if (symbol is KSFunctionDeclaration) {
+                try {
+                    val pageInfo = generateHotPreviewPage(symbol)
+                    pageInfos.add(pageInfo)
+                } catch (e: Exception) {
+                    logger.error("Error generating HotPreview page for ${symbol.simpleName.asString()}: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        return pageInfos
+    }
+
+    /**
+     * 生成单个 HotPreview 页面
+     */
+    private fun generateHotPreviewPage(functionDeclaration: KSFunctionDeclaration): PageInfo {
+        val functionName = functionDeclaration.simpleName.asString()
+        val packageName = functionDeclaration.packageName.asString()
+        val className = "${functionName}PreviewPager"
+        
+        // 生成预览 Pager 类
+        val fileSpec = FileSpec.builder(packageName, className)
+            .addImport("com.tencent.kuikly.compose", "setContent")
+            .addType(
+                TypeSpec.classBuilder(className)
+                    .addAnnotation(
+                        AnnotationSpec.builder(Page::class)
+                            .addMember("name = %S", "${functionName}Preview")
+                            .build()
+                    )
+                    .addModifiers(KModifier.INTERNAL)
+                    .superclass(ClassName("com.tencent.kuikly.compose", "ComposeContainer"))
+                    .addFunction(
+                        FunSpec.builder("willInit")
+                            .addModifiers(KModifier.OVERRIDE)
+                            .addStatement("super.willInit()")
+                            .addStatement("setContent {")
+                            .addStatement("    %L()", functionName)
+                            .addStatement("}")
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
+
+        // 写入生成的文件
+        codeGenerator.createNewFile(
+            dependencies = Dependencies(aggregating = false),
+            packageName = packageName,
+            fileName = className,
+            extensionName = "kt"
+        ).use { output ->
+            output.write(fileSpec.toString().toByteArray())
+        }
+
+        // 创建并返回 PageInfo
+        val pageInfo = PageInfo(
+            pageName = "${functionName}Preview",
+            pageFullName = "$packageName.$className",
+            moduleId = "preview",
+            packLocal = true
+        )
+
+        logger.info("Generated HotPreview page: $packageName.$className with page name: ${pageInfo.pageName}")
+        return pageInfo
     }
 
     private fun getEntryBuilder(): KuiklyCoreAbsEntryBuilder{
