@@ -94,6 +94,13 @@ class CoreProcessor(
         val packBundleByModuleId = option["packBundleByModuleId"] ?: ""
         val pageClassDeclarations = mutableListOf<PageInfo>()
         val moduleSet = packBundleByModuleId.split("&").toSet()
+        
+        // 添加 HotPreview 生成的页面信息
+        val hotPreviewPageInfos = hotPreviewProcessor.getGeneratedPageInfos()
+        logger.info("CoreProcessor: Adding ${hotPreviewPageInfos.size} HotPreview generated pages to registry")
+        pageClassDeclarations.addAll(hotPreviewPageInfos)
+        
+        // 处理原有的 @Page 注解
         resolver.getSymbolsWithAnnotation(Page::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
             .forEach { classDeclaration ->
@@ -114,6 +121,8 @@ class CoreProcessor(
                     pageClassDeclarations.add(pageInfo)
                 }
             }
+            
+        logger.info("CoreProcessor: Total pages for registry: ${pageClassDeclarations.size}")
         return absEntryBuilder.build(pageClassDeclarations)
     }
 

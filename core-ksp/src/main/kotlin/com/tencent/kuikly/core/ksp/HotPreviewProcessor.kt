@@ -20,6 +20,7 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.squareup.kotlinpoet.*
 import com.tencent.kuikly.core.annotations.Page
+import impl.PageInfo
 
 /**
  * HotPreview 注解处理器
@@ -29,6 +30,8 @@ class HotPreviewProcessor(
     private val codeGenerator: CodeGenerator,
     private val logger: KSPLogger
 ) : SymbolProcessor {
+
+    private val generatedPageInfos = mutableListOf<PageInfo>()
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         logger.info("HotPreviewProcessor: Starting to process HotPreview annotations")
@@ -95,6 +98,22 @@ class HotPreviewProcessor(
             output.write(fileSpec.toString().toByteArray())
         }
 
-        logger.info("Generated preview pager: $packageName.$className")
+        // 创建 PageInfo 并添加到列表
+        val pageInfo = PageInfo(
+            pageName = "${functionName}Preview",
+            pageFullName = "$packageName.$className",
+            moduleId = "preview",
+            packLocal = true
+        )
+        generatedPageInfos.add(pageInfo)
+
+        logger.info("Generated preview pager: $packageName.$className with page name: ${pageInfo.pageName}")
+    }
+    
+    /**
+     * 获取生成的 PageInfo 列表
+     */
+    fun getGeneratedPageInfos(): List<PageInfo> {
+        return generatedPageInfos.toList()
     }
 }
