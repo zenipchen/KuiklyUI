@@ -161,8 +161,9 @@ fun AccessibilityDemo() {
     }
 }
 
+@HotPreview(widthDp = 300, heightDp = 480)
 @Composable
-private fun BasicSemanticsDemo() {
+fun BasicSemanticsDemo() {
     Column {
         // 使用 semantics 修饰符添加语义标签
         // 声明clickable时，mergeDescendants = true
@@ -184,8 +185,9 @@ private fun BasicSemanticsDemo() {
     }
 }
 
+@HotPreview(widthDp = 300, heightDp = 480)
 @Composable
-private fun AccessibilityDescriptionDemo() {
+fun AccessibilityDescriptionDemo() {
     Column {
         // 为图片添加无障碍描述
         Box(
