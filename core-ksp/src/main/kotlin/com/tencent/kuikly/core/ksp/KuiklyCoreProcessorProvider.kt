@@ -18,6 +18,7 @@ package com.tencent.kuikly.core.ksp
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.FileSpec
 import com.tencent.kuikly.core.annotations.Page
 import impl.AndroidTargetEntryBuilder
@@ -56,16 +57,16 @@ class CoreProcessor(
         // 先处理 HotPreview 注解，生成预览 Pager 类
         hotPreviewProcessor.process(resolver)
 
-        // 第一次调用仅触发下一轮（让本轮生成的 @Page 预览类在下一轮被收集）
-        if (isInitialInvocation) {
-            isInitialInvocation = false
+        val newFiles = resolver.getNewFiles()
+        if (!isInitialInvocation || newFiles.firstOrNull() == null) {
+            // * A subsequent invocation is for processing generated files. We do not need to process these.
+            // * If there are no new files to process, we avoid generating an output file, as this would break
+            //   incremental compilation.
+            //   TODO: This could be omitted if file generation were not required to discover the output source set.
             return emptyList()
         }
 
-        // 入口文件仅生成一次
-        if (coreEntryGenerated) {
-            return emptyList()
-        }
+        isInitialInvocation = false
 
         codeGenerator.createNewFile(
             dependencies = Dependencies(aggregating = true),
