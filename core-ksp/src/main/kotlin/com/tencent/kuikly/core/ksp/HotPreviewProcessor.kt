@@ -55,7 +55,6 @@ class HotPreviewProcessor(
 
         return ret
     }
-
     private fun generatePreviewPager(functionDeclaration: KSFunctionDeclaration) {
         val functionName = functionDeclaration.simpleName.asString()
         val packageName = functionDeclaration.packageName.asString()
