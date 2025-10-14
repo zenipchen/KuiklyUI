@@ -184,9 +184,12 @@ fun main(args: Array<String>) {
             }
         })
         
-        // 创建浏览器实例 - 使用本地网页加载 Web 渲染层
+        // 创建浏览器实例 - 使用本地网页加载 Web 渲染层，并传递 pageName 参数
         val webRenderHtmlPath = java.io.File("../desktop_render_web.html").absolutePath
-        val webRenderHtmlUrl = "file://$webRenderHtmlPath"
+        val pageName = pageParams.pageName.ifEmpty { "ComposeAllSample" }
+        val webRenderHtmlUrl = "file://$webRenderHtmlPath?pageName=$pageName"
+        
+        DebugConfig.info("Kuikly Desktop", "加载 HTML 页面: $webRenderHtmlUrl")
         
         // 6. 加载本地网页（包含 Web 渲染层）
         DebugConfig.info("Kuikly Desktop", "正在加载本地网页（Web 渲染层）...")
