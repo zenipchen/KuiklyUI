@@ -15,8 +15,19 @@ import org.cef.handler.CefLoadHandler
 import org.cef.handler.CefMessageRouterHandlerAdapter
 import org.cef.network.CefRequest
 import java.awt.BorderLayout
+import java.awt.Color
 import java.awt.Dimension
+import java.awt.IllegalComponentStateException
+import java.awt.event.ActionEvent
+import java.io.File
+import javax.swing.AbstractAction
+import javax.swing.BorderFactory
+import javax.swing.JComponent
 import javax.swing.JFrame
+import javax.swing.JMenu
+import javax.swing.JMenuBar
+import javax.swing.JMenuItem
+import javax.swing.KeyStroke
 import javax.swing.SwingUtilities
 import javax.swing.WindowConstants
 
@@ -27,32 +38,43 @@ fun main(args: Array<String>) {
 
      val pageParams = PageParam(pageName = "ComposeAllSample")
 
-     try {
-         // 设置自定义的线程调度器，将任务调度到 Web 容器线程执行
-         setKuiklyThreadScheduler(object : KuiklyThreadScheduler {
-             override fun scheduleOnKuiklyThread(pagerId: String) {
-                 // 将任务调度到 Web 容器线程执行
-                 // 这里使用 SwingUtilities.invokeLater 来确保任务在 Web 容器线程中执行
-                 SwingUtilities.invokeLater {
-                     try {
-                         DebugConfig.debug("Kuikly Desktop", "在 Web 容器线程中执行任务: pagerId=$pagerId")
-                         // 注意：这里的 task 参数需要从其他地方获取
-                         // 可能需要重新设计接口或者使用其他方式传递任务
-                     } catch (e: Exception) {
-                         DebugConfig.error("Kuikly Desktop", "执行 Kuikly 线程任务失败: ${e.message}", e)
-                     }
-                 }
-             }
-         })
-         DebugConfig.success("Kuikly Desktop", "Kuikly 线程调度器初始化完成")
-     } catch (e: Exception) {
-         DebugConfig.error("Kuikly Desktop", "Kuikly 线程调度器初始化失败: ${e.message}", e)
-     }
+    runPage(pageParams)
+}
+
+private fun runPage(pageParams: PageParam) {
+    try {
+        // 设置自定义的线程调度器，将任务调度到 Web 容器线程执行
+        setKuiklyThreadScheduler(object : KuiklyThreadScheduler {
+            override fun scheduleOnKuiklyThread(pagerId: String) {
+                // 将任务调度到 Web 容器线程执行
+                // 这里使用 SwingUtilities.invokeLater 来确保任务在 Web 容器线程中执行
+                SwingUtilities.invokeLater {
+                    try {
+                        DebugConfig.debug(
+                            "Kuikly Desktop",
+                            "在 Web 容器线程中执行任务: pagerId=$pagerId"
+                        )
+                        // 注意：这里的 task 参数需要从其他地方获取
+                        // 可能需要重新设计接口或者使用其他方式传递任务
+                    } catch (e: Exception) {
+                        DebugConfig.error(
+                            "Kuikly Desktop",
+                            "执行 Kuikly 线程任务失败: ${e.message}",
+                            e
+                        )
+                    }
+                }
+            }
+        })
+        DebugConfig.success("Kuikly Desktop", "Kuikly 线程调度器初始化完成")
+    } catch (e: Exception) {
+        DebugConfig.error("Kuikly Desktop", "Kuikly 线程调度器初始化失败: ${e.message}", e)
+    }
 
     // 2. 构建 JCEF 应用
     DebugConfig.info("Kuikly Desktop", "正在初始化 Chromium...")
     val builder = CefAppBuilder()
-    
+
     // 配置 JCEF 以减少线程警告
     builder.setAppHandler(object : MavenCefAppHandlerAdapter() {
         override fun onContextInitialized() {
@@ -63,50 +85,50 @@ fun main(args: Array<String>) {
     // 应用性能优化参数
     val performanceArgs = DebugConfig.getPerformanceArgs()
     val debugArgs = DebugConfig.getDebugArgs()
-    
+
     DebugConfig.debug("Kuikly Desktop", "应用性能优化参数: ${performanceArgs.size} 个")
     DebugConfig.debug("Kuikly Desktop", "应用调试参数: ${debugArgs.size} 个")
-    
+
     // 添加性能优化参数
     performanceArgs.forEach { arg ->
         builder.addJcefArgs(arg)
     }
-    
+
     // 添加调试参数
     debugArgs.forEach { arg ->
         builder.addJcefArgs(arg)
     }
-    
+
     // 初始化 CEF
     val cefApp = builder.build()
-    
+
     SwingUtilities.invokeLater {
         // 创建窗口
         val frame = JFrame("Kuikly Desktop")
         frame.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         frame.layout = BorderLayout()
         frame.size = Dimension(580, 1920)
-        
+
         // 创建菜单栏 - 使用更简单的方式避免 macOS 组件状态问题
-        val menuBar = javax.swing.JMenuBar()
-        val devMenu = javax.swing.JMenu("开发者工具")
-        
-        val openDevToolsItem = javax.swing.JMenuItem("打开开发者工具 (F12)")
-        val inspectElementItem = javax.swing.JMenuItem("检查元素 (Ctrl+Shift+I)")
-        
+        val menuBar = JMenuBar()
+        val devMenu = JMenu("开发者工具")
+
+        val openDevToolsItem = JMenuItem("打开开发者工具 (F12)")
+        val inspectElementItem = JMenuItem("检查元素 (Ctrl+Shift+I)")
+
         // 禁用菜单项的某些功能以避免组件状态问题
         openDevToolsItem.isEnabled = true
         inspectElementItem.isEnabled = true
-        
+
         devMenu.add(openDevToolsItem)
         devMenu.add(inspectElementItem)
         menuBar.add(devMenu)
-        
+
         // 延迟设置菜单栏，确保窗口完全初始化
         SwingUtilities.invokeLater {
             frame.jMenuBar = menuBar
         }
-        
+
         // 创建浏览器客户端
         val client = cefApp.createClient()
         client.addLifeSpanHandler(object : CefLifeSpanHandlerAdapter() {
@@ -123,10 +145,10 @@ fun main(args: Array<String>) {
                 return true
             }
         })
-        
+
         // 创建桌面端渲染委托器
         val renderDelegator = DesktopRenderViewDelegator()
-        
+
         // 配置消息路由器（用于 Web → JVM 通信）
         val msgRouter = CefMessageRouter.create()
         msgRouter.addHandler(object : CefMessageRouterHandlerAdapter() {
@@ -148,7 +170,7 @@ fun main(args: Array<String>) {
             }
         }, true)
         client.addMessageRouter(msgRouter)
-        
+
         // 添加加载状态监听
         client.addLoadHandler(object : CefLoadHandlerAdapter() {
             override fun onLoadingStateChange(
@@ -163,15 +185,22 @@ fun main(args: Array<String>) {
                     renderDelegator.initRenderLayer()
                 }
             }
-            
-            override fun onLoadStart(browser: CefBrowser?, frame: CefFrame?, transitionType: CefRequest.TransitionType?) {
+
+            override fun onLoadStart(
+                browser: CefBrowser?,
+                frame: CefFrame?,
+                transitionType: CefRequest.TransitionType?
+            ) {
                 DebugConfig.debug("Kuikly Desktop", "开始加载: ${frame?.url}")
             }
-            
+
             override fun onLoadEnd(browser: CefBrowser?, frame: CefFrame?, httpStatusCode: Int) {
-                DebugConfig.debug("Kuikly Desktop", "加载结束: ${frame?.url} (状态码: $httpStatusCode)")
+                DebugConfig.debug(
+                    "Kuikly Desktop",
+                    "加载结束: ${frame?.url} (状态码: $httpStatusCode)"
+                )
             }
-            
+
             override fun onLoadError(
                 browser: CefBrowser?,
                 frame: CefFrame?,
@@ -183,32 +212,31 @@ fun main(args: Array<String>) {
                 DebugConfig.error("Kuikly Desktop", "错误: $errorText")
             }
         })
-        
+
         // 创建浏览器实例 - 使用本地网页加载 Web 渲染层，并传递 pageName 参数
-        val webRenderHtmlPath = java.io.File("../desktop_render_web.html").absolutePath
+        val webRenderHtmlPath = File("../desktop_render_web.html").absolutePath
         val pageName = pageParams.pageName.ifEmpty { "ComposeAllSample" }
         val webRenderHtmlUrl = "file://$webRenderHtmlPath?pageName=$pageName"
-        
+
         DebugConfig.info("Kuikly Desktop", "加载 HTML 页面: $webRenderHtmlUrl")
-        
+
         // 6. 加载本地网页（包含 Web 渲染层）
         DebugConfig.info("Kuikly Desktop", "正在加载本地网页（Web 渲染层）...")
         val browser = client.createBrowser(webRenderHtmlUrl, false, false)
 
 
-
         // 为浏览器组件添加边框，便于调试（仅在调试模式下）
         if (DebugConfig.DEBUG_ENABLED) {
             val browserComponent = browser.uiComponent
-            if (browserComponent is javax.swing.JComponent) {
-                browserComponent.border = javax.swing.BorderFactory.createLineBorder(java.awt.Color.RED, 2)
+            if (browserComponent is JComponent) {
+                browserComponent.border = BorderFactory.createLineBorder(Color.RED, 2)
             }
         }
-        
+
         // 添加开发者工具支持
         browser.getDevTools()
         DebugConfig.debug("Kuikly Desktop", "开发者工具已启用")
-        
+
         // 设置菜单项事件监听器 - 添加异常处理避免 macOS 组件状态问题
         openDevToolsItem.addActionListener {
             try {
@@ -237,7 +265,7 @@ fun main(args: Array<String>) {
                         DebugConfig.error("Kuikly Desktop", "打开开发者工具失败: ${e.message}", e)
                     }
                 }
-            } catch (e: java.awt.IllegalComponentStateException) {
+            } catch (e: IllegalComponentStateException) {
                 // 忽略 macOS 组件状态异常
                 DebugConfig.warning("Kuikly Desktop", "忽略组件状态异常，继续执行开发者工具功能")
                 try {
@@ -261,7 +289,7 @@ fun main(args: Array<String>) {
                 DebugConfig.error("Kuikly Desktop", "菜单事件处理失败: ${e.message}", e)
             }
         }
-        
+
         inspectElementItem.addActionListener {
             try {
                 SwingUtilities.invokeLater {
@@ -287,7 +315,7 @@ fun main(args: Array<String>) {
                         DebugConfig.error("Kuikly Desktop", "启用检查元素失败: ${e.message}", e)
                     }
                 }
-            } catch (e: java.awt.IllegalComponentStateException) {
+            } catch (e: IllegalComponentStateException) {
                 // 忽略 macOS 组件状态异常
                 DebugConfig.warning("Kuikly Desktop", "忽略组件状态异常，继续执行检查元素功能")
                 try {
@@ -313,11 +341,11 @@ fun main(args: Array<String>) {
                 DebugConfig.error("Kuikly Desktop", "菜单事件处理失败: ${e.message}", e)
             }
         }
-        
+
         // 添加键盘监听器来支持开发者工具快捷键
-        frame.rootPane.inputMap.put(javax.swing.KeyStroke.getKeyStroke("F12"), "toggleDevTools")
-        frame.rootPane.actionMap.put("toggleDevTools", object : javax.swing.AbstractAction() {
-            override fun actionPerformed(e: java.awt.event.ActionEvent?) {
+        frame.rootPane.inputMap.put(KeyStroke.getKeyStroke("F12"), "toggleDevTools")
+        frame.rootPane.actionMap.put("toggleDevTools", object : AbstractAction() {
+            override fun actionPerformed(e: ActionEvent?) {
                 SwingUtilities.invokeLater {
                     try {
                         // 使用 JavaScript 来打开开发者工具
@@ -341,11 +369,11 @@ fun main(args: Array<String>) {
                 }
             }
         })
-        
+
         // 添加右键菜单支持
-        frame.rootPane.inputMap.put(javax.swing.KeyStroke.getKeyStroke("ctrl shift I"), "inspectElement")
-        frame.rootPane.actionMap.put("inspectElement", object : javax.swing.AbstractAction() {
-            override fun actionPerformed(e: java.awt.event.ActionEvent?) {
+        frame.rootPane.inputMap.put(KeyStroke.getKeyStroke("ctrl shift I"), "inspectElement")
+        frame.rootPane.actionMap.put("inspectElement", object : AbstractAction() {
+            override fun actionPerformed(e: ActionEvent?) {
                 SwingUtilities.invokeLater {
                     try {
                         // 使用 JavaScript 来启用检查元素模式
@@ -371,19 +399,22 @@ fun main(args: Array<String>) {
                 }
             }
         })
-        
+
         // 将浏览器添加到窗口
         frame.add(browser.uiComponent, BorderLayout.CENTER)
-        
+
         frame.isVisible = true
-        
+
         DebugConfig.success("Kuikly Desktop", "窗口已启动！")
         DebugConfig.info("Kuikly Desktop", "当前为完整版本，已启用 JCEF 和 JS Bridge")
         DebugConfig.info("Kuikly Desktop", "支持完整的 Web 渲染和双向通信")
-        
+
         // 显示性能摘要
         if (DebugConfig.PERFORMANCE_DEBUG_ENABLED) {
-            DebugConfig.performanceDebug("Kuikly Desktop", PerformanceMonitor.getPerformanceSummary())
+            DebugConfig.performanceDebug(
+                "Kuikly Desktop",
+                PerformanceMonitor.getPerformanceSummary()
+            )
         }
     }
 }
