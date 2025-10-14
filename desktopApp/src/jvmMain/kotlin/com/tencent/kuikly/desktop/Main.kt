@@ -9,13 +9,10 @@ import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.browser.CefMessageRouter
 import org.cef.callback.CefQueryCallback
-import org.cef.handler.CefDisplayHandlerAdapter
 import org.cef.handler.CefLifeSpanHandlerAdapter
 import org.cef.handler.CefLoadHandlerAdapter
 import org.cef.handler.CefLoadHandler
 import org.cef.handler.CefMessageRouterHandlerAdapter
-import org.cef.handler.CefRequestHandler
-import org.cef.handler.CefRequestHandlerAdapter
 import org.cef.network.CefRequest
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -23,87 +20,7 @@ import javax.swing.JFrame
 import javax.swing.SwingUtilities
 import javax.swing.WindowConstants
 
-/**
- * 生成桌面端专用的 HTML（加载 desktopRenderHost 渲染宿主）
- * 业务逻辑由 JVM 端的 demo 模块提供，Web 端仅负责渲染
- */
-fun generateDesktopHtml(): String {
-    // 加载 desktopRenderHost（包含 core-render-web 渲染引擎的桌面端宿主）
-    val desktopRenderHostPath = "../desktopRenderHost/build/dist/js/productionExecutable/desktopRenderHost.js"
-    
-    val desktopRenderHostFile = java.io.File(desktopRenderHostPath)
 
-    if (!desktopRenderHostFile.exists()) {
-        DebugConfig.warning("Kuikly Desktop", "未找到 desktopRenderHost 编译产物")
-        DebugConfig.info("Kuikly Desktop", "请运行: ./gradlew :desktopRenderHost:jsBrowserProductionWebpack")
-        return """
-            <!DOCTYPE html>
-            <html><head><meta charset="UTF-8"><title>Kuikly Desktop - Error</title></head>
-            <body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;">
-                <div style="text-align:center;">
-                    <h2>❌ desktopRenderHost 未找到</h2>
-                    <p>请运行: ./gradlew :desktopRenderHost:jsBrowserProductionWebpack</p>
-                </div>
-            </body></html>
-        """.trimIndent()
-    }
-    
-    // 读取 desktopRenderHost
-    val desktopRenderHostJs = desktopRenderHostFile.readText()
-    DebugConfig.debug("Kuikly Desktop", "成功加载 desktopRenderHost (${desktopRenderHostJs.length} 字节)")
-
-    
-    // 生成 HTML（加载 desktopRenderHost 渲染宿主）
-    return """
-        <!DOCTYPE html>
-        <html lang="zh-CN">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Kuikly Desktop - Render Host</title>
-            <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body, html {
-                    width: 100%;
-                    height: 100%;
-                    overflow: hidden;
-                }
-                #kuikly-render-container {
-                    width: 100%;
-                    height: 100%;
-                }
-                .list-no-scrollbar {
-                    scrollbar-width: none;
-                }
-                .list-no-scrollbar::-webkit-scrollbar {
-                    display: none;
-                }
-            </style>
-        </head>
-        <body>
-            <div id="kuikly-render-container"></div>
-            
-            <!-- 加载 desktopRenderHost -->
-            <script>
-                console.log('[Kuikly Desktop] 🚀 加载 desktopRenderHost...');
-                $desktopRenderHostJs
-                console.log('[Kuikly Desktop] ✅ desktopRenderHost 加载完成');
-            </script>
-        </body>
-        </html>
-    """.trimIndent()
-}
-
-/**
- * Kuikly 桌面端 - 使用 JCEF (Chromium)
- * 
- * 架构：
- * - 逻辑层：JVM (Kotlin) - core + compose
- * - 渲染层：Chromium (Web) - core-render-web
- * - 通信：JS Bridge 双向桥接
- * 
- * 当前状态：完整版本，支持 Web 渲染和 JS Bridge
- */
 fun main(args: Array<String>) {
     // 初始化调试配置
     DebugConfig.info("Kuikly Desktop", "启动 Kuikly Desktop 应用")
