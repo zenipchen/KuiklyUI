@@ -5,6 +5,7 @@ import com.tencent.kuiklyx.coroutines.setKuiklyThreadScheduler
 import kotlinx.coroutines.Dispatchers
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
+import org.cef.CefApp
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.browser.CefMessageRouter
@@ -34,16 +35,12 @@ import javax.swing.WindowConstants
 data class PageParam(val pageName: String = "")
 
 // 全局 CEF 应用实例
-private var globalCefApp: me.friwi.jcefmaven.CefApp? = null
+private var globalCefApp: CefApp? = null
 
 fun main(args: Array<String>) {
-    // 解析命令行参数获取页面参数
-    val pageParams = parsePageParamsFromArgs(args)
-    
-    // 输出页面参数信息
-    DebugConfig.info("Kuikly Desktop", "页面参数: ${pageParams.pageName}")
-    
-    runPage(pageParams)
+    // 直接运行两个页面，显示两个窗口
+    runPage(PageParam(pageName = "ComposeAllSample"))
+    runPage(PageParam(pageName = "TextDemo"))
 }
 
 /**
@@ -253,7 +250,6 @@ private fun runPage(pageParams: PageParam) {
 
         // 创建浏览器实例 - 使用本地网页加载 Web 渲染层，并传递 pageName 参数
         val webRenderHtmlPath = File("../desktop_render_web.html").absolutePath
-        val pageName = pageParams.pageName.ifEmpty { "ComposeAllSample" }
         val webRenderHtmlUrl = "file://$webRenderHtmlPath?pageName=$pageName"
 
         DebugConfig.info("Kuikly Desktop", "加载 HTML 页面: $webRenderHtmlUrl")
