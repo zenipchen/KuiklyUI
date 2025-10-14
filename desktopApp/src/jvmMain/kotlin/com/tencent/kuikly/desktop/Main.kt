@@ -33,12 +33,42 @@ import javax.swing.WindowConstants
 
 data class PageParam(val pageName: String = "")
 
+// 全局 CEF 应用实例
+private var globalCefApp: me.friwi.jcefmaven.CefApp? = null
 
 fun main(args: Array<String>) {
+    // 解析命令行参数获取页面参数
+    val pageParams = parsePageParamsFromArgs(args)
+    
+    // 输出页面参数信息
+    DebugConfig.info("Kuikly Desktop", "页面参数: ${pageParams.pageName}")
+    
+    runPage(pageParams)
+}
 
-    runPage(PageParam(pageName = "ComposeAllSample"))
-    runPage(PageParam(pageName = "TextDemo"))
-
+/**
+ * 从命令行参数中解析页面参数
+ * 支持格式: --pageName=PageName 或 -p PageName
+ */
+private fun parsePageParamsFromArgs(args: Array<String>): PageParam {
+    for (i in args.indices) {
+        val arg = args[i]
+        when {
+            arg.startsWith("--pageName=") -> {
+                val pageName = arg.substring("--pageName=".length)
+                return PageParam(pageName = pageName)
+            }
+            arg == "-p" && i + 1 < args.size -> {
+                val pageName = args[i + 1]
+                return PageParam(pageName = pageName)
+            }
+            arg == "--page" && i + 1 < args.size -> {
+                val pageName = args[i + 1]
+                return PageParam(pageName = pageName)
+            }
+        }
+    }
+    return PageParam(pageName = "ComposeAllSample") // 默认页面名称
 }
 
 private fun runPage(pageParams: PageParam) {
@@ -71,41 +101,49 @@ private fun runPage(pageParams: PageParam) {
         DebugConfig.error("Kuikly Desktop", "Kuikly 线程调度器初始化失败: ${e.message}", e)
     }
 
-    // 2. 构建 JCEF 应用
-    DebugConfig.info("Kuikly Desktop", "正在初始化 Chromium...")
-    val builder = CefAppBuilder()
+    // 2. 构建 JCEF 应用（使用全局实例）
+    if (globalCefApp == null) {
+        DebugConfig.info("Kuikly Desktop", "正在初始化 Chromium...")
+        val builder = CefAppBuilder()
 
-    // 配置 JCEF 以减少线程警告
-    builder.setAppHandler(object : MavenCefAppHandlerAdapter() {
-        override fun onContextInitialized() {
-            DebugConfig.success("Kuikly Desktop", "JCEF 上下文初始化完成")
+        // 配置 JCEF 以减少线程警告
+        builder.setAppHandler(object : MavenCefAppHandlerAdapter() {
+            override fun onContextInitialized() {
+                DebugConfig.success("Kuikly Desktop", "JCEF 上下文初始化完成")
+            }
+        })
+
+        // 应用性能优化参数
+        val performanceArgs = DebugConfig.getPerformanceArgs()
+        val debugArgs = DebugConfig.getDebugArgs()
+
+        DebugConfig.debug("Kuikly Desktop", "应用性能优化参数: ${performanceArgs.size} 个")
+        DebugConfig.debug("Kuikly Desktop", "应用调试参数: ${debugArgs.size} 个")
+
+        // 添加性能优化参数
+        performanceArgs.forEach { arg ->
+            builder.addJcefArgs(arg)
         }
-    })
 
-    // 应用性能优化参数
-    val performanceArgs = DebugConfig.getPerformanceArgs()
-    val debugArgs = DebugConfig.getDebugArgs()
+        // 添加调试参数
+        debugArgs.forEach { arg ->
+            builder.addJcefArgs(arg)
+        }
 
-    DebugConfig.debug("Kuikly Desktop", "应用性能优化参数: ${performanceArgs.size} 个")
-    DebugConfig.debug("Kuikly Desktop", "应用调试参数: ${debugArgs.size} 个")
-
-    // 添加性能优化参数
-    performanceArgs.forEach { arg ->
-        builder.addJcefArgs(arg)
+        // 初始化 CEF
+        globalCefApp = builder.build()
+        DebugConfig.success("Kuikly Desktop", "全局 CEF 应用已初始化")
+    } else {
+        DebugConfig.info("Kuikly Desktop", "使用已存在的全局 CEF 应用")
     }
 
-    // 添加调试参数
-    debugArgs.forEach { arg ->
-        builder.addJcefArgs(arg)
-    }
-
-    // 初始化 CEF
-    val cefApp = builder.build()
+    val cefApp = globalCefApp!!
 
     SwingUtilities.invokeLater {
         // 创建窗口
-        val frame = JFrame("Kuikly Desktop")
-        frame.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
+        val pageName = pageParams.pageName.ifEmpty { "ComposeAllSample" }
+        val frame = JFrame("Kuikly Desktop - $pageName")
+        frame.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE // 关闭单个窗口而不是整个应用
         frame.layout = BorderLayout()
         frame.size = Dimension(580, 1920)
 
