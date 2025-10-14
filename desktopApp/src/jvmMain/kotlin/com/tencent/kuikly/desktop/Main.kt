@@ -20,27 +20,13 @@ import javax.swing.JFrame
 import javax.swing.SwingUtilities
 import javax.swing.WindowConstants
 
+data class PageParam(val pageName: String = "")
+
 
 fun main(args: Array<String>) {
-    // 初始化调试配置
-    DebugConfig.info("Kuikly Desktop", "启动 Kuikly Desktop 应用")
-    DebugConfig.debug("Kuikly Desktop", "调试模式: ${DebugConfig.DEBUG_ENABLED}")
-    DebugConfig.debug("Kuikly Desktop", "性能优化: ${DebugConfig.PERFORMANCE_OPTIMIZATION_ENABLED}")
-    
-    // 启动性能监控
-    if (DebugConfig.PERFORMANCE_DEBUG_ENABLED) {
-        PerformanceMonitor.startMonitoring(10) // 每10秒监控一次
-    }
-    
-    // 启动线程监控
-    if (DebugConfig.THREAD_DEBUG_ENABLED) {
-        ThreadMonitor.startMonitoring(5) // 每5秒监控一次
-    }
 
-    Dispatchers.Main
-    
-    // 2. 初始化 Kuikly 线程调度器 (暂时注释掉，避免类路径问题)
-    DebugConfig.debug("Kuikly Desktop", "跳过 Kuikly 线程调度器初始化...")
+     val pageParams = PageParam(pageName = "ComposeAllSample")
+
      try {
          // 设置自定义的线程调度器，将任务调度到 Web 容器线程执行
          setKuiklyThreadScheduler(object : KuiklyThreadScheduler {
