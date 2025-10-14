@@ -36,9 +36,9 @@ data class PageParam(val pageName: String = "")
 
 fun main(args: Array<String>) {
 
-     val pageParams = PageParam(pageName = "ComposeAllSample")
+    runPage(PageParam(pageName = "ComposeAllSample"))
+    runPage(PageParam(pageName = "TextDemo"))
 
-    runPage(pageParams)
 }
 
 private fun runPage(pageParams: PageParam) {
