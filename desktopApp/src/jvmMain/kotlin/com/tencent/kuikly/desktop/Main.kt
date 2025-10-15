@@ -136,7 +136,7 @@ private fun runPageWithTwoPanels() {
         val leftPanel = createBrowserPanel(cefApp, "HelloWorldPage", "左侧页面")
         
         // 创建右侧面板 (TextDemo)
-        val rightPanel = createBrowserPanel(cefApp, "HelloWorldPage", "右侧页面")
+        val rightPanel = createBrowserPanel(cefApp, "ListViewDemoPage", "右侧页面")
 
         // 创建分割面板
         val splitPane = javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel)

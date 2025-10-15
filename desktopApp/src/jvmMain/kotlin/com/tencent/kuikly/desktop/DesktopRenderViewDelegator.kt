@@ -33,11 +33,11 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
     
     // 页面实例管理
     private val pageInstances = mutableMapOf<String, Pager>()
-    
+
     // 对齐 Android 的 pageId 分配机制
     // 每个 DesktopRenderViewDelegator 实例都有唯一的 instanceId（即 pageId）
     private val instanceId: String = instanceIdProducer++.toString()
-    
+
     // NativeBridge 用于 Pager 调用 callNative
     private val nativeBridge = NativeBridge()
     
@@ -68,8 +68,6 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
             }
         }
         BridgeManager.registerNativeBridge(instanceId, nativeBridge)
-        
-        println("[Desktop Render][$pageName] ✅ 页面注册已触发，instanceId: $instanceId")
         println("[Desktop Render][$pageName] ✅ NativeBridge 已注册")
     }
     
@@ -88,74 +86,6 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
         
         // 注入 JS Bridge
         injectJSBridge(browser)
-        
-//        // 初始化渲染容器
-//        val initScript = """
-//            console.log('[Desktop Render] 🚀 初始化渲染层...');
-//
-//            // 检查 desktop-render-layer 是否已加载
-//            if (typeof window.createRenderViewDelegator === 'function') {
-//                console.log('[Desktop Render] ✅ desktop-render-layer 已加载');
-//
-//                // 创建渲染视图委托器
-//                const renderView = window.createRenderViewDelegator();
-//                if (renderView) {
-//                    console.log('[Desktop Render] ✅ 渲染视图委托器创建成功');
-//
-//                    // 初始化渲染视图
-//                    const container = document.getElementById('kuikly-render-container');
-//                    const pageName = 'HelloWorldPage';
-//                    const pageData = {
-//                        statusBarHeight: 0,
-//                        activityWidth: window.innerWidth,
-//                        activityHeight: window.innerHeight,
-//                        param: {}
-//                    };
-//                    const size = [window.innerWidth, window.innerHeight];
-//
-//                    // 存储 renderView 实例到全局，供后续调用
-//                    window.desktopRenderView = renderView;
-//
-//
-//                    // 通知 JVM 端渲染层已就绪
-//                    if (window.cefQuery) {
-//                        window.cefQuery({
-//                            request: JSON.stringify({
-//                                type: 'renderReady',
-//                                pageId: '$instanceId'
-//                            }),
-//                            onSuccess: function(response) {
-//                                console.log('[Desktop Render] ✅ 已通知 JVM 端渲染层就绪');
-//
-//                                // 触发 HelloWorldPage 创建
-//                                setTimeout(function() {
-//                                    console.log('[Desktop Render] 🚀 开始创建 HelloWorldPage...');
-//                                    if (window.callKotlinMethod) {
-//                                        // 初始化 JS 渲染层
-//                                        // KuiklyRenderCore.init() 会自动调用 CREATE_INSTANCE 来创建 JVM 端的 Pager 实例
-//                                        // 这会触发 HelloWorldPage.onCreatePager() -> createBody() -> body()
-//                                        // 然后 body() 中的视图会调用 callNative 进行渲染
-//                                        renderView.init(container, pageName, pageData, size);
-//                                        renderView.resume();
-//
-//                                        console.log('[Desktop Render] ✅ 渲染层初始化完成');
-//                                    }
-//                                }, 500);
-//                            },
-//                            onFailure: function(error_code, error_message) {
-//                                console.error('[Desktop Render] ❌ 通知 JVM 失败:', error_message);
-//                            }
-//                        });
-//                    }
-//                } else {
-//                    console.error('[Desktop Render] ❌ 无法创建渲染视图委托器');
-//                }
-//            } else {
-//                console.error('[Desktop Render] ❌ desktop-render-layer 未加载');
-//            }
-//        """.trimIndent()
-//
-//        browser.executeJavaScript(initScript, "", 0)
     }
     
     /**
