@@ -23,7 +23,7 @@ import javax.swing.SwingUtilities
  * 负责管理 JVM 逻辑层和 JS 渲染层之间的通信
  * 参考 Android 的 KuiklyRenderJvmContextHandler 实现
  */
-class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
+class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKuiklyCoreEntry.Delegate {
     
     private var browser: CefBrowser? = null
     private val gson = Gson()
@@ -63,14 +63,14 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                 arg4: Any?,
                 arg5: Any?
             ): Any? {
-                println("[Desktop Render] 🌉 NativeBridge.callNative 被调用: methodId=$methodId, arg0=$arg0")
+                println("[Desktop Render][$pageName] 🌉 NativeBridge.callNative 被调用: methodId=$methodId, arg0=$arg0")
                 return this@DesktopRenderViewDelegator.callNative(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
             }
         }
         BridgeManager.registerNativeBridge(instanceId, nativeBridge)
         
-        println("[Desktop Render] ✅ 页面注册已触发，instanceId: $instanceId")
-        println("[Desktop Render] ✅ NativeBridge 已注册")
+        println("[Desktop Render][$pageName] ✅ 页面注册已触发，instanceId: $instanceId")
+        println("[Desktop Render][$pageName] ✅ NativeBridge 已注册")
     }
     
     /**
@@ -305,7 +305,7 @@ class DesktopRenderViewDelegator : IKuiklyCoreEntry.Delegate {
                        // 为啥不用Thread.UncaughtExceptionHandler来捕获线程异常：
                        // 使用UncaughtExceptionHandler来捕获的话，当异常发生时，KTV线程已经挂掉了，因此所有KTV页面都使用不了
                        // 使用try-catch的话，能保证KTV线程一直存活，KTV页面之间的异常不会影响到彼此
-                       println("[Desktop Render] ❌ callKotlinMethod 异常: ${t.message}")
+                       println("[Desktop Render][$pageName] ❌ callKotlinMethod 异常: ${t.message}")
                        t.printStackTrace()
                        // TODO: 实现异常通知机制，类似 Android 的 notifyException(t, ErrorReason.CALL_KOTLIN)
                    }
