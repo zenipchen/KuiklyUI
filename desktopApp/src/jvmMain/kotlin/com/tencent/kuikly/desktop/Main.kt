@@ -133,10 +133,10 @@ private fun runPageWithTwoPanels() {
         frame.jMenuBar = menuBar
 
         // 创建左侧面板 (ComposeAllSample)
-        val leftPanel = createBrowserPanel(cefApp, "ComposeAllSample", "左侧页面")
+        val leftPanel = createBrowserPanel(cefApp, "HelloWorldPage", "左侧页面")
         
         // 创建右侧面板 (TextDemo)
-        val rightPanel = createBrowserPanel(cefApp, "TextDemo", "右侧页面")
+        val rightPanel = createBrowserPanel(cefApp, "HelloWorldPage", "右侧页面")
 
         // 创建分割面板
         val splitPane = javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel)
@@ -162,7 +162,7 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
     val client = cefApp.createClient()
     
     // 创建桌面端渲染委托器
-    val renderDelegator = DesktopRenderViewDelegator()
+    val renderDelegator = DesktopRenderViewDelegator(pageName)
 
     // 配置消息路由器（用于 Web → JVM 通信）
     val msgRouter = CefMessageRouter.create()
@@ -188,30 +188,30 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
 
     // 添加加载状态监听
     client.addLoadHandler(object : CefLoadHandlerAdapter() {
-        override fun onLoadingStateChange(
-            browser: CefBrowser?,
-            isLoading: Boolean,
-            canGoBack: Boolean,
-            canGoForward: Boolean
-        ) {
-            if (!isLoading && browser != null) {
-                DebugConfig.success("Kuikly Desktop", "$panelTitle 页面加载完成，正在初始化渲染层...")
-                renderDelegator.setBrowser(browser)
-                renderDelegator.initRenderLayer()
-            }
-        }
+                    override fun onLoadingStateChange(
+                        browser: CefBrowser?,
+                        isLoading: Boolean,
+                        canGoBack: Boolean,
+                        canGoForward: Boolean
+                    ) {
+                        if (!isLoading && browser != null) {
+                            DebugConfig.success("Kuikly Desktop [$pageName]", "$panelTitle 页面加载完成，正在初始化渲染层...")
+                            renderDelegator.setBrowser(browser)
+                            renderDelegator.initRenderLayer()
+                        }
+                    }
 
         override fun onLoadStart(
             browser: CefBrowser?,
             frame: CefFrame?,
             transitionType: CefRequest.TransitionType?
         ) {
-            DebugConfig.debug("Kuikly Desktop", "$panelTitle 开始加载: ${frame?.url}")
+            DebugConfig.debug("Kuikly Desktop [$pageName]", "$panelTitle 开始加载: ${frame?.url}")
         }
 
         override fun onLoadEnd(browser: CefBrowser?, frame: CefFrame?, httpStatusCode: Int) {
             DebugConfig.debug(
-                "Kuikly Desktop",
+                "Kuikly Desktop [$pageName]",
                 "$panelTitle 加载结束: ${frame?.url} (状态码: $httpStatusCode)"
             )
         }
@@ -223,8 +223,8 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
             errorText: String?,
             failedUrl: String?
         ) {
-            DebugConfig.error("Kuikly Desktop", "$panelTitle 加载失败: $failedUrl")
-            DebugConfig.error("Kuikly Desktop", "错误: $errorText")
+            DebugConfig.error("Kuikly Desktop [$pageName]", "$panelTitle 加载失败: $failedUrl")
+            DebugConfig.error("Kuikly Desktop [$pageName]", "错误: $errorText")
         }
     })
 
@@ -232,7 +232,7 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
     val webRenderHtmlPath = File("../desktop_render_web.html").absolutePath
     val webRenderHtmlUrl = "file://$webRenderHtmlPath?pageName=$pageName"
 
-    DebugConfig.info("Kuikly Desktop", "$panelTitle 加载 HTML 页面: $webRenderHtmlUrl")
+    DebugConfig.info("Kuikly Desktop [$pageName]", "$panelTitle 加载 HTML 页面: $webRenderHtmlUrl")
 
     // 加载本地网页（包含 Web 渲染层）
     val browser = client.createBrowser(webRenderHtmlUrl, false, false)
@@ -247,7 +247,7 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
 
     // 添加开发者工具支持
     browser.getDevTools()
-    DebugConfig.debug("Kuikly Desktop", "$panelTitle 开发者工具已启用")
+    DebugConfig.debug("Kuikly Desktop [$pageName]", "$panelTitle 开发者工具已启用")
 
     return browser.uiComponent as JComponent
 }
