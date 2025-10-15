@@ -38,14 +38,218 @@ data class PageParam(val pageName: String = "")
 private var globalCefApp: CefApp? = null
 
 fun main(args: Array<String>) {
-    // 使用线程来同时启动两个窗口，避免阻塞
-    Thread {
-        runPage(PageParam(pageName = "ComposeAllSample"))
-    }.start()
+    // 在单个窗口内并排显示两个页面
+    runPageWithTwoPanels()
+}
+
+/**
+ * 在单个窗口内并排显示两个页面
+ */
+private fun runPageWithTwoPanels() {
+    try {
+        // 设置自定义的线程调度器，将任务调度到 Web 容器线程执行
+        setKuiklyThreadScheduler(object : KuiklyThreadScheduler {
+            override fun scheduleOnKuiklyThread(pagerId: String) {
+                // 将任务调度到 Web 容器线程执行
+                // 这里使用 SwingUtilities.invokeLater 来确保任务在 Web 容器线程中执行
+                SwingUtilities.invokeLater {
+                    try {
+                        DebugConfig.debug(
+                            "Kuikly Desktop",
+                            "在 Web 容器线程中执行任务: pagerId=$pagerId"
+                        )
+                        // 注意：这里的 task 参数需要从其他地方获取
+                        // 可能需要重新设计接口或者使用其他方式传递任务
+                    } catch (e: Exception) {
+                        DebugConfig.error(
+                            "Kuikly Desktop",
+                            "执行 Kuikly 线程任务失败: ${e.message}",
+                            e
+                        )
+                    }
+                }
+            }
+        })
+        DebugConfig.success("Kuikly Desktop", "Kuikly 线程调度器初始化完成")
+    } catch (e: Exception) {
+        DebugConfig.error("Kuikly Desktop", "Kuikly 线程调度器初始化失败: ${e.message}", e)
+    }
+
+    // 2. 构建 JCEF 应用（使用全局实例）
+    if (globalCefApp == null) {
+        DebugConfig.info("Kuikly Desktop", "正在初始化 Chromium...")
+        val builder = CefAppBuilder()
+
+        // 配置 JCEF 以减少线程警告
+        builder.setAppHandler(object : MavenCefAppHandlerAdapter() {
+            override fun onContextInitialized() {
+                DebugConfig.success("Kuikly Desktop", "JCEF 上下文初始化完成")
+            }
+        })
+
+        // 应用性能优化参数
+        val performanceArgs = DebugConfig.getPerformanceArgs()
+        val debugArgs = DebugConfig.getDebugArgs()
+
+        DebugConfig.debug("Kuikly Desktop", "应用性能优化参数: ${performanceArgs.size} 个")
+        DebugConfig.debug("Kuikly Desktop", "应用调试参数: ${debugArgs.size} 个")
+
+        // 添加性能优化参数
+        performanceArgs.forEach { arg ->
+            builder.addJcefArgs(arg)
+        }
+
+        // 添加调试参数
+        debugArgs.forEach { arg ->
+            builder.addJcefArgs(arg)
+        }
+
+        // 初始化 CEF
+        globalCefApp = builder.build()
+        DebugConfig.success("Kuikly Desktop", "全局 CEF 应用已初始化")
+    } else {
+        DebugConfig.info("Kuikly Desktop", "使用已存在的全局 CEF 应用")
+    }
+
+    val cefApp = globalCefApp!!
+
+    SwingUtilities.invokeLater {
+        // 创建主窗口
+        val frame = JFrame("Kuikly Desktop - 双页面并排显示")
+        frame.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
+        frame.layout = BorderLayout()
+        frame.size = Dimension(1200, 800) // 更宽的窗口以容纳两个页面
+
+        // 创建菜单栏
+        val menuBar = JMenuBar()
+        val devMenu = JMenu("开发者工具")
+
+        val openDevToolsItem = JMenuItem("打开开发者工具 (F12)")
+        val inspectElementItem = JMenuItem("检查元素 (Ctrl+Shift+I)")
+
+        devMenu.add(openDevToolsItem)
+        devMenu.add(inspectElementItem)
+        menuBar.add(devMenu)
+        frame.jMenuBar = menuBar
+
+        // 创建左侧面板 (ComposeAllSample)
+        val leftPanel = createBrowserPanel(cefApp, "ComposeAllSample", "左侧页面")
+        
+        // 创建右侧面板 (TextDemo)
+        val rightPanel = createBrowserPanel(cefApp, "TextDemo", "右侧页面")
+
+        // 创建分割面板
+        val splitPane = javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel)
+        splitPane.dividerLocation = 600 // 设置分割线位置
+        splitPane.isOneTouchExpandable = true
+        splitPane.isContinuousLayout = true
+
+        // 将分割面板添加到主窗口
+        frame.add(splitPane, BorderLayout.CENTER)
+
+        frame.isVisible = true
+
+        DebugConfig.success("Kuikly Desktop", "双页面并排窗口已启动！")
+        DebugConfig.info("Kuikly Desktop", "左侧显示 ComposeAllSample，右侧显示 TextDemo")
+    }
+}
+
+/**
+ * 创建浏览器面板
+ */
+private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: String): JComponent {
+    // 创建浏览器客户端
+    val client = cefApp.createClient()
     
-    Thread {
-        runPage(PageParam(pageName = "TextDemo"))
-    }.start()
+    // 创建桌面端渲染委托器
+    val renderDelegator = DesktopRenderViewDelegator()
+
+    // 配置消息路由器（用于 Web → JVM 通信）
+    val msgRouter = CefMessageRouter.create()
+    msgRouter.addHandler(object : CefMessageRouterHandlerAdapter() {
+        override fun onQuery(
+            browser: CefBrowser?,
+            frame: CefFrame?,
+            queryId: Long,
+            request: String?,
+            persistent: Boolean,
+            callback: CefQueryCallback?
+        ): Boolean {
+            // 处理来自 Web 的调用
+            if (request != null && browser != null) {
+                return renderDelegator.handleCefQuery(
+                    browser, frame, queryId.toInt(), request, persistent, callback
+                )
+            }
+            return false
+        }
+    }, true)
+    client.addMessageRouter(msgRouter)
+
+    // 添加加载状态监听
+    client.addLoadHandler(object : CefLoadHandlerAdapter() {
+        override fun onLoadingStateChange(
+            browser: CefBrowser?,
+            isLoading: Boolean,
+            canGoBack: Boolean,
+            canGoForward: Boolean
+        ) {
+            if (!isLoading && browser != null) {
+                DebugConfig.success("Kuikly Desktop", "$panelTitle 页面加载完成，正在初始化渲染层...")
+                renderDelegator.setBrowser(browser)
+                renderDelegator.initRenderLayer()
+            }
+        }
+
+        override fun onLoadStart(
+            browser: CefBrowser?,
+            frame: CefFrame?,
+            transitionType: CefRequest.TransitionType?
+        ) {
+            DebugConfig.debug("Kuikly Desktop", "$panelTitle 开始加载: ${frame?.url}")
+        }
+
+        override fun onLoadEnd(browser: CefBrowser?, frame: CefFrame?, httpStatusCode: Int) {
+            DebugConfig.debug(
+                "Kuikly Desktop",
+                "$panelTitle 加载结束: ${frame?.url} (状态码: $httpStatusCode)"
+            )
+        }
+
+        override fun onLoadError(
+            browser: CefBrowser?,
+            frame: CefFrame?,
+            errorCode: CefLoadHandler.ErrorCode?,
+            errorText: String?,
+            failedUrl: String?
+        ) {
+            DebugConfig.error("Kuikly Desktop", "$panelTitle 加载失败: $failedUrl")
+            DebugConfig.error("Kuikly Desktop", "错误: $errorText")
+        }
+    })
+
+    // 创建浏览器实例 - 使用本地网页加载 Web 渲染层，并传递 pageName 参数
+    val webRenderHtmlPath = File("../desktop_render_web.html").absolutePath
+    val webRenderHtmlUrl = "file://$webRenderHtmlPath?pageName=$pageName"
+
+    DebugConfig.info("Kuikly Desktop", "$panelTitle 加载 HTML 页面: $webRenderHtmlUrl")
+
+    // 加载本地网页（包含 Web 渲染层）
+    val browser = client.createBrowser(webRenderHtmlUrl, false, false)
+
+    // 为浏览器组件添加边框，便于调试（仅在调试模式下）
+    if (DebugConfig.DEBUG_ENABLED) {
+        val browserComponent = browser.uiComponent
+        if (browserComponent is JComponent) {
+            browserComponent.border = BorderFactory.createLineBorder(Color.BLUE, 2)
+        }
+    }
+
+    // 添加开发者工具支持
+    browser.getDevTools()
+    DebugConfig.debug("Kuikly Desktop", "$panelTitle 开发者工具已启用")
+
+    return browser.uiComponent as JComponent
 }
 
 /**
