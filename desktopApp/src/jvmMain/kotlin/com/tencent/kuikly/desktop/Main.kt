@@ -38,8 +38,7 @@ data class PageParam(val pageName: String = "")
 private var globalCefApp: CefApp? = null
 
 fun main(args: Array<String>) {
-    // 直接运行两个页面，显示两个窗口
-    // 使用线程来同时启动两个窗口
+    // 使用线程来同时启动两个窗口，避免阻塞
     Thread {
         runPage(PageParam(pageName = "ComposeAllSample"))
     }.start()
