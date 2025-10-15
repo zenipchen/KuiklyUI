@@ -36,6 +36,7 @@ data class PageParam(val pageName: String = "")
 
 // 全局 CEF 应用实例
 private var globalCefApp: CefApp? = null
+private var globalInstanceId = 0
 
 fun main(args: Array<String>) {
     // 在单个窗口内并排显示两个页面
@@ -164,6 +165,9 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
     // 创建桌面端渲染委托器
     val renderDelegator = DesktopRenderViewDelegator(pageName)
 
+    val instanceId = globalInstanceId
+    globalInstanceId++
+
     // 配置消息路由器（用于 Web → JVM 通信）
     val msgRouter = CefMessageRouter.create()
     msgRouter.addHandler(object : CefMessageRouterHandlerAdapter() {
@@ -230,7 +234,7 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
 
     // 创建浏览器实例 - 使用本地网页加载 Web 渲染层，并传递 pageName 参数
     val webRenderHtmlPath = File("../desktop_render_web.html").absolutePath
-    val webRenderHtmlUrl = "file://$webRenderHtmlPath?pageName=$pageName"
+    val webRenderHtmlUrl = "file://$webRenderHtmlPath?pageName=$pageName&instanceId=$instanceId"
 
     DebugConfig.info("Kuikly Desktop [$pageName]", "$panelTitle 加载 HTML 页面: $webRenderHtmlUrl")
 
