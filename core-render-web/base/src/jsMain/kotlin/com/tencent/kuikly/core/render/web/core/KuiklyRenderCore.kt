@@ -35,7 +35,7 @@ import org.w3c.dom.Element
  */
 class KuiklyRenderCore : IKuiklyRenderCore {
     // Unique identifier id for kuikly page
-    private val instanceId: String = instanceIdProducer++.toString()
+    private val instanceId: String
 
     // Kuikly page rendering layer protocol handler
     private var renderLayerHandler: IKuiklyRenderLayerHandler? = null
@@ -48,6 +48,14 @@ class KuiklyRenderCore : IKuiklyRenderCore {
 
     // Context execution environment instance
     private val contextHandler = KuiklyRenderContextHandler()
+
+    /**
+     * Constructor for KuiklyRenderCore
+     * @param customInstanceId Optional custom instance ID from URL parameters
+     */
+    constructor(customInstanceId: String? = null) {
+        instanceId = customInstanceId ?: instanceIdProducer++.toString()
+    }
 
     /**
      * Initialize rendering core
