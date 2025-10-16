@@ -1,5 +1,7 @@
 package com.tencent.kuikly.desktop
 
+import com.tencent.kuikly.desktop.sdk.KuiklyDesktopRenderSdk
+
 /**
  * CEF 查询回调适配器
  * 

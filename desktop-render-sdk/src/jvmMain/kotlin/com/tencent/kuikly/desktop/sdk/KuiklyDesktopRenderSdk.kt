@@ -1,4 +1,4 @@
-package com.tencent.kuikly.desktop
+package com.tencent.kuikly.desktop.sdk
 
 import com.google.gson.Gson
 import com.tencent.kuikly.core.IKuiklyCoreEntry
@@ -492,7 +492,7 @@ class KuiklyDesktopRenderSdk(private val pageName: String = "Unknown") : IKuikly
         
         try {
             // 从 resources 加载 HTML 模板
-            val htmlResourcePath = "/com/tencent/kuikly/desktop/desktop-render.html"
+            val htmlResourcePath = "/com/tencent/kuikly/desktop/sdk/desktop-render.html"
             val htmlInputStream: InputStream? = javaClass.getResourceAsStream(htmlResourcePath)
             
             if (htmlInputStream == null) {
@@ -503,7 +503,7 @@ class KuiklyDesktopRenderSdk(private val pageName: String = "Unknown") : IKuikly
             val htmlContent = htmlInputStream.bufferedReader().use { it.readText() }
             
             // 从 resources 加载 JavaScript 文件
-            val jsResourcePath = "/com/tencent/kuikly/desktop/desktopRenderLayer.js"
+            val jsResourcePath = "/com/tencent/kuikly/desktop/sdk/desktopRenderLayer.js"
             val jsInputStream: InputStream? = javaClass.getResourceAsStream(jsResourcePath)
             
             if (jsInputStream == null) {
