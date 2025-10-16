@@ -35,8 +35,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var NoSuchElementException_init_$Create$ = kotlin_kotlin.$_$.p;
   var IllegalStateException_init_$Create$ = kotlin_kotlin.$_$.n;
   var initMetadataForClass = kotlin_kotlin.$_$.z1;
-  var KtList = kotlin_kotlin.$_$.x;
   var Iterable = kotlin_kotlin.$_$.w;
+  var KtList = kotlin_kotlin.$_$.x;
   var Collection = kotlin_kotlin.$_$.v;
   var VOID = kotlin_kotlin.$_$.b;
   var ensureNotNull = kotlin_kotlin.$_$.u3;
@@ -56,9 +56,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   initMetadataForObject(CrossPlatFeature, 'CrossPlatFeature');
   initMetadataForObject(BridgeManager, 'BridgeManager');
   initMetadataForClass(FastArrayList$listIterator$1);
-  initMetadataForClass(FastArrayList, 'FastArrayList', FastArrayList_init_$Create$, VOID, [KtList, Iterable, Collection]);
+  initMetadataForClass(FastArrayList, 'FastArrayList', FastArrayList_init_$Create$, VOID, [Iterable, KtList, Collection]);
   initMetadataForClass(FastHashSet$iterator$1);
-  initMetadataForClass(FastHashSet, 'FastHashSet', FastHashSet_init_$Create$, VOID, [KtSet, Iterable, Collection]);
+  initMetadataForClass(FastHashSet, 'FastHashSet', FastHashSet_init_$Create$, VOID, [Iterable, KtSet, Collection]);
   initMetadataForClass(FastLinkedHashMap$entries$1, VOID, VOID, VOID, [Entry]);
   initMetadataForClass(FastLinkedHashMap, 'FastLinkedHashMap', FastLinkedHashMap_init_$Create$, VOID, [KtMap]);
   initMetadataForCompanion(Companion);
@@ -458,8 +458,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var initMetadataForObject = kotlin_kotlin.$_$.c2;
   var NoSuchElementException_init_$Create$ = kotlin_kotlin.$_$.p;
   var IllegalArgumentException_init_$Create$ = kotlin_kotlin.$_$.m;
-  var KtList = kotlin_kotlin.$_$.x;
   var Iterable = kotlin_kotlin.$_$.w;
+  var KtList = kotlin_kotlin.$_$.x;
   var Collection = kotlin_kotlin.$_$.v;
   var toString_0 = kotlin_kotlin.$_$.a4;
   var Entry = kotlin_kotlin.$_$.y;
@@ -473,6 +473,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var KtMap = kotlin_kotlin.$_$.a1;
   var Enum = kotlin_kotlin.$_$.n3;
   var isInterface = kotlin_kotlin.$_$.f2;
+  var objectCreate = kotlin_kotlin.$_$.n2;
   var numberToInt = kotlin_kotlin.$_$.l2;
   var equals = kotlin_kotlin.$_$.u1;
   var Pair = kotlin_kotlin.$_$.r3;
@@ -524,7 +525,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var NumberFormatException = kotlin_kotlin.$_$.q3;
   var toLong = kotlin_kotlin.$_$.h3;
   var getKClassFromExpression = kotlin_kotlin.$_$.a;
-  var objectCreate = kotlin_kotlin.$_$.n2;
   var Exception_init_$Init$ = kotlin_kotlin.$_$.l;
   var captureStack = kotlin_kotlin.$_$.q1;
   var Char__toInt_impl_vasixd = kotlin_kotlin.$_$.r;
@@ -558,7 +558,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   initMetadataForClass(TextPostProcessorInput, 'TextPostProcessorInput');
   initMetadataForObject(KuiklyRenderAdapterManager, 'KuiklyRenderAdapterManager');
   initMetadataForClass(FastMutableList$listIterator$1);
-  initMetadataForClass(FastMutableList, 'FastMutableList', VOID, VOID, [KtList, Iterable, Collection]);
+  initMetadataForClass(FastMutableList, 'FastMutableList', VOID, VOID, [Iterable, KtList, Collection]);
   initMetadataForClass(FastMutableMap$entries$1, VOID, VOID, VOID, [Entry]);
   initMetadataForClass(FastMutableMap, 'FastMutableMap', VOID, VOID, [KtMap]);
   initMetadataForCompanion(Companion_0);
@@ -570,7 +570,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   initMetadataForClass(KuiklyRenderContextHandler, 'KuiklyRenderContextHandler', KuiklyRenderContextHandler);
   initMetadataForClass(KuiklyRenderCoreExecuteMode, 'KuiklyRenderCoreExecuteMode', VOID, Enum);
   initMetadataForCompanion(Companion_2);
-  initMetadataForClass(KuiklyRenderCore, 'KuiklyRenderCore', KuiklyRenderCore);
+  initMetadataForClass(KuiklyRenderCore, 'KuiklyRenderCore', KuiklyRenderCore_init_$Create$);
   initMetadataForCompanion(Companion_3);
   initMetadataForClass(KRCSSAnimation, 'KRCSSAnimation');
   initMetadataForClass(KRCSSAnimationHandler, 'KRCSSAnimationHandler');
@@ -780,10 +780,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     delayMs = delayMs === VOID ? 0 : delayMs;
     var tmp;
     if ($super === VOID) {
-      this.gi(delayMs, task);
+      this.mi(delayMs, task);
       tmp = Unit_instance;
     } else {
-      tmp = $super.gi.call(this, delayMs, task);
+      tmp = $super.mi.call(this, delayMs, task);
     }
     return tmp;
   }
@@ -875,16 +875,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function initRenderCore($this, pageName, params, size) {
     dispatchLifecycleStateChanged($this, 2);
+    var instanceId = (new URLSearchParams(kuiklyWindow.location.search)).get('instanceId');
     var tmp = $this;
     // Inline function 'kotlin.apply' call
-    var this_0 = createRenderCore($this);
+    var this_0 = createRenderCore($this, instanceId);
     var tmp_0 = generateWithParams($this, params, size);
     this_0.le($this, pageName, tmp_0, new KuiklyRenderView$initRenderCore$1($this));
     tmp.fe_1 = this_0;
     dispatchLifecycleStateChanged($this, 3);
   }
-  function createRenderCore($this) {
-    return new KuiklyRenderCore();
+  function createRenderCore($this, instanceId) {
+    return KuiklyRenderCore_init_$Create$(instanceId);
   }
   function initPerformanceManager($this, pageName) {
     $this.ie_1 = new KRPerformanceManager(pageName, KuiklyRenderCoreExecuteMode_JS_getInstance(), listOf([KRMonitorType_LAUNCH_getInstance(), KRMonitorType_MEMORY_getInstance()]));
@@ -1930,8 +1931,26 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     KuiklyRenderCoreExecuteMode_initEntries();
     return KuiklyRenderCoreExecuteMode_JS_instance;
   }
+  function KuiklyRenderCore_init_$Init$(customInstanceId, $this) {
+    customInstanceId = customInstanceId === VOID ? null : customInstanceId;
+    KuiklyRenderCore.call($this);
+    var tmp = $this;
+    var tmp_0;
+    if (customInstanceId == null) {
+      var _unary__edvuaz = Companion_getInstance_2().gi_1;
+      Companion_getInstance_2().gi_1 = _unary__edvuaz.u1();
+      tmp_0 = _unary__edvuaz.toString();
+    } else {
+      tmp_0 = customInstanceId;
+    }
+    tmp.hi_1 = tmp_0;
+    return $this;
+  }
+  function KuiklyRenderCore_init_$Create$(customInstanceId) {
+    return KuiklyRenderCore_init_$Init$(customInstanceId, objectCreate(protoOf(KuiklyRenderCore)));
+  }
   function performOnContextQueue($this, delayMs, task) {
-    KuiklyRenderCoreContextScheduler_instance.gi(numberToInt(delayMs), task);
+    KuiklyRenderCoreContextScheduler_instance.mi(numberToInt(delayMs), task);
   }
   function performOnContextQueue$default($this, delayMs, task, $super) {
     delayMs = delayMs === VOID ? 0.0 : delayMs;
@@ -1957,10 +1976,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return method.equals(KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCalculateRenderViewSize_getInstance()) || method.equals(KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCreateShadow_getInstance()) || method.equals(KuiklyRenderNativeMethod_KuiklyRenderNativeMethodRemoveShadow_getInstance()) || method.equals(KuiklyRenderNativeMethod_KuiklyRenderNativeMethodSetShadowForView_getInstance()) || method.equals(KuiklyRenderNativeMethod_KuiklyRenderNativeMethodSetShadowProp_getInstance()) || method.equals(KuiklyRenderNativeMethod_KuiklyRenderNativeMethodSetTimeout_getInstance()) || method.equals(KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCallShadowMethod_getInstance());
   }
   function performNativeMethodWithMethod($this, method, args) {
-    if (KuiklyProcessor_instance.ni_1) {
-      Log_instance.hi(['callNative: ' + method.toString() + ', ' + JSON.stringify(args)]);
+    if (KuiklyProcessor_instance.ti_1) {
+      Log_instance.ni(['callNative: ' + method.toString() + ', ' + JSON.stringify(args)]);
     }
-    var cb = get($this.ri_1, method.vh_1);
+    var cb = get($this.ki_1, method.vh_1);
     if (cb == null)
       null;
     else {
@@ -1968,11 +1987,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       if (isSyncMethodCall($this, method, args)) {
         return cb(method, args);
       } else {
-        var tmp0_safe_receiver = $this.qi_1;
+        var tmp0_safe_receiver = $this.ji_1;
         if (tmp0_safe_receiver == null)
           null;
         else {
-          tmp0_safe_receiver.ti(VOID, KuiklyRenderCore$performNativeMethodWithMethod$lambda(cb, method, args));
+          tmp0_safe_receiver.ui(VOID, KuiklyRenderCore$performNativeMethodWithMethod$lambda(cb, method, args));
         }
       }
     }
@@ -1980,17 +1999,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function initContextHandler($this, url, params, contextInitCallback) {
     // Inline function 'kotlin.apply' call
-    var this_0 = $this.si_1;
+    var this_0 = $this.li_1;
     this_0.ci(KuiklyRenderCore$initContextHandler$lambda($this));
     contextInitCallback.vf();
-    this_0.ai(url, $this.oi_1);
+    this_0.ai(url, $this.hi_1);
     contextInitCallback.wf();
     contextInitCallback.xf();
-    this_0.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodCreateInstance_getInstance(), new (Function.bind.apply(Array, [null, $this.oi_1, url, params]))());
+    this_0.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodCreateInstance_getInstance(), new (Function.bind.apply(Array, [null, $this.hi_1, url, params]))());
     contextInitCallback.yf();
   }
   function createRenderView($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2007,13 +2026,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$9 = args[2];
-      tmp0_safe_receiver.ui(tmp_0, tmp$ret$9);
+      tmp0_safe_receiver.vi(tmp_0, tmp$ret$9);
       tmp = Unit_instance;
     }
     return tmp;
   }
   function removeRenderView($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2024,13 +2043,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$4 = args[1];
-      tmp0_safe_receiver.vi(tmp$ret$4);
+      tmp0_safe_receiver.wi(tmp$ret$4);
       tmp = Unit_instance;
     }
     return tmp;
   }
   function insertSubRenderView($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2053,7 +2072,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$14 = args[3];
-      tmp0_safe_receiver.wi(tmp_0, tmp_1, tmp$ret$14);
+      tmp0_safe_receiver.xi(tmp_0, tmp_1, tmp$ret$14);
       tmp = Unit_instance;
     }
     return tmp;
@@ -2079,7 +2098,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       var tag = args[1];
       propValue = new KuiklyRenderCallback(KuiklyRenderCore$setViewProp$lambda($this, tag, args));
     }
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2096,7 +2115,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$17 = args[2];
-      tmp0_safe_receiver.xi(tmp_0, tmp$ret$17, propValue);
+      tmp0_safe_receiver.yi(tmp_0, tmp$ret$17, propValue);
       tmp = Unit_instance;
     }
     return tmp;
@@ -2127,7 +2146,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     // Inline function 'kotlin.js.asDynamic' call
     var tmp$ret$19 = args[5];
     var frame = new DOMRect(tmp, tmp_0, tmp_1, tmp$ret$19);
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp_2;
     if (tmp0_safe_receiver == null) {
       tmp_2 = null;
@@ -2138,13 +2157,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$24 = args[1];
-      tmp0_safe_receiver.yi(tmp$ret$24, frame);
+      tmp0_safe_receiver.zi(tmp$ret$24, frame);
       tmp_2 = Unit_instance;
     }
     return tmp_2;
   }
   function calculateRenderViewSize($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2167,7 +2186,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$14 = args[3];
-      tmp = tmp0_safe_receiver.zi(tmp_0, new Pair(tmp_1, tmp$ret$14));
+      tmp = tmp0_safe_receiver.aj(tmp_0, new Pair(tmp_1, tmp$ret$14));
     }
     var size = tmp;
     var tmp_2;
@@ -2245,7 +2264,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       tmp = null;
     }
     var callback = tmp;
-    var tmp1_safe_receiver = $this.pi_1;
+    var tmp1_safe_receiver = $this.ii_1;
     var tmp_1;
     if (tmp1_safe_receiver == null) {
       tmp_1 = null;
@@ -2268,13 +2287,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$20 = args[3];
-      tmp1_safe_receiver.aj(tmp_2, tmp_3, tmp$ret$20, callback);
+      tmp1_safe_receiver.bj(tmp_2, tmp_3, tmp$ret$20, callback);
       tmp_1 = Unit_instance;
     }
     return tmp_1;
   }
   function callShadowMethod($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2297,7 +2316,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$14 = args[3];
-      tmp = tmp0_safe_receiver.bj(tmp_0, tmp_1, tmp$ret$14);
+      tmp = tmp0_safe_receiver.cj(tmp_0, tmp_1, tmp$ret$14);
     }
     return tmp;
   }
@@ -2322,7 +2341,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       tmp = null;
     }
     var callback = tmp;
-    var tmp1_safe_receiver = $this.pi_1;
+    var tmp1_safe_receiver = $this.ii_1;
     var tmp_1;
     if (tmp1_safe_receiver == null) {
       tmp_1 = null;
@@ -2343,12 +2362,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.asDynamic' call
       // Inline function 'kotlin.js.unsafeCast' call
       var tmp$ret$18 = args[3];
-      tmp_1 = tmp1_safe_receiver.cj(tmp_2, tmp_3, tmp$ret$18, callback);
+      tmp_1 = tmp1_safe_receiver.dj(tmp_2, tmp_3, tmp$ret$18, callback);
     }
     return tmp_1;
   }
   function createShadow($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2365,13 +2384,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$9 = args[2];
-      tmp0_safe_receiver.dj(tmp_0, tmp$ret$9);
+      tmp0_safe_receiver.ej(tmp_0, tmp$ret$9);
       tmp = Unit_instance;
     }
     return tmp;
   }
   function removeShadow($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2382,13 +2401,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$4 = args[1];
-      tmp0_safe_receiver.ej(tmp$ret$4);
+      tmp0_safe_receiver.fj(tmp$ret$4);
       tmp = Unit_instance;
     }
     return tmp;
   }
   function setShadowProp($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2411,13 +2430,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$14 = args[3];
-      tmp0_safe_receiver.fj(tmp_0, tmp_1, tmp$ret$14);
+      tmp0_safe_receiver.gj(tmp_0, tmp_1, tmp$ret$14);
       tmp = Unit_instance;
     }
     return tmp;
   }
   function setShadow_0($this, method, args) {
-    var tmp0_safe_receiver = $this.pi_1;
+    var tmp0_safe_receiver = $this.ii_1;
     var tmp;
     if (tmp0_safe_receiver == null) {
       tmp = null;
@@ -2428,7 +2447,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
       var tmp$ret$4 = args[1];
-      tmp = tmp0_safe_receiver.gj(tmp$ret$4);
+      tmp = tmp0_safe_receiver.hj(tmp$ret$4);
     }
     var tmp1_elvis_lhs = tmp;
     var tmp_0;
@@ -2438,11 +2457,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       tmp_0 = tmp1_elvis_lhs;
     }
     var shadow = tmp_0;
-    var tmp2_safe_receiver = $this.qi_1;
+    var tmp2_safe_receiver = $this.ji_1;
     if (tmp2_safe_receiver == null)
       null;
     else {
-      tmp2_safe_receiver.ti(VOID, KuiklyRenderCore$setShadow$lambda($this, args, shadow));
+      tmp2_safe_receiver.ui(VOID, KuiklyRenderCore$setShadow$lambda($this, args, shadow));
     }
     return null;
   }
@@ -2458,37 +2477,37 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function initNativeMethodRegisters($this) {
     var tmp = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCreateRenderView_getInstance().vh_1;
-    set($this.ri_1, tmp, KuiklyRenderCore$createRenderView$ref($this));
+    set($this.ki_1, tmp, KuiklyRenderCore$createRenderView$ref($this));
     var tmp_0 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodRemoveRenderView_getInstance().vh_1;
-    set($this.ri_1, tmp_0, KuiklyRenderCore$removeRenderView$ref($this));
+    set($this.ki_1, tmp_0, KuiklyRenderCore$removeRenderView$ref($this));
     var tmp_1 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodInsertSubRenderView_getInstance().vh_1;
-    set($this.ri_1, tmp_1, KuiklyRenderCore$insertSubRenderView$ref($this));
+    set($this.ki_1, tmp_1, KuiklyRenderCore$insertSubRenderView$ref($this));
     var tmp_2 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodSetViewProp_getInstance().vh_1;
-    set($this.ri_1, tmp_2, KuiklyRenderCore$setViewProp$ref($this));
+    set($this.ki_1, tmp_2, KuiklyRenderCore$setViewProp$ref($this));
     var tmp_3 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodSetRenderViewFrame_getInstance().vh_1;
-    set($this.ri_1, tmp_3, KuiklyRenderCore$setRenderViewFrame$ref($this));
+    set($this.ki_1, tmp_3, KuiklyRenderCore$setRenderViewFrame$ref($this));
     var tmp_4 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCalculateRenderViewSize_getInstance().vh_1;
-    set($this.ri_1, tmp_4, KuiklyRenderCore$calculateRenderViewSize$ref($this));
+    set($this.ki_1, tmp_4, KuiklyRenderCore$calculateRenderViewSize$ref($this));
     var tmp_5 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCallViewMethod_getInstance().vh_1;
-    set($this.ri_1, tmp_5, KuiklyRenderCore$callViewMethod$ref($this));
+    set($this.ki_1, tmp_5, KuiklyRenderCore$callViewMethod$ref($this));
     var tmp_6 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCallModuleMethod_getInstance().vh_1;
-    set($this.ri_1, tmp_6, KuiklyRenderCore$callModuleMethod$ref($this));
+    set($this.ki_1, tmp_6, KuiklyRenderCore$callModuleMethod$ref($this));
     var tmp_7 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCreateShadow_getInstance().vh_1;
-    set($this.ri_1, tmp_7, KuiklyRenderCore$createShadow$ref($this));
+    set($this.ki_1, tmp_7, KuiklyRenderCore$createShadow$ref($this));
     var tmp_8 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodRemoveShadow_getInstance().vh_1;
-    set($this.ri_1, tmp_8, KuiklyRenderCore$removeShadow$ref($this));
+    set($this.ki_1, tmp_8, KuiklyRenderCore$removeShadow$ref($this));
     var tmp_9 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodSetShadowProp_getInstance().vh_1;
-    set($this.ri_1, tmp_9, KuiklyRenderCore$setShadowProp$ref($this));
+    set($this.ki_1, tmp_9, KuiklyRenderCore$setShadowProp$ref($this));
     var tmp_10 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodSetShadowForView_getInstance().vh_1;
-    set($this.ri_1, tmp_10, KuiklyRenderCore$setShadow$ref($this));
+    set($this.ki_1, tmp_10, KuiklyRenderCore$setShadow$ref($this));
     var tmp_11 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodSetTimeout_getInstance().vh_1;
-    set($this.ri_1, tmp_11, KuiklyRenderCore$setTimeout$ref($this));
+    set($this.ki_1, tmp_11, KuiklyRenderCore$setTimeout$ref($this));
     var tmp_12 = KuiklyRenderNativeMethod_KuiklyRenderNativeMethodCallShadowMethod_getInstance().vh_1;
-    set($this.ri_1, tmp_12, KuiklyRenderCore$callShadowMethod$ref($this));
+    set($this.ki_1, tmp_12, KuiklyRenderCore$callShadowMethod$ref($this));
   }
   function Companion_2() {
     Companion_instance_2 = this;
-    this.hj_1 = new Long(0, 0);
+    this.gi_1 = new Long(0, 0);
   }
   var Companion_instance_2;
   function Companion_getInstance_2() {
@@ -2498,7 +2517,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function KuiklyRenderCore$init$lambda(this$0) {
     return function () {
-      this$0.si_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodLayoutView_getInstance(), new (Function.bind.apply(Array, [null, this$0.oi_1]))());
+      this$0.li_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodLayoutView_getInstance(), new (Function.bind.apply(Array, [null, this$0.hi_1]))());
       return Unit_instance;
     };
   }
@@ -2510,14 +2529,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function KuiklyRenderCore$sendEvent$lambda(this$0, $event, $data) {
     return function () {
-      this$0.si_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodUpdateInstance_getInstance(), new (Function.bind.apply(Array, [null, this$0.oi_1, $event, $data]))());
+      this$0.li_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodUpdateInstance_getInstance(), new (Function.bind.apply(Array, [null, this$0.hi_1, $event, $data]))());
       return Unit_instance;
     };
   }
   function KuiklyRenderCore$destroy$lambda(this$0) {
     return function () {
-      this$0.si_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodDestroyInstance_getInstance(), new (Function.bind.apply(Array, [null, this$0.oi_1]))());
-      this$0.si_1.rg();
+      this$0.li_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodDestroyInstance_getInstance(), new (Function.bind.apply(Array, [null, this$0.hi_1]))());
+      this$0.li_1.rg();
       return Unit_instance;
     };
   }
@@ -2539,7 +2558,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.asDynamic' call
       // Inline function 'kotlin.js.unsafeCast' call
       var tmp$ret$2 = $args[2];
-      this$0.si_1.bi(tmp, new (Function.bind.apply(Array, [null, this$0.oi_1, $tag, tmp$ret$2, $result]))());
+      this$0.li_1.bi(tmp, new (Function.bind.apply(Array, [null, this$0.hi_1, $tag, tmp$ret$2, $result]))());
       return Unit_instance;
     };
   }
@@ -2551,7 +2570,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function KuiklyRenderCore$callViewMethod$lambda$lambda(this$0, $callbackId, $result) {
     return function () {
-      this$0.si_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodFireCallback_getInstance(), new (Function.bind.apply(Array, [null, this$0.oi_1, $callbackId, $result]))());
+      this$0.li_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodFireCallback_getInstance(), new (Function.bind.apply(Array, [null, this$0.hi_1, $callbackId, $result]))());
       return Unit_instance;
     };
   }
@@ -2563,7 +2582,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function KuiklyRenderCore$callModuleMethod$lambda$lambda(this$0, $callbackId, $result) {
     return function () {
-      this$0.si_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodFireCallback_getInstance(), new (Function.bind.apply(Array, [null, this$0.oi_1, $callbackId, $result]))());
+      this$0.li_1.bi(KuiklyRenderContextMethod_KuiklyRenderContextMethodFireCallback_getInstance(), new (Function.bind.apply(Array, [null, this$0.hi_1, $callbackId, $result]))());
       return Unit_instance;
     };
   }
@@ -2575,7 +2594,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function KuiklyRenderCore$setShadow$lambda(this$0, $args, $shadow) {
     return function () {
-      var tmp0_safe_receiver = this$0.pi_1;
+      var tmp0_safe_receiver = this$0.ii_1;
       if (tmp0_safe_receiver == null)
         null;
       else {
@@ -2597,7 +2616,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       // Inline function 'kotlin.js.asDynamic' call
       // Inline function 'kotlin.js.unsafeCast' call
       var tmp$ret$2 = $args[2];
-      this$0.si_1.bi(tmp, new (Function.bind.apply(Array, [null, this$0.oi_1, tmp$ret$2]))());
+      this$0.li_1.bi(tmp, new (Function.bind.apply(Array, [null, this$0.hi_1, tmp$ret$2]))());
       return Unit_instance;
     };
   }
@@ -2699,25 +2718,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     l.callableName = 'callShadowMethod';
     return l;
   }
-  function KuiklyRenderCore() {
-    Companion_getInstance_2();
-    var tmp = this;
-    var _unary__edvuaz = Companion_getInstance_2().hj_1;
-    Companion_getInstance_2().hj_1 = _unary__edvuaz.u1();
-    tmp.oi_1 = _unary__edvuaz.toString();
-    this.pi_1 = null;
-    this.qi_1 = null;
-    this.ri_1 = new Map();
-    this.si_1 = new KuiklyRenderContextHandler();
-  }
   protoOf(KuiklyRenderCore).le = function (renderView, url, params, contextInitCallback) {
     var tmp = this;
-    tmp.qi_1 = new KuiklyRenderCoreUIScheduler(KuiklyRenderCore$init$lambda(this));
+    tmp.ji_1 = new KuiklyRenderCoreUIScheduler(KuiklyRenderCore$init$lambda(this));
     var tmp_0 = this;
     // Inline function 'kotlin.apply' call
     var this_0 = new KuiklyRenderLayerHandler();
     this_0.oj(renderView);
-    tmp_0.pi_1 = this_0;
+    tmp_0.ii_1 = this_0;
     initNativeMethodRegisters(this);
     performOnContextQueue$default(this, VOID, KuiklyRenderCore$init$lambda_0(this, url, params, contextInitCallback));
   };
@@ -2725,11 +2733,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     performOnContextQueue$default(this, VOID, KuiklyRenderCore$sendEvent$lambda(this, event, data));
   };
   protoOf(KuiklyRenderCore).ug = function (name) {
-    var tmp0_safe_receiver = this.pi_1;
+    var tmp0_safe_receiver = this.ii_1;
     return tmp0_safe_receiver == null ? null : tmp0_safe_receiver.ug(name);
   };
   protoOf(KuiklyRenderCore).rg = function () {
-    var tmp0_safe_receiver = this.pi_1;
+    var tmp0_safe_receiver = this.ii_1;
     if (tmp0_safe_receiver == null)
       null;
     else {
@@ -2737,6 +2745,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
     performOnContextQueue$default(this, VOID, KuiklyRenderCore$destroy$lambda(this));
   };
+  function KuiklyRenderCore() {
+    Companion_getInstance_2();
+    this.ii_1 = null;
+    this.ji_1 = null;
+    this.ki_1 = new Map();
+    this.li_1 = new KuiklyRenderContextHandler();
+  }
   function parseAnimation($this, animation) {
     var animationSpilt = split(animation, [' ']);
     $this.tj_1 = toInt(animationSpilt.j(0));
@@ -5472,17 +5487,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         break;
       case 'focus':
         var tmp_1 = KuiklyRenderCoreContextScheduler_instance;
-        tmp_1.ti(VOID, KRTextAreaView$call$lambda(this));
+        tmp_1.ui(VOID, KRTextAreaView$call$lambda(this));
         tmp = Unit_instance;
         break;
       case 'blur':
         var tmp_2 = KuiklyRenderCoreContextScheduler_instance;
-        tmp_2.ti(VOID, KRTextAreaView$call$lambda_0(this));
+        tmp_2.ui(VOID, KRTextAreaView$call$lambda_0(this));
         tmp = Unit_instance;
         break;
       case 'getCursorIndex':
         var tmp_3 = KuiklyRenderCoreContextScheduler_instance;
-        tmp_3.ti(VOID, KRTextAreaView$call$lambda_1(callback, this));
+        tmp_3.ui(VOID, KRTextAreaView$call$lambda_1(callback, this));
         tmp = Unit_instance;
         break;
       case 'setCursorIndex':
@@ -5887,17 +5902,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         break;
       case 'focus':
         var tmp_1 = KuiklyRenderCoreContextScheduler_instance;
-        tmp_1.ti(VOID, KRTextFieldView$call$lambda(this));
+        tmp_1.ui(VOID, KRTextFieldView$call$lambda(this));
         tmp = Unit_instance;
         break;
       case 'blur':
         var tmp_2 = KuiklyRenderCoreContextScheduler_instance;
-        tmp_2.ti(VOID, KRTextFieldView$call$lambda_0(this));
+        tmp_2.ui(VOID, KRTextFieldView$call$lambda_0(this));
         tmp = Unit_instance;
         break;
       case 'getCursorIndex':
         var tmp_3 = KuiklyRenderCoreContextScheduler_instance;
-        tmp_3.ti(VOID, KRTextFieldView$call$lambda_1(callback, this));
+        tmp_3.ui(VOID, KRTextFieldView$call$lambda_1(callback, this));
         tmp = Unit_instance;
         break;
       case 'setCursorIndex':
@@ -8231,7 +8246,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var httpCode = {_v: 0};
     var httpHeaders = {_v: ''};
     url = getRequestUrl($this, method, url, param);
-    Log_instance.hi(['httpRequestParams', toString_0(param), getPostParams($this, param)]);
+    Log_instance.ni(['httpRequestParams', toString_0(param), getPostParams($this, param)]);
     var requestTimeoutPromise = new Promise(KRNetworkModule$httpRequest$lambda(timeout));
     var tmp = kuiklyWindow;
     var tmp_0 = url;
@@ -8296,7 +8311,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var tmp$ret$9 = dataArray[4];
     var timeout = imul(numberToInt(tmp$ret$9), 1000);
     var tmp = Log_instance;
-    tmp.hi(['httpStreamRequest', url == null ? '' : url, body, headerStr, cookie, timeout]);
+    tmp.ni(['httpStreamRequest', url == null ? '' : url, body, headerStr, cookie, timeout]);
     var httpCode = {_v: 0};
     var httpHeaders = {_v: ''};
     var requestTimeoutPromise = new Promise(KRNetworkModule$httpStreamRequest$lambda(timeout));
@@ -10595,13 +10610,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   protoOf(KuiklyRenderLayerHandler).oj = function (renderView) {
     this.jj_1 = renderView;
   };
-  protoOf(KuiklyRenderLayerHandler).ui = function (tag, viewName) {
+  protoOf(KuiklyRenderLayerHandler).vi = function (tag, viewName) {
     createRenderViewHandler(this, tag, viewName);
   };
-  protoOf(KuiklyRenderLayerHandler).vi = function (tag) {
+  protoOf(KuiklyRenderLayerHandler).wi = function (tag) {
     innerRemoveRenderView(this, tag);
   };
-  protoOf(KuiklyRenderLayerHandler).wi = function (parentTag, childTag, index) {
+  protoOf(KuiklyRenderLayerHandler).xi = function (parentTag, childTag, index) {
     var isRootViewTag = parentTag === -1;
     var tmp;
     if (isRootViewTag) {
@@ -10660,7 +10675,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
     viewExport.un(parentEle);
   };
-  protoOf(KuiklyRenderLayerHandler).xi = function (tag, propKey, propValue) {
+  protoOf(KuiklyRenderLayerHandler).yi = function (tag, propKey, propValue) {
     var tmp0_safe_receiver = getRenderViewHandler(this, tag);
     var tmp1_safe_receiver = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.w17_1;
     if (tmp1_safe_receiver == null)
@@ -10688,7 +10703,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       tmp1_safe_receiver.sn(shadow);
     }
   };
-  protoOf(KuiklyRenderLayerHandler).yi = function (tag, frame) {
+  protoOf(KuiklyRenderLayerHandler).zi = function (tag, frame) {
     var tmp0_safe_receiver = getRenderViewHandler(this, tag);
     var tmp1_safe_receiver = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.w17_1;
     if (tmp1_safe_receiver == null)
@@ -10696,7 +10711,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     else
       tmp1_safe_receiver.nn('frame', frame);
   };
-  protoOf(KuiklyRenderLayerHandler).zi = function (tag, constraintSize) {
+  protoOf(KuiklyRenderLayerHandler).aj = function (tag, constraintSize) {
     var tmp0_safe_receiver = getShadowHandler(this, tag);
     var tmp1_elvis_lhs = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.vu(constraintSize);
     var tmp;
@@ -10707,7 +10722,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
     return tmp;
   };
-  protoOf(KuiklyRenderLayerHandler).aj = function (tag, method, params, callback) {
+  protoOf(KuiklyRenderLayerHandler).bj = function (tag, method, params, callback) {
     var tmp0_safe_receiver = getRenderViewHandler(this, tag);
     var tmp1_safe_receiver = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.w17_1;
     if (tmp1_safe_receiver == null)
@@ -10715,11 +10730,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     else
       tmp1_safe_receiver.yn(method, params, callback);
   };
-  protoOf(KuiklyRenderLayerHandler).cj = function (moduleName, method, params, callback) {
+  protoOf(KuiklyRenderLayerHandler).dj = function (moduleName, method, params, callback) {
     var tmp0_safe_receiver = getModuleHandler(this, moduleName);
     return tmp0_safe_receiver == null ? null : tmp0_safe_receiver.xn(method, params, callback);
   };
-  protoOf(KuiklyRenderLayerHandler).dj = function (tag, viewName) {
+  protoOf(KuiklyRenderLayerHandler).ej = function (tag, viewName) {
     if (this.lj_1 == null) {
       this.lj_1 = new Map();
     }
@@ -10738,7 +10753,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     else
       set(tmp2_safe_receiver, tag, kuiklyRenderExport.ae(viewName));
   };
-  protoOf(KuiklyRenderLayerHandler).ej = function (tag) {
+  protoOf(KuiklyRenderLayerHandler).fj = function (tag) {
     var tmp0_safe_receiver = this.lj_1;
     if (tmp0_safe_receiver == null)
       null;
@@ -10748,7 +10763,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       tmp0_safe_receiver.delete(tag);
     }
   };
-  protoOf(KuiklyRenderLayerHandler).fj = function (tag, propKey, propValue) {
+  protoOf(KuiklyRenderLayerHandler).gj = function (tag, propKey, propValue) {
     var tmp0_safe_receiver = getShadowHandler(this, tag);
     if (tmp0_safe_receiver == null)
       null;
@@ -10756,11 +10771,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       tmp0_safe_receiver.pu(propKey, propValue);
     }
   };
-  protoOf(KuiklyRenderLayerHandler).gj = function (tag) {
+  protoOf(KuiklyRenderLayerHandler).hj = function (tag) {
     return getShadowHandler(this, tag);
   };
-  protoOf(KuiklyRenderLayerHandler).bj = function (tag, method, params) {
-    var tmp0_safe_receiver = this.gj(tag);
+  protoOf(KuiklyRenderLayerHandler).cj = function (tag, method, params) {
+    var tmp0_safe_receiver = this.hj(tag);
     return tmp0_safe_receiver == null ? null : tmp0_safe_receiver.xu(method, params);
   };
   protoOf(KuiklyRenderLayerHandler).ug = function (name) {
@@ -12987,10 +13002,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return AnimationTimingFunction_SIMULATE_SPRING_ANIMATION_instance;
   }
   function KuiklyProcessor() {
-    this.ni_1 = false;
+    this.ti_1 = false;
   }
   protoOf(KuiklyProcessor).fk = function () {
-    var tmp = this.ii_1;
+    var tmp = this.oi_1;
     if (!(tmp == null))
       return tmp;
     else {
@@ -12998,7 +13013,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   };
   protoOf(KuiklyProcessor).ez = function () {
-    var tmp = this.ji_1;
+    var tmp = this.pi_1;
     if (!(tmp == null))
       return tmp;
     else {
@@ -13006,7 +13021,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   };
   protoOf(KuiklyProcessor).eq = function () {
-    var tmp = this.ki_1;
+    var tmp = this.qi_1;
     if (!(tmp == null))
       return tmp;
     else {
@@ -13014,7 +13029,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   };
   protoOf(KuiklyProcessor).yz = function () {
-    var tmp = this.li_1;
+    var tmp = this.ri_1;
     if (!(tmp == null))
       return tmp;
     else {
@@ -13022,7 +13037,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   };
   protoOf(KuiklyProcessor).qu = function () {
-    var tmp = this.mi_1;
+    var tmp = this.si_1;
     if (!(tmp == null))
       return tmp;
     else {
@@ -13059,7 +13074,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function KuiklyRenderCoreContextScheduler() {
   }
-  protoOf(KuiklyRenderCoreContextScheduler).gi = function (delayMs, task) {
+  protoOf(KuiklyRenderCoreContextScheduler).mi = function (delayMs, task) {
     var tmp = kuiklyWindow;
     tmp.setTimeout(KuiklyRenderCoreContextScheduler$scheduleTask$lambda(task), delayMs);
   };
@@ -13117,7 +13132,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     this.v1c_1 = false;
     this.w1c_1 = null;
   }
-  protoOf(KuiklyRenderCoreUIScheduler).gi = function (delayMs, task) {
+  protoOf(KuiklyRenderCoreUIScheduler).mi = function (delayMs, task) {
     addTaskToMainQueue(this, task);
   };
   var DeviceType_MOBILE_instance;
@@ -13167,8 +13182,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function Log() {
   }
-  protoOf(Log).hi = function (msg) {
-    if (KuiklyProcessor_instance.ni_1) {
+  protoOf(Log).ni = function (msg) {
+    if (KuiklyProcessor_instance.ti_1) {
       this.o12([msg]);
     }
   };
@@ -13355,8 +13370,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   protoOf(KuiklyRenderBaseModule).xn = call;
   protoOf(KuiklyRenderBaseModule).yn = call_0;
   protoOf(KuiklyRenderBaseModule).ig = onDestroy;
-  protoOf(KuiklyRenderCoreContextScheduler).ti = scheduleTask$default;
-  protoOf(KuiklyRenderCoreUIScheduler).ti = scheduleTask$default;
+  protoOf(KuiklyRenderCoreContextScheduler).ui = scheduleTask$default;
+  protoOf(KuiklyRenderCoreUIScheduler).ui = scheduleTask$default;
   //endregion
   //region block: init
   Companion_instance = new Companion();
@@ -13626,7 +13641,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     initRenderView($this, size);
   }
   function initRenderView($this, size) {
-    Log_instance.hi(['KuiklyRenderViewDelegator', 'initRenderView, pageName: ' + $this.b1d_1]);
+    Log_instance.ni(['KuiklyRenderViewDelegator', 'initRenderView, pageName: ' + $this.b1d_1]);
     $this.y1c_1 = new KuiklyRenderView($this.d1d_1, $this.x1c_1);
     var tmp0_safe_receiver = $this.y1c_1;
     if (tmp0_safe_receiver == null)
@@ -13733,12 +13748,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   }
   function injectHostFunc($this) {
-    KuiklyProcessor_instance.ii_1 = AnimationProcessor_instance;
-    KuiklyProcessor_instance.mi_1 = RichTextProcessor_getInstance();
-    KuiklyProcessor_instance.ji_1 = EventProcessor_instance;
-    KuiklyProcessor_instance.ki_1 = ImageProcessor_instance;
-    KuiklyProcessor_instance.li_1 = ListProcessor_instance;
-    KuiklyProcessor_instance.ni_1 = contains(window.location.href, 'is_dev');
+    KuiklyProcessor_instance.oi_1 = AnimationProcessor_instance;
+    KuiklyProcessor_instance.si_1 = RichTextProcessor_getInstance();
+    KuiklyProcessor_instance.pi_1 = EventProcessor_instance;
+    KuiklyProcessor_instance.qi_1 = ImageProcessor_instance;
+    KuiklyProcessor_instance.ri_1 = ListProcessor_instance;
+    KuiklyProcessor_instance.ti_1 = contains(window.location.href, 'is_dev');
   }
   function Companion() {
     this.h1d_1 = 'KuiklyRenderViewDelegator';
@@ -14268,17 +14283,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       needParentNodeScroll = true;
     }
     if (needParentNodeScroll) {
-      Log_instance.hi(['pagelist needParentNodeScroll']);
+      Log_instance.ni(['pagelist needParentNodeScroll']);
       return Unit_instance;
     } else {
       it.preventDefault();
       it.stopPropagation();
       if (!canScroll) {
-        Log_instance.hi(["pagelist can't scroll"]);
+        Log_instance.ni(["pagelist can't scroll"]);
         return Unit_instance;
       }
     }
-    Log_instance.hi(['pagelist scroll']);
+    Log_instance.ni(['pagelist scroll']);
     setElementPosition(this, this.p1d_1, this.q1d_1);
     // Inline function 'kotlin.math.abs' call
     var x = delta;
@@ -14314,12 +14329,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var scrollOffsetY = 0.0;
     var newPageIndex = this.y1d_1;
     if (this.c1e_1 === 'column') {
-      Log_instance.hi(['delta y: ', deltaY, ' currentTranslateY: ', this.q1d_1]);
+      Log_instance.ni(['delta y: ', deltaY, ' currentTranslateY: ', this.q1d_1]);
       newPageIndex = getNewPageIndex(this, deltaY, offset, newPageIndex);
       scrollOffsetY = (-this.n1d_1.offsetHeight | 0) * newPageIndex;
       this.q1d_1 = scrollOffsetY;
     } else {
-      Log_instance.hi(['delta x: ', deltaX, ' currentTranslateX: ', this.p1d_1]);
+      Log_instance.ni(['delta x: ', deltaX, ' currentTranslateX: ', this.p1d_1]);
       newPageIndex = getNewPageIndex(this, deltaX, offset, newPageIndex);
       scrollOffsetX = (-this.n1d_1.offsetWidth | 0) * newPageIndex;
       this.p1d_1 = scrollOffsetX;
@@ -14380,7 +14395,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       tmp_0.y1d_1 = round(x_0);
       this.p1d_1 = -offsetX;
     } else {
-      Log_instance.hi(['ele offset is invalid', elementWidth, elementHeight]);
+      Log_instance.ni(['ele offset is invalid', elementWidth, elementHeight]);
     }
     this.n1d_1.style.overflowX = 'visible';
     this.n1d_1.style.overflowY = 'visible';
@@ -14972,7 +14987,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var contentInsetString = tmp;
     var contentInset = new KRListViewContentInset(contentInsetString);
     var tmp_0 = KuiklyRenderCoreContextScheduler_instance;
-    tmp_0.gi(0, H5ListView$setContentInset$lambda(this, contentInset));
+    tmp_0.mi(0, H5ListView$setContentInset$lambda(this, contentInset));
   };
   protoOf(H5ListView).p10 = function (params) {
     var tmp;
@@ -14988,7 +15003,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       this.n1f_1.style.overflowY = 'scroll';
       this.n1f_1.style.overflowX = 'hidden';
       var tmp_0 = KuiklyRenderCoreContextScheduler_instance;
-      tmp_0.gi(250, H5ListView$setContentInsetWhenEndDrag$lambda(this, contentInset, transform));
+      tmp_0.mi(250, H5ListView$setContentInsetWhenEndDrag$lambda(this, contentInset, transform));
     } else {
       this.j1f_1 = contentInset.q10_1;
     }
@@ -16041,13 +16056,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       null;
     else
       tmp1_safe_receiver.removeChild(newEle);
-    Log_instance.hi(['calculate size by dom, size: ', w, h]);
+    Log_instance.ni(['calculate size by dom, size: ', w, h]);
     var realWidth = w < get_width(constraintSize) ? w + 0.5 : get_width(constraintSize);
     var realHeight = h;
     if (!(index === -1) && !(originParent == null)) {
       insertChild($this, originParent, newEle, index);
     }
-    Log_instance.hi(['real size by dom, size:', realWidth, realHeight]);
+    Log_instance.ni(['real size by dom, size:', realWidth, realHeight]);
     return new Pair(realWidth, realHeight);
   }
   function getCanvasContext($this) {
@@ -16113,7 +16128,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     if (get_width(constraintSize) > 0) {
       style.maxWidth = toPxF(get_width(constraintSize));
     }
-    Log_instance.hi(['canvas measure size: ', ele.innerText, maxWidth._v, totalHeight._v, get_width(constraintSize)]);
+    Log_instance.ni(['canvas measure size: ', ele.innerText, maxWidth._v, totalHeight._v, get_width(constraintSize)]);
     var realWidth;
     var realHeight;
     if (maxWidth._v < get_width(constraintSize) || get_width(constraintSize) === 0.0) {
@@ -16125,7 +16140,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         tmp = totalHeight._v;
       }
       realHeight = tmp;
-      Log_instance.hi(['canvas real size: ', realWidth, realHeight]);
+      Log_instance.ni(['canvas real size: ', realWidth, realHeight]);
       return new Pair(realWidth, realHeight);
     } else {
       return calculateRenderViewSizeByDom($this, constraintSize, view, renderText);
@@ -16916,25 +16931,25 @@ if (typeof String.prototype.endsWith === 'undefined') {
   initMetadataForObject(Digit, 'Digit');
   initMetadataForObject(Unit, 'Unit');
   initMetadataForClass(AbstractCollection, 'AbstractCollection', VOID, VOID, [Collection]);
-  initMetadataForClass(AbstractMutableCollection, 'AbstractMutableCollection', VOID, AbstractCollection, [AbstractCollection, Iterable, Collection]);
+  initMetadataForClass(AbstractMutableCollection, 'AbstractMutableCollection', VOID, AbstractCollection, [AbstractCollection, Collection, Iterable]);
   initMetadataForClass(IteratorImpl, 'IteratorImpl');
   initMetadataForClass(ListIteratorImpl, 'ListIteratorImpl', VOID, IteratorImpl);
-  initMetadataForClass(AbstractMutableList, 'AbstractMutableList', VOID, AbstractMutableCollection, [AbstractMutableCollection, KtList, Iterable, Collection]);
+  initMetadataForClass(AbstractMutableList, 'AbstractMutableList', VOID, AbstractMutableCollection, [AbstractMutableCollection, Iterable, KtList, Collection]);
   initMetadataForClass(AbstractMap, 'AbstractMap', VOID, VOID, [KtMap]);
   initMetadataForClass(AbstractMutableMap, 'AbstractMutableMap', VOID, AbstractMap, [AbstractMap, KtMap]);
-  initMetadataForClass(AbstractMutableSet, 'AbstractMutableSet', VOID, AbstractMutableCollection, [AbstractMutableCollection, KtSet, Iterable, Collection]);
+  initMetadataForClass(AbstractMutableSet, 'AbstractMutableSet', VOID, AbstractMutableCollection, [AbstractMutableCollection, Iterable, KtSet, Collection]);
   initMetadataForCompanion(Companion_2);
-  initMetadataForClass(ArrayList, 'ArrayList', ArrayList_init_$Create$, AbstractMutableList, [AbstractMutableList, KtList, Iterable, Collection]);
+  initMetadataForClass(ArrayList, 'ArrayList', ArrayList_init_$Create$, AbstractMutableList, [AbstractMutableList, Iterable, KtList, Collection]);
   initMetadataForClass(HashMap, 'HashMap', HashMap_init_$Create$, AbstractMutableMap, [AbstractMutableMap, KtMap]);
-  initMetadataForClass(HashMapKeys, 'HashMapKeys', VOID, AbstractMutableSet, [KtSet, Iterable, Collection, AbstractMutableSet]);
-  initMetadataForClass(HashMapValues, 'HashMapValues', VOID, AbstractMutableCollection, [Iterable, Collection, AbstractMutableCollection]);
-  initMetadataForClass(HashMapEntrySetBase, 'HashMapEntrySetBase', VOID, AbstractMutableSet, [KtSet, Iterable, Collection, AbstractMutableSet]);
+  initMetadataForClass(HashMapKeys, 'HashMapKeys', VOID, AbstractMutableSet, [Iterable, KtSet, Collection, AbstractMutableSet]);
+  initMetadataForClass(HashMapValues, 'HashMapValues', VOID, AbstractMutableCollection, [Collection, Iterable, AbstractMutableCollection]);
+  initMetadataForClass(HashMapEntrySetBase, 'HashMapEntrySetBase', VOID, AbstractMutableSet, [Iterable, KtSet, Collection, AbstractMutableSet]);
   initMetadataForClass(HashMapEntrySet, 'HashMapEntrySet', VOID, HashMapEntrySetBase);
   initMetadataForClass(HashMapKeysDefault$iterator$1);
   initMetadataForClass(HashMapKeysDefault, 'HashMapKeysDefault', VOID, AbstractMutableSet);
   initMetadataForClass(HashMapValuesDefault$iterator$1);
   initMetadataForClass(HashMapValuesDefault, 'HashMapValuesDefault', VOID, AbstractMutableCollection);
-  initMetadataForClass(HashSet, 'HashSet', HashSet_init_$Create$, AbstractMutableSet, [AbstractMutableSet, KtSet, Iterable, Collection]);
+  initMetadataForClass(HashSet, 'HashSet', HashSet_init_$Create$, AbstractMutableSet, [AbstractMutableSet, Iterable, KtSet, Collection]);
   initMetadataForCompanion(Companion_3);
   initMetadataForClass(Itr, 'Itr');
   initMetadataForClass(KeysItr, 'KeysItr', VOID, Itr);
@@ -16980,7 +16995,7 @@ if (typeof String.prototype.endsWith === 'undefined') {
   initMetadataForClass(InternalHashMap, 'InternalHashMap', InternalHashMap_init_$Create$, VOID, [InternalMap]);
   initMetadataForObject(EmptyHolder, 'EmptyHolder');
   initMetadataForClass(LinkedHashMap, 'LinkedHashMap', LinkedHashMap_init_$Create$, HashMap, [HashMap, KtMap]);
-  initMetadataForClass(LinkedHashSet, 'LinkedHashSet', LinkedHashSet_init_$Create$, HashSet, [HashSet, KtSet, Iterable, Collection]);
+  initMetadataForClass(LinkedHashSet, 'LinkedHashSet', LinkedHashSet_init_$Create$, HashSet, [HashSet, Iterable, KtSet, Collection]);
   initMetadataForClass(Exception, 'Exception', Exception_init_$Create$, Error);
   initMetadataForClass(RuntimeException, 'RuntimeException', RuntimeException_init_$Create$, Exception);
   initMetadataForClass(IllegalArgumentException, 'IllegalArgumentException', IllegalArgumentException_init_$Create$, RuntimeException);
