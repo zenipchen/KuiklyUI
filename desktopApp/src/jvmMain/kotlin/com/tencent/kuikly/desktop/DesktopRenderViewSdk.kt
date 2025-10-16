@@ -60,8 +60,21 @@ class DesktopRenderViewSdk(private val pageName: String = "Unknown") : IKuiklyCo
     private val instanceId: String = instanceIdProducer++.toString()
     
     companion object {
+
+        private val kuiklyClass = Class.forName("com.tencent.kuikly.core.android.KuiklyCoreEntry")
+
+        // 对齐 Android 的全局 pageId 分配机制
         // 全局递增的 instanceIdProducer，确保每个实例都有唯一的 pageId
         private var instanceIdProducer = 0L
+
+        fun newKuiklyCoreEntryInstance(): IKuiklyCoreEntry {
+            return kuiklyClass.newInstance() as IKuiklyCoreEntry
+        }
+
+        fun isPageExist(pageName: String): Boolean {
+            newKuiklyCoreEntryInstance().triggerRegisterPages()
+            return BridgeManager.isPageExist(pageName)
+        }
     }
 
     // NativeBridge 用于 Pager 调用 callNative
@@ -570,17 +583,5 @@ class DesktopRenderViewSdk(private val pageName: String = "Unknown") : IKuiklyCo
         
         println("[Desktop Render] ✅ 资源清理完成")
     }
-    
 
-    private val kuiklyClass = DesktopRenderViewSdk::class.java.classLoader.loadClass("com.tencent.kuikly.core.android.KuiklyCoreEntry")
-
-
-    fun newKuiklyCoreEntryInstance(): IKuiklyCoreEntry {
-        return kuiklyClass.newInstance() as IKuiklyCoreEntry
-    }
-
-    fun isPageExist(pageName: String): Boolean {
-        newKuiklyCoreEntryInstance().triggerRegisterPages()
-        return BridgeManager.isPageExist(pageName)
-    }
 }
