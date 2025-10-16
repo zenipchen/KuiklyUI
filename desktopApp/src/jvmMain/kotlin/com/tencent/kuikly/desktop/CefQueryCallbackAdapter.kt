@@ -1,9 +1,14 @@
 package com.tencent.kuikly.desktop
 
 /**
- * CEF 查询回调适配器，将 CefQueryCallback 适配为 IQueryCallback 接口
+ * CEF 查询回调适配器
+ * 
+ * 将 CEF 的 CefQueryCallback 适配为 KuiklyDesktopRenderSdk.QueryCallback 接口。
+ * 这样可以让 SDK 不直接依赖 CEF 具体类型，提高可测试性和可扩展性。
+ * 
+ * @param cefQueryCallback CEF 查询回调实例
  */
-class CefQueryCallbackAdapter(private val cefQueryCallback: org.cef.callback.CefQueryCallback) : IQueryCallback {
+class CefQueryCallbackAdapter(private val cefQueryCallback: org.cef.callback.CefQueryCallback) : KuiklyDesktopRenderSdk.QueryCallback {
     override fun success(response: String) {
         cefQueryCallback.success(response)
     }

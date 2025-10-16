@@ -181,7 +181,9 @@ tasks.register<Jar>("desktopRenderSdkLightJar") {
     
     // 只包含编译后的类文件和资源文件
     from(sourceSets["jvmMain"].output)
-    from(sourceSets["jvmMain"].resources)
+    from(sourceSets["jvmMain"].resources) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
     
     // 设置清单文件
     manifest {

@@ -140,7 +140,7 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
     val client = cefApp.createClient()
 
     // 创建桌面端渲染委托器
-    val renderDelegator = DesktopRenderViewSdk(pageName)
+    val renderDelegator = KuiklyDesktopRenderSdk(pageName)
 
     // 配置消息路由器（用于 Web → JVM 通信）
     val msgRouter = CefMessageRouter.create()
@@ -156,9 +156,10 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
             // 处理来自 Web 的调用
             if (request != null && browser != null && callback != null) {
                 // 使用适配器将 CEF 对象转换为抽象接口
+                val browserAdapter = CefBrowserAdapter(browser)
                 val callbackAdapter = CefQueryCallbackAdapter(callback)
                 return renderDelegator.handleCefQuery(
-                    request, callbackAdapter
+                    browserAdapter, frame, queryId.toInt(), request, persistent, callbackAdapter
                 )
             }
             return false
