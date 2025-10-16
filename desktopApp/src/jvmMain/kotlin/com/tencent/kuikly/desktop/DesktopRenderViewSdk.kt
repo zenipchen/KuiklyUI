@@ -4,39 +4,65 @@ import com.google.gson.Gson
 import com.tencent.kuikly.core.IKuiklyCoreEntry
 import com.tencent.kuikly.core.manager.BridgeManager
 import com.tencent.kuikly.core.nvi.NativeBridge
-import com.tencent.kuikly.core.pager.Pager
-// import com.tencent.kuikly.demo.pages.HelloWorldPage  // HelloWorldPage 是 internal 的，无法直接访问
-// import com.tencent.kuikly.core.render.web.ktx.SizeI
-import org.cef.browser.CefBrowser
-import org.cef.browser.CefFrame
-import org.cef.callback.CefQueryCallback
-import org.cef.handler.CefLoadHandlerAdapter
-import org.cef.handler.CefMessageRouterHandlerAdapter
-import org.cef.network.CefRequest
+import java.io.File
+import java.io.FileWriter
+import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
-import javax.swing.SwingUtilities
 
 /**
- * 桌面端渲染视图委托器
- * 负责管理 JVM 逻辑层和 JS 渲染层之间的通信
- * 参考 Android 的 KuiklyRenderJvmContextHandler 实现
+ * 浏览器抽象接口，用于替代 CEF 具体类型
  */
-class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKuiklyCoreEntry.Delegate {
-    
-    private var browser: CefBrowser? = null
-    private val gson = Gson()
-    
-    // 使用 KuiklyCoreEntry 处理 JVM 逻辑层调用
-    private val kuiklyCoreEntry = newKuiklyCoreEntryInstance()
-    
-    // 页面实例管理
-    private val pageInstances = mutableMapOf<String, Pager>()
+interface Browser {
+    fun executeJavaScript(script: String, scriptUrl: String, startLine: Int)
+}
 
-    // 对齐 Android 的 pageId 分配机制
-    // 每个 DesktopRenderViewDelegator 实例都有唯一的 instanceId（即 pageId）
+/**
+ * 查询回调抽象接口，用于替代 CEF 具体类型
+ */
+interface QueryCallback {
+    fun success(response: String)
+    fun failure(errorCode: Int, errorMessage: String)
+}
+
+/**
+ * CEF 浏览器适配器，将 CefBrowser 适配为 Browser 接口
+ */
+class CefBrowserAdapter(private val cefBrowser: org.cef.browser.CefBrowser) : Browser {
+    override fun executeJavaScript(script: String, scriptUrl: String, startLine: Int) {
+        cefBrowser.executeJavaScript(script, scriptUrl, startLine)
+    }
+}
+
+/**
+ * CEF 查询回调适配器，将 CefQueryCallback 适配为 QueryCallback 接口
+ */
+class CefQueryCallbackAdapter(private val cefQueryCallback: org.cef.callback.CefQueryCallback) : QueryCallback {
+    override fun success(response: String) {
+        cefQueryCallback.success(response)
+    }
+    
+    override fun failure(errorCode: Int, errorMessage: String) {
+        cefQueryCallback.failure(errorCode, errorMessage)
+    }
+}
+
+/**
+ * 用于桌面渲染的 SDK，理论上不依赖任何 IDE 相关代码内。
+ */
+class DesktopRenderViewSdk(private val pageName: String = "Unknown") : IKuiklyCoreEntry.Delegate {
+    private var browser: Browser? = null
+    private val gson = Gson()
+    private val kuiklyCoreEntry = newKuiklyCoreEntryInstance()
     private val instanceId: String = instanceIdProducer++.toString()
+    
+    companion object {
+        // 全局递增的 instanceIdProducer，确保每个实例都有唯一的 pageId
+        private var instanceIdProducer = 0L
+    }
 
     // NativeBridge 用于 Pager 调用 callNative
     private val nativeBridge = NativeBridge()
@@ -64,7 +90,7 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
                 arg5: Any?
             ): Any? {
                 println("[Desktop Render][$pageName] 🌉 NativeBridge.callNative 被调用: methodId=$methodId, arg0=$arg0")
-                return this@DesktopRenderViewDelegator.callNative(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
+                return this@DesktopRenderViewSdk.callNative(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
             }
         }
         BridgeManager.registerNativeBridge(instanceId, nativeBridge)
@@ -74,7 +100,7 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
     /**
      * 设置浏览器实例
      */
-    fun setBrowser(browser: CefBrowser) {
+    fun setBrowser(browser: Browser) {
         this.browser = browser
     }
     
@@ -91,7 +117,7 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
     /**
      * 注入 JS Bridge
      */
-    private fun injectJSBridge(browser: CefBrowser) {
+    private fun injectJSBridge(browser: Browser) {
         val bridgeScript = """
             console.log('[Desktop Render] 🔗 注入 JS Bridge...');
             
@@ -367,12 +393,12 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
      * 处理 CEF 查询
      */
     fun handleCefQuery(
-        browser: CefBrowser,
-        frame: CefFrame?,
+        browser: Browser,
+        frame: Any?,
         requestId: Int,
         request: String,
         persistent: Boolean,
-        callback: CefQueryCallback?
+        callback: QueryCallback?
     ): Boolean {
         try {
             // println("[Desktop Render] 📨 收到 CEF 查询: $request")
@@ -473,6 +499,60 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
     }
     
     /**
+     * 生成 HTML 文件到临时目录
+     */
+    fun generateHtmlFile(): String {
+        val tempDir = System.getProperty("java.io.tmpdir")
+        val tempFile = File(tempDir, "kuikly-desktop-${instanceId}.html")
+        
+        try {
+            // 从 resources 加载 HTML 模板
+            val htmlResourcePath = "/com/tencent/kuikly/desktop/desktop-render.html"
+            val htmlInputStream: InputStream? = javaClass.getResourceAsStream(htmlResourcePath)
+            
+            if (htmlInputStream == null) {
+                throw RuntimeException("无法找到 HTML 资源文件: $htmlResourcePath")
+            }
+            
+            // 读取 HTML 内容
+            val htmlContent = htmlInputStream.bufferedReader().use { it.readText() }
+            
+            // 从 resources 加载 JavaScript 文件
+            val jsResourcePath = "/com/tencent/kuikly/desktop/desktopRenderLayer.js"
+            val jsInputStream: InputStream? = javaClass.getResourceAsStream(jsResourcePath)
+            
+            if (jsInputStream == null) {
+                throw RuntimeException("无法找到 JavaScript 资源文件: $jsResourcePath")
+            }
+            
+            // 读取 JavaScript 内容
+            val jsContent = jsInputStream.bufferedReader().use { it.readText() }
+            
+            // 将 JavaScript 内容注入到 HTML 中
+            val finalHtmlContent = htmlContent.replace(
+                "<!-- desktopRenderLayer.js 将通过 DesktopRenderViewSdk 动态注入 -->",
+                "<script>$jsContent</script>"
+            )
+            
+            // 将最终内容写入临时文件
+            FileWriter(tempFile).use { writer ->
+                writer.write(finalHtmlContent)
+            }
+            
+            println("[Desktop Render] ✅ HTML 文件已生成: ${tempFile.absolutePath}")
+            return tempFile.absolutePath
+        } catch (e: Exception) {
+            println("[Desktop Render] ❌ 生成 HTML 文件失败: ${e.message}")
+            throw e
+        }
+    }
+    
+    /**
+     * 获取当前实例的 instanceId
+     */
+    fun getInstanceId(): String = instanceId
+    
+    /**
      * 清理资源
      */
     fun destroy() {
@@ -491,21 +571,16 @@ class DesktopRenderViewDelegator(private val pageName: String = "Unknown") : IKu
         println("[Desktop Render] ✅ 资源清理完成")
     }
     
-    companion object {
-        
-        private val kuiklyClass = Class.forName("com.tencent.kuikly.core.android.KuiklyCoreEntry")
-        
-        // 对齐 Android 的全局 pageId 分配机制
-        // 全局递增的 instanceIdProducer，确保每个实例都有唯一的 pageId
-        private var instanceIdProducer = 0L
-        
-        fun newKuiklyCoreEntryInstance(): IKuiklyCoreEntry {
-            return kuiklyClass.newInstance() as IKuiklyCoreEntry
-        }
-        
-        fun isPageExist(pageName: String): Boolean {
-            newKuiklyCoreEntryInstance().triggerRegisterPages()
-            return BridgeManager.isPageExist(pageName)
-        }
+
+    private val kuiklyClass = DesktopRenderViewSdk::class.java.classLoader.loadClass("com.tencent.kuikly.core.android.KuiklyCoreEntry")
+
+
+    fun newKuiklyCoreEntryInstance(): IKuiklyCoreEntry {
+        return kuiklyClass.newInstance() as IKuiklyCoreEntry
+    }
+
+    fun isPageExist(pageName: String): Boolean {
+        newKuiklyCoreEntryInstance().triggerRegisterPages()
+        return BridgeManager.isPageExist(pageName)
     }
 }
