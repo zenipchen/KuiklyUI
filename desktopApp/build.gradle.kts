@@ -36,8 +36,8 @@ kotlin {
                 // Demo 模块 - 包含 HelloWorldPage 等示例页面
                 implementation(project(":demo"))
                 
-                // Desktop Render SDK
-                implementation(project(":desktop-render-sdk"))
+                // 自动引用 libs 目录中的所有 JAR 文件
+                implementation(fileTree("libs") { include("*.jar") })
                 
                 // JCEF (Java Chromium Embedded Framework)
                 implementation("me.friwi:jcefmaven:122.1.10")
