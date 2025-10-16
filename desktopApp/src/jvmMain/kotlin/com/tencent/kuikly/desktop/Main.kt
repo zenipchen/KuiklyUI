@@ -34,28 +34,6 @@ fun main(args: Array<String>) {
 }
 
 
-/**
- * CEF 浏览器适配器，将 CefBrowser 适配为 Browser 接口
- */
-class CefBrowserAdapter(private val cefBrowser: org.cef.browser.CefBrowser) : IBrowser {
-    override fun executeJavaScript(script: String, scriptUrl: String, startLine: Int) {
-        cefBrowser.executeJavaScript(script, scriptUrl, startLine)
-    }
-}
-
-/**
- * CEF 查询回调适配器，将 CefQueryCallback 适配为 QueryCallback 接口
- */
-class CefQueryCallbackAdapter(private val cefQueryCallback: org.cef.callback.CefQueryCallback) :
-    IQueryCallback {
-    override fun success(response: String) {
-        cefQueryCallback.success(response)
-    }
-
-    override fun failure(errorCode: Int, errorMessage: String) {
-        cefQueryCallback.failure(errorCode, errorMessage)
-    }
-}
 
 
 /**
