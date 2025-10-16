@@ -7,8 +7,6 @@ import com.tencent.kuikly.core.nvi.NativeBridge
 import java.io.File
 import java.io.FileWriter
 import java.io.InputStream
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -16,45 +14,23 @@ import java.util.concurrent.atomic.AtomicReference
 /**
  * 浏览器抽象接口，用于替代 CEF 具体类型
  */
-interface Browser {
+interface IBrowser {
     fun executeJavaScript(script: String, scriptUrl: String, startLine: Int)
 }
 
 /**
  * 查询回调抽象接口，用于替代 CEF 具体类型
  */
-interface QueryCallback {
+interface IQueryCallback {
     fun success(response: String)
     fun failure(errorCode: Int, errorMessage: String)
-}
-
-/**
- * CEF 浏览器适配器，将 CefBrowser 适配为 Browser 接口
- */
-class CefBrowserAdapter(private val cefBrowser: org.cef.browser.CefBrowser) : Browser {
-    override fun executeJavaScript(script: String, scriptUrl: String, startLine: Int) {
-        cefBrowser.executeJavaScript(script, scriptUrl, startLine)
-    }
-}
-
-/**
- * CEF 查询回调适配器，将 CefQueryCallback 适配为 QueryCallback 接口
- */
-class CefQueryCallbackAdapter(private val cefQueryCallback: org.cef.callback.CefQueryCallback) : QueryCallback {
-    override fun success(response: String) {
-        cefQueryCallback.success(response)
-    }
-    
-    override fun failure(errorCode: Int, errorMessage: String) {
-        cefQueryCallback.failure(errorCode, errorMessage)
-    }
 }
 
 /**
  * 用于桌面渲染的 SDK，理论上不依赖任何 IDE 相关代码内。
  */
 class DesktopRenderViewSdk(private val pageName: String = "Unknown") : IKuiklyCoreEntry.Delegate {
-    private var browser: Browser? = null
+    private var browser: IBrowser? = null
     private val gson = Gson()
     private val kuiklyCoreEntry = newKuiklyCoreEntryInstance()
     private val instanceId: String = instanceIdProducer++.toString()
@@ -113,7 +89,7 @@ class DesktopRenderViewSdk(private val pageName: String = "Unknown") : IKuiklyCo
     /**
      * 设置浏览器实例
      */
-    fun setBrowser(browser: Browser) {
+    fun setBrowser(browser: IBrowser) {
         this.browser = browser
     }
     
@@ -130,7 +106,7 @@ class DesktopRenderViewSdk(private val pageName: String = "Unknown") : IKuiklyCo
     /**
      * 注入 JS Bridge
      */
-    private fun injectJSBridge(browser: Browser) {
+    private fun injectJSBridge(browser: IBrowser) {
         val bridgeScript = """
             console.log('[Desktop Render] 🔗 注入 JS Bridge...');
             
@@ -406,12 +382,8 @@ class DesktopRenderViewSdk(private val pageName: String = "Unknown") : IKuiklyCo
      * 处理 CEF 查询
      */
     fun handleCefQuery(
-        browser: Browser,
-        frame: Any?,
-        requestId: Int,
         request: String,
-        persistent: Boolean,
-        callback: QueryCallback?
+        callback: IQueryCallback?
     ): Boolean {
         try {
             // println("[Desktop Render] 📨 收到 CEF 查询: $request")

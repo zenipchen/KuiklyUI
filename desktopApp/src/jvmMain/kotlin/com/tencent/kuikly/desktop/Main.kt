@@ -9,15 +9,12 @@ import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.browser.CefMessageRouter
 import org.cef.callback.CefQueryCallback
-import org.cef.handler.CefLoadHandlerAdapter
 import org.cef.handler.CefLoadHandler
+import org.cef.handler.CefLoadHandlerAdapter
 import org.cef.handler.CefMessageRouterHandlerAdapter
 import org.cef.network.CefRequest
 import java.awt.BorderLayout
-import java.awt.Color
 import java.awt.Dimension
-import java.io.File
-import javax.swing.BorderFactory
 import javax.swing.JComponent
 import javax.swing.JFrame
 import javax.swing.JMenu
@@ -35,6 +32,31 @@ fun main(args: Array<String>) {
     // 在单个窗口内并排显示两个页面
     runPageWithTwoPanels()
 }
+
+
+/**
+ * CEF 浏览器适配器，将 CefBrowser 适配为 Browser 接口
+ */
+class CefBrowserAdapter(private val cefBrowser: org.cef.browser.CefBrowser) : IBrowser {
+    override fun executeJavaScript(script: String, scriptUrl: String, startLine: Int) {
+        cefBrowser.executeJavaScript(script, scriptUrl, startLine)
+    }
+}
+
+/**
+ * CEF 查询回调适配器，将 CefQueryCallback 适配为 QueryCallback 接口
+ */
+class CefQueryCallbackAdapter(private val cefQueryCallback: org.cef.callback.CefQueryCallback) :
+    IQueryCallback {
+    override fun success(response: String) {
+        cefQueryCallback.success(response)
+    }
+
+    override fun failure(errorCode: Int, errorMessage: String) {
+        cefQueryCallback.failure(errorCode, errorMessage)
+    }
+}
+
 
 /**
  * 在单个窗口内并排显示两个页面
@@ -111,12 +133,13 @@ private fun runPageWithTwoPanels() {
 
         // 创建左侧面板 (ComposeAllSample)
         val leftPanel = createBrowserPanel(cefApp, "HelloWorldPage", "左侧页面")
-        
+
         // 创建右侧面板 (TextDemo)
         val rightPanel = createBrowserPanel(cefApp, "ListViewDemoPage", "右侧页面")
 
         // 创建分割面板
-        val splitPane = javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel)
+        val splitPane =
+            javax.swing.JSplitPane(javax.swing.JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel)
         splitPane.dividerLocation = 600 // 设置分割线位置
         splitPane.isOneTouchExpandable = true
         splitPane.isContinuousLayout = true
@@ -137,7 +160,7 @@ private fun runPageWithTwoPanels() {
 private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: String): JComponent {
     // 创建浏览器客户端
     val client = cefApp.createClient()
-    
+
     // 创建桌面端渲染委托器
     val renderDelegator = DesktopRenderViewSdk(pageName)
 
@@ -155,10 +178,9 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
             // 处理来自 Web 的调用
             if (request != null && browser != null && callback != null) {
                 // 使用适配器将 CEF 对象转换为抽象接口
-                val browserAdapter = CefBrowserAdapter(browser)
                 val callbackAdapter = CefQueryCallbackAdapter(callback)
                 return renderDelegator.handleCefQuery(
-                    browserAdapter, frame, queryId.toInt(), request, persistent, callbackAdapter
+                    request, callbackAdapter
                 )
             }
             return false
@@ -166,20 +188,23 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
     }, true)
     client.addMessageRouter(msgRouter)
     client.addLoadHandler(object : CefLoadHandlerAdapter() {
-                    override fun onLoadingStateChange(
-                        browser: CefBrowser?,
-                        isLoading: Boolean,
-                        canGoBack: Boolean,
-                        canGoForward: Boolean
-                    ) {
-                        if (!isLoading && browser != null) {
-                            DebugConfig.success("Kuikly Desktop [$pageName]", "$panelTitle 页面加载完成，正在初始化渲染层...")
-                            // 使用适配器将 CEF 浏览器转换为抽象接口
-                            val browserAdapter = CefBrowserAdapter(browser)
-                            renderDelegator.setBrowser(browserAdapter)
-                            renderDelegator.initRenderLayer()
-                        }
-                    }
+        override fun onLoadingStateChange(
+            browser: CefBrowser?,
+            isLoading: Boolean,
+            canGoBack: Boolean,
+            canGoForward: Boolean
+        ) {
+            if (!isLoading && browser != null) {
+                DebugConfig.success(
+                    "Kuikly Desktop [$pageName]",
+                    "$panelTitle 页面加载完成，正在初始化渲染层..."
+                )
+                // 使用适配器将 CEF 浏览器转换为抽象接口
+                val browserAdapter = CefBrowserAdapter(browser)
+                renderDelegator.setBrowser(browserAdapter)
+                renderDelegator.initRenderLayer()
+            }
+        }
 
         override fun onLoadStart(
             browser: CefBrowser?,
@@ -210,7 +235,8 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
 
     // 使用 DesktopRenderViewSdk 生成 HTML 文件
     val htmlFilePath = renderDelegator.generateHtmlFile()
-    val webRenderHtmlUrl = "file://$htmlFilePath?pageName=$pageName&instanceId=${renderDelegator.getInstanceId()}"
+    val webRenderHtmlUrl =
+        "file://$htmlFilePath?pageName=$pageName&instanceId=${renderDelegator.getInstanceId()}"
 
     DebugConfig.info("Kuikly Desktop [$pageName]", "$panelTitle 加载 HTML 页面: $webRenderHtmlUrl")
 
