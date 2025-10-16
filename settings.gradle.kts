@@ -42,4 +42,7 @@ include(":desktopApp")
 // Desktop Render Layer (桌面端渲染层)
 include(":desktop-render-layer")
 
+// Desktop Render SDK (桌面端渲染 SDK)
+include(":desktop-render-sdk")
+
 rootProject.buildFileName = buildFileName

@@ -2,6 +2,9 @@ package com.tencent.kuikly.desktop
 
 import com.tencent.kuiklyx.coroutines.KuiklyThreadScheduler
 import com.tencent.kuiklyx.coroutines.setKuiklyThreadScheduler
+import com.tencent.kuikly.desktop.sdk.KuiklyDesktopRenderSdk
+import com.tencent.kuikly.desktop.CefBrowserAdapter
+import com.tencent.kuikly.desktop.CefQueryCallbackAdapter
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.CefApp
