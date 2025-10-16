@@ -11,20 +11,6 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
-/**
- * 浏览器抽象接口，用于替代 CEF 具体类型
- */
-interface IBrowser {
-    fun executeJavaScript(script: String, scriptUrl: String, startLine: Int)
-}
-
-/**
- * 查询回调抽象接口，用于替代 CEF 具体类型
- */
-interface IQueryCallback {
-    fun success(response: String)
-    fun failure(errorCode: Int, errorMessage: String)
-}
 
 /**
  * 用于桌面渲染的 SDK，理论上不依赖任何 IDE 相关代码内。
