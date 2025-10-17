@@ -161,7 +161,7 @@ fun AccessibilityDemo() {
     }
 }
 
-@HotPreview(widthDp = 300, heightDp = 480)
+@HotPreview(widthDp = 1000, heightDp = 480)
 @Composable
 fun BasicSemanticsDemo() {
     Column {
