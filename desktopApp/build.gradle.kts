@@ -137,4 +137,36 @@ afterEvaluate {
     }
 }
 
+// 自定义运行任务
+tasks.register<JavaExec>("runApp") {
+    group = "application"
+    description = "运行 DesktopApp 应用"
+    
+    mainClass.set("com.tencent.kuikly.desktop.MainKt")
+    classpath = sourceSets["jvmMain"].runtimeClasspath
+    
+    // 添加 JVM 参数
+    jvmArgs(
+        "--add-exports=java.desktop/sun.awt=ALL-UNNAMED",
+        "--add-exports=java.desktop/sun.lwawt=ALL-UNNAMED",
+        "--add-exports=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
+        "--add-exports=java.desktop/sun.java2d=ALL-UNNAMED",
+        "--add-exports=java.desktop/sun.java2d.opengl=ALL-UNNAMED",
+        "--add-exports=java.desktop/sun.java2d.metal=ALL-UNNAMED",
+        "--add-exports=java.desktop/sun.font=ALL-UNNAMED",
+        "--add-exports=java.desktop/sun.java2d.pipe=ALL-UNNAMED",
+        "--add-exports=java.desktop/sun.java2d.pipe.hw=ALL-UNNAMED",
+        "--add-exports=java.desktop/java.awt.peer=ALL-UNNAMED",
+        "--add-opens=java.desktop/sun.awt=ALL-UNNAMED",
+        "--add-opens=java.desktop/sun.lwawt=ALL-UNNAMED",
+        "--add-opens=java.desktop/sun.lwawt.macosx=ALL-UNNAMED",
+        "--add-opens=java.desktop/sun.font=ALL-UNNAMED",
+        "--add-opens=java.desktop/sun.java2d.pipe=ALL-UNNAMED",
+        "--add-opens=java.desktop/sun.java2d.pipe.hw=ALL-UNNAMED"
+    )
+    
+    // 设置工作目录
+    workingDir = projectDir
+}
+
 

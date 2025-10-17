@@ -22,13 +22,18 @@ import java.util.concurrent.atomic.AtomicReference
  * - 抽象接口设计：不直接依赖 CEF 具体类型
  * - 运行时资源管理：动态生成 HTML 文件到临时目录
  * - 线程安全：内部使用线程池处理异步任务
+ * - 灵活的类加载：支持外部传入 ClassLoader
  * 
  * @param pageName 页面名称，用于标识不同的渲染实例
+ * @param classLoader 用于加载 KuiklyCoreEntry 的 ClassLoader，如果为 null 则使用默认的 Class.forName
  * 
  * @author Kuikly Team
  * @version 1.0.0
  */
-class KuiklyDesktopRenderSdk(private val pageName: String = "Unknown") : IKuiklyCoreEntry.Delegate {
+class KuiklyDesktopRenderSdk(
+    private val pageName: String = "Unknown",
+    private val classLoader: ClassLoader? = null
+) : IKuiklyCoreEntry.Delegate {
     
     /**
      * 浏览器抽象接口
@@ -72,7 +77,7 @@ class KuiklyDesktopRenderSdk(private val pageName: String = "Unknown") : IKuikly
     // 私有字段
     private var browser: Browser? = null
     private val gson = Gson()
-    private val kuiklyCoreEntry = newKuiklyCoreEntryInstance()
+    private val kuiklyCoreEntry = newKuiklyCoreEntryInstance(classLoader)
     private val instanceId: String = instanceIdProducer++.toString()
     
     // NativeBridge 用于 Pager 调用 callNative
@@ -561,17 +566,20 @@ class KuiklyDesktopRenderSdk(private val pageName: String = "Unknown") : IKuikly
     }
     
     companion object {
-        private val kuiklyClass = Class.forName("com.tencent.kuikly.core.android.KuiklyCoreEntry")
-        
         // 全局递增的 instanceIdProducer，确保每个实例都有唯一的 pageId
         private var instanceIdProducer = 0L
         
-        fun newKuiklyCoreEntryInstance(): IKuiklyCoreEntry {
+        fun newKuiklyCoreEntryInstance(classLoader: ClassLoader? = null): IKuiklyCoreEntry {
+            val kuiklyClass = if (classLoader != null) {
+                classLoader.loadClass("com.tencent.kuikly.core.android.KuiklyCoreEntry")
+            } else {
+                Class.forName("com.tencent.kuikly.core.android.KuiklyCoreEntry")
+            }
             return kuiklyClass.newInstance() as IKuiklyCoreEntry
         }
         
-        fun isPageExist(pageName: String): Boolean {
-            newKuiklyCoreEntryInstance().triggerRegisterPages()
+        fun isPageExist(pageName: String, classLoader: ClassLoader? = null): Boolean {
+            newKuiklyCoreEntryInstance(classLoader).triggerRegisterPages()
             return BridgeManager.isPageExist(pageName)
         }
     }
