@@ -3,8 +3,6 @@ package com.tencent.kuikly.desktop
 import com.tencent.kuiklyx.coroutines.KuiklyThreadScheduler
 import com.tencent.kuiklyx.coroutines.setKuiklyThreadScheduler
 import com.tencent.kuikly.desktop.sdk.KuiklyDesktopRenderSdk
-import com.tencent.kuikly.desktop.CefBrowserAdapter
-import com.tencent.kuikly.desktop.CefQueryCallbackAdapter
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.CefApp
@@ -143,7 +141,9 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
     val client = cefApp.createClient()
 
     // 创建桌面端渲染委托器
-    val renderDelegator = KuiklyDesktopRenderSdk(pageName)
+    // 使用当前线程的 ClassLoader 来加载 KuiklyCoreEntry
+    val currentClassLoader = Thread.currentThread().contextClassLoader
+    val renderDelegator = KuiklyDesktopRenderSdk(pageName, currentClassLoader)
 
     // 配置消息路由器（用于 Web → JVM 通信）
     val msgRouter = CefMessageRouter.create()

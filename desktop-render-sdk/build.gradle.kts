@@ -121,8 +121,18 @@ tasks.register<Jar>("sdkFatJar") {
     }
     
     // 包含依赖的 JAR 文件（fat jar）
-    from(configurations["runtimeClasspath"].map { if (it.isDirectory) it else zipTree(it) }) {
+    from(configurations["jvmRuntimeClasspath"].map { if (it.isDirectory) it else zipTree(it) }) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        
+        // 排除特定的依赖包
+        exclude("**/compose/runtime/**")
+        exclude("**/compose/runtimeSaveable/**")
+        exclude("**/kotlinx/coroutines/**")
+        exclude("**/androidx/annotation/**")
+        exclude("**/org/jetbrains/compose/collection/**")
+        exclude("**/kotlinx-coroutines-core-*.jar")
+        exclude("**/annotation-*.jar")
+        exclude("**/collection-*.jar")
     }
     
     // 排除重复的 META-INF 文件
