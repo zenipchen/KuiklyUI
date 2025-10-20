@@ -37,7 +37,8 @@ kotlin {
                 implementation(project(":demo"))
                 
                 // 自动引用 libs 目录中的所有 JAR 文件
-                implementation(fileTree("libs") { include("*.jar") })
+//                implementation(fileTree("libs") { include("*.jar") })
+                implementation(project(":desktop-render-sdk"))
                 
                 // JCEF (Java Chromium Embedded Framework)
                 implementation("me.friwi:jcefmaven:122.1.10")
@@ -45,7 +46,7 @@ kotlin {
                 
                 // JSON 解析
                 implementation("com.google.code.gson:gson:2.10.1")
-                api("com.tencent.kuiklyx-open:coroutines:1.5.0-2.0.21") {
+                api("com.tencent.kuiklyx-open:coroutines:1.5.1-2.0.21") {
                     exclude(group = "com.tencent.kuikly-open", module = "core")
                     exclude(group = "com.tencent.kuikly-open", module = "core-annotations")
                 }

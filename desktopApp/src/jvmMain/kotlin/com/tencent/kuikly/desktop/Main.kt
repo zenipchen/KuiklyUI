@@ -3,6 +3,7 @@ package com.tencent.kuikly.desktop
 import com.tencent.kuiklyx.coroutines.KuiklyThreadScheduler
 import com.tencent.kuiklyx.coroutines.setKuiklyThreadScheduler
 import com.tencent.kuikly.desktop.sdk.KuiklyDesktopRenderSdk
+import com.tencent.kuiklyx.coroutines.DefaultKuiklyThreadScheduler
 import me.friwi.jcefmaven.CefAppBuilder
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter
 import org.cef.CefApp
@@ -42,26 +43,11 @@ fun main(args: Array<String>) {
  */
 private fun runPageWithTwoPanels() {
     try {
-        // 设置自定义的线程调度器，将任务调度到 Web 容器线程执行
-        setKuiklyThreadScheduler(object : KuiklyThreadScheduler {
+        // 设置自定义的线程调度器，将任务调度到 Swing EDT 线程执行
+        setKuiklyThreadScheduler(object : DefaultKuiklyThreadScheduler() {
             override fun scheduleOnKuiklyThread(pagerId: String) {
-                // 将任务调度到 Web 容器线程执行
-                // 这里使用 SwingUtilities.invokeLater 来确保任务在 Web 容器线程中执行
-                SwingUtilities.invokeLater {
-                    try {
-                        DebugConfig.debug(
-                            "Kuikly Desktop",
-                            "在 Web 容器线程中执行任务: pagerId=$pagerId"
-                        )
-                        // 注意：这里的 task 参数需要从其他地方获取
-                        // 可能需要重新设计接口或者使用其他方式传递任务
-                    } catch (e: Exception) {
-                        DebugConfig.error(
-                            "Kuikly Desktop",
-                            "执行 Kuikly 线程任务失败: ${e.message}",
-                            e
-                        )
-                    }
+                KuiklyDesktopRenderSdk.kotlinMethodExecutor.submit {
+                    runTasks(pagerId)
                 }
             }
         })
@@ -111,10 +97,10 @@ private fun runPageWithTwoPanels() {
         frame.jMenuBar = menuBar
 
         // 创建左侧面板 (ComposeAllSample)
-        val leftPanel = createBrowserPanel(cefApp, "HelloWorldPage", "左侧页面")
+        val leftPanel = createBrowserPanel(cefApp, "AccessibilityDemo", "左侧页面")
 
         // 创建右侧面板 (TextDemo)
-        val rightPanel = createBrowserPanel(cefApp, "ListViewDemoPage", "右侧页面")
+        val rightPanel = createBrowserPanel(cefApp, "TextDemo", "右侧页面")
 
         // 创建分割面板
         val splitPane =
