@@ -469,9 +469,9 @@ class KuiklyDesktopRenderSdk(
                             if (waitingResult != null) {
                                 val (_, resultRef) = waitingResult // 不再使用 latch
                                 resultRef.set(result ?: "")
-                                println("[Kuikly Desktop] ✅ callNative 结果已传递给等待线程: requestId=$requestId, result=$result")
+                                println("[Kuikly Desktop] ✅ callNative 结果已传递给等待线程: requestId=$requestId, result=$result ${instanceId}")
                             } else {
-                                println("[Kuikly Desktop] ⚠️ 未找到对应的等待线程: requestId=$requestId")
+                                println("[Kuikly Desktop] ⚠️ 未找到对应的等待线程: requestId=$requestId ${instanceId}")
                             }
                         }
                     }
