@@ -365,7 +365,7 @@ class KuiklyDesktopRenderSdk(
                     waitingCallNativeResults.remove(requestId)
                 }
 
-                println("[Kuikly Desktop] ✅ callNative 执行完成，结果: $result ${requestId}")
+                println("[Kuikly Desktop] ✅ callNative 执行完成，结果: $result ${requestId} ${instanceId}")
                 return result
             }
             attempts++
@@ -376,7 +376,7 @@ class KuiklyDesktopRenderSdk(
             waitingCallNativeResults.remove(requestId)
         }
 
-        println("[Kuikly Desktop] ⚠️ callNative 执行超时，返回空字符串 ${requestId} ${attempts}")
+        println("[Kuikly Desktop] ⚠️ callNative 执行超时，返回空字符串 ${requestId} ${attempts} ${instanceId}")
         return ""
     }
 
