@@ -30,7 +30,7 @@ kotlin {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
                 
                 // 协程支持
-                implementation("com.tencent.kuiklyx-open:coroutines:1.5.0-2.0.21")
+                implementation("com.tencent.kuiklyx-open:coroutines:1.5.1-2.0.21")
                 
                 // JSON 解析
                 implementation("com.google.code.gson:gson:2.10.1")

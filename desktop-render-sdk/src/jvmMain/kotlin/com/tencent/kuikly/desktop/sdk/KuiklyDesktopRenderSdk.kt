@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalAtomicApi::class)
+
 package com.tencent.kuikly.desktop.sdk
 
 import com.google.gson.Gson
+import com.tencent.kuikly.compose.animation.Animatable
 import com.tencent.kuikly.core.IKuiklyCoreEntry
 import com.tencent.kuikly.core.manager.BridgeManager
 import com.tencent.kuikly.core.nvi.NativeBridge
@@ -10,6 +13,9 @@ import java.io.InputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 
 /**
  * Kuikly 桌面渲染 SDK
@@ -84,9 +90,7 @@ class KuiklyDesktopRenderSdk(
     private val nativeBridge = NativeBridge()
     
     // 用于执行 callKotlinMethod 的线程池
-    private val kotlinMethodExecutor = java.util.concurrent.Executors.newSingleThreadExecutor { r ->
-        Thread(r, "KuiklyMethod-Executor").apply { isDaemon = true }
-    }
+
     private val waitingCallNativeResults = mutableMapOf<String, Pair<CountDownLatch, AtomicReference<String?>>>()
     
     init {
@@ -110,7 +114,7 @@ class KuiklyDesktopRenderSdk(
             }
         }
         BridgeManager.registerNativeBridge(instanceId, nativeBridge)
-        println("[Kuikly Desktop][$pageName] ✅ NativeBridge 已注册")
+        println("[Kuikly Desktop][$pageName] ✅ NativeBridge 已注册 ${instanceId}")
     }
     
     /**
@@ -272,10 +276,15 @@ class KuiklyDesktopRenderSdk(
             println("[Kuikly Desktop] ❌ browser 为 null，无法调用 JS")
             return null
         }
-        
+
         // 生成唯一的请求 ID
-        val requestId = System.currentTimeMillis().toString()
-        
+        val requestIdLong = requestIdProducer.incrementAndFetch()
+        if (requestIdLong > (Long.MAX_VALUE - 2)) {
+            requestIdProducer = AtomicLong(0L)
+        }
+
+        val requestId = requestIdLong.toString()
+
         // 将 Kotlin 参数转换为 JavaScript 字符串表示
         fun Any?.toJsString(): String = when (this) {
             null -> "null"
@@ -284,7 +293,7 @@ class KuiklyDesktopRenderSdk(
             is Boolean -> this.toString()
             else -> "'${this.toString().replace("'", "\\'")}'" // 默认转换为字符串
         }
-        
+
         // 构建 JavaScript 代码，通过 cefQuery 返回结果
         val jsCode = """
             (function(){
@@ -321,17 +330,17 @@ class KuiklyDesktopRenderSdk(
             })();
         """.trimIndent()
 
-        println("[Kuikly Desktop] 🌐 正在执行 callNative: methodId=$methodId, arg0=$arg0, requestId=$requestId")
-        
+        println("[Kuikly Desktop] 🌐 正在执行 callNative: wait=${waitingCallNativeResults.hashCode()} methodId=$methodId, arg0=$arg0, requestId=$requestId")
+
         // 使用 CountDownLatch 等待结果
         val latch = CountDownLatch(1)
         val resultRef = AtomicReference<String?>(null)
-        
+
         // 将等待线程存储到 Map 中
         synchronized(waitingCallNativeResults) {
             waitingCallNativeResults[requestId] = Pair(latch, resultRef)
         }
-        
+
         // 在独立的JavaScript执行线程中执行，避免阻塞 CEF UI线程
         try {
             // 执行 JavaScript 代码
@@ -345,8 +354,9 @@ class KuiklyDesktopRenderSdk(
 
         // 使用轮询机制等待结果，避免阻塞 CEF UI 线程
         var attempts = 0
-        val maxAttempts = 50 // 5秒超时，每100ms检查一次
-        
+        val maxAttempts = Integer.MAX_VALUE // 5秒超时，每100ms检查一次
+
+
         while (attempts < maxAttempts) {
             val result = resultRef.get()
             if (result != null) {
@@ -354,11 +364,10 @@ class KuiklyDesktopRenderSdk(
                 synchronized(waitingCallNativeResults) {
                     waitingCallNativeResults.remove(requestId)
                 }
+
                 println("[Kuikly Desktop] ✅ callNative 执行完成，结果: $result ${requestId}")
                 return result
             }
-
-            Thread.sleep(1) // 等待100ms
             attempts++
         }
 
@@ -366,14 +375,14 @@ class KuiklyDesktopRenderSdk(
         synchronized(waitingCallNativeResults) {
             waitingCallNativeResults.remove(requestId)
         }
-        
-        println("[Kuikly Desktop] ⚠️ callNative 执行超时，返回空字符串 ${requestId}")
+
+        println("[Kuikly Desktop] ⚠️ callNative 执行超时，返回空字符串 ${requestId} ${attempts}")
         return ""
     }
-    
+
     /**
      * 处理 CEF 查询
-     * 
+     *
      * @param browser 浏览器实例
      * @param frame 框架实例
      * @param requestId 请求 ID
@@ -397,15 +406,15 @@ class KuiklyDesktopRenderSdk(
                 callback?.failure(-1, "Empty request")
                 return true
             }
-            
+
             val requestData = gson.fromJson(request, com.google.gson.JsonObject::class.java)
             val type = requestData.get("type")?.asString
-            
+
             when (type) {
                 "callKotlinMethod" -> {
                     val methodId = requestData.get("methodId")?.asInt ?: 0
                     val args = requestData.getAsJsonArray("args")
-                    
+
                     // 安全地解析参数，处理 JsonNull
                     val safeArgs = mutableListOf<Any?>()
                     if (args != null) {
@@ -428,7 +437,7 @@ class KuiklyDesktopRenderSdk(
                             )
                         }
                     }
-                    
+
                     // callKotlinMethod 现在返回 Unit，不需要处理返回值
                     callKotlinMethod(
                         methodId,
@@ -439,7 +448,7 @@ class KuiklyDesktopRenderSdk(
                         safeArgs.getOrNull(4),
                         safeArgs.getOrNull(5)
                     )
-                    
+
                     callback?.success("OK")
                     return true
                 }
@@ -452,7 +461,7 @@ class KuiklyDesktopRenderSdk(
                     val requestId = requestData.get("requestId")?.asString
                     val result = requestData.get("result")?.asString
                     println("[Kuikly Desktop] 📨 收到 callNative 结果: requestId=$requestId, result=$result")
-                    
+
                     // 将结果传递给等待的线程
                     if (requestId != null) {
                         synchronized(waitingCallNativeResults) {
@@ -466,7 +475,7 @@ class KuiklyDesktopRenderSdk(
                             }
                         }
                     }
-                    
+
                     callback?.success("OK")
                     return true
                 }
@@ -483,7 +492,7 @@ class KuiklyDesktopRenderSdk(
             return true
         }
     }
-    
+
     /**
      * 生成 HTML 文件到临时目录
      * 
@@ -553,22 +562,29 @@ class KuiklyDesktopRenderSdk(
         println("[Kuikly Desktop] 🧹 正在清理资源...")
         
         // 关闭 Kotlin 方法执行线程池
-        kotlinMethodExecutor.shutdown()
-        try {
-            if (!kotlinMethodExecutor.awaitTermination(3, TimeUnit.SECONDS)) {
-                kotlinMethodExecutor.shutdownNow()
-            }
-        } catch (e: InterruptedException) {
-            kotlinMethodExecutor.shutdownNow()
-        }
-        
+//        kotlinMethodExecutor.shutdown()
+//        try {
+//            if (!kotlinMethodExecutor.awaitTermination(3, TimeUnit.SECONDS)) {
+//                kotlinMethodExecutor.shutdownNow()
+//            }
+//        } catch (e: InterruptedException) {
+//            kotlinMethodExecutor.shutdownNow()
+//        }
+//
         println("[Kuikly Desktop] ✅ 资源清理完成")
     }
     
     companion object {
+
+        val kotlinMethodExecutor = java.util.concurrent.Executors.newSingleThreadExecutor { r ->
+            Thread(r, "KuiklyMethod-Executor").apply { isDaemon = true }
+        }
+
         // 全局递增的 instanceIdProducer，确保每个实例都有唯一的 pageId
         private var instanceIdProducer = 0L
-        
+
+        private var requestIdProducer = AtomicLong(0L)
+
         fun newKuiklyCoreEntryInstance(classLoader: ClassLoader? = null): IKuiklyCoreEntry {
             val kuiklyClass = if (classLoader != null) {
                 classLoader.loadClass("com.tencent.kuikly.core.android.KuiklyCoreEntry")
