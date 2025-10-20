@@ -161,7 +161,7 @@ fun AccessibilityDemo() {
     }
 }
 
-@HotPreview(widthDp = 1000, heightDp = 480)
+//@HotPreview(widthDp = 1000, heightDp = 480)
 @Composable
 fun BasicSemanticsDemo() {
     Column {
@@ -185,7 +185,7 @@ fun BasicSemanticsDemo() {
     }
 }
 
-@HotPreview(widthDp = 300, heightDp = 480)
+//@HotPreview(widthDp = 300, heightDp = 480)
 @Composable
 fun AccessibilityDescriptionDemo() {
     Column {
@@ -203,7 +203,7 @@ fun AccessibilityDescriptionDemo() {
 
         // 为文本添加无障碍描述
         Text(
-            "重要通知",
+            "重要通知 12",
             modifier = Modifier.semantics {
                 contentDescription = "这是一条重要通知，请仔细阅读"
             }
