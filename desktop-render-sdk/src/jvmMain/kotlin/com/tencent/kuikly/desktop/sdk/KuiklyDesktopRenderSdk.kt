@@ -330,7 +330,7 @@ class KuiklyDesktopRenderSdk(
             })();
         """.trimIndent()
 
-        println("[Kuikly Desktop] 🌐 正在执行 callNative: wait=${waitingCallNativeResults.hashCode()} methodId=$methodId, arg0=$arg0, requestId=$requestId")
+        println("[Kuikly Desktop] 🌐 正在执行 callNative: wait=${waitingCallNativeResults.hashCode()} methodId=$methodId, arg0=$arg0, requestId=$requestId instanceId=${instanceId}" )
 
         // 使用 CountDownLatch 等待结果
         val latch = CountDownLatch(1)
