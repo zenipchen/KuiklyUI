@@ -86,8 +86,20 @@ private fun runPageWithTwoPanels() {
 
         // 创建菜单栏
         val menuBar = JMenuBar()
+        
+        // 添加刷新菜单
+        val refreshMenu = JMenu("刷新控制")
+        val refreshLeftItem = JMenuItem("刷新左侧页面")
+        val refreshRightItem = JMenuItem("刷新右侧页面")
+        val refreshBothItem = JMenuItem("刷新两个页面")
+        
+        refreshMenu.add(refreshLeftItem)
+        refreshMenu.add(refreshRightItem)
+        refreshMenu.add(refreshBothItem)
+        menuBar.add(refreshMenu)
+        
+        // 添加开发者工具菜单
         val devMenu = JMenu("开发者工具")
-
         val openDevToolsItem = JMenuItem("打开开发者工具 (F12)")
         val inspectElementItem = JMenuItem("检查元素 (Ctrl+Shift+I)")
 
@@ -97,10 +109,31 @@ private fun runPageWithTwoPanels() {
         frame.jMenuBar = menuBar
 
         // 创建左侧面板 (ComposeAllSample)
-        val leftPanel = createBrowserPanel(cefApp, "AccessibilityDemo", "左侧页面")
+        val leftPanelResult = createBrowserPanel(cefApp, "AccessibilityDemo", "左侧页面")
+        val leftPanel = leftPanelResult.first
+        val leftBrowser = leftPanelResult.second
 
         // 创建右侧面板 (TextDemo)
-        val rightPanel = createBrowserPanel(cefApp, "TextDemo", "右侧页面")
+        val rightPanelResult = createBrowserPanel(cefApp, "TextDemo", "右侧页面")
+        val rightPanel = rightPanelResult.first
+        val rightBrowser = rightPanelResult.second
+        
+        // 添加刷新按钮事件处理
+        refreshLeftItem.addActionListener {
+            DebugConfig.info("Kuikly Desktop", "刷新左侧页面")
+            refreshPage(leftBrowser, "左侧页面")
+        }
+        
+        refreshRightItem.addActionListener {
+            DebugConfig.info("Kuikly Desktop", "刷新右侧页面")
+            refreshPage(rightBrowser, "右侧页面")
+        }
+        
+        refreshBothItem.addActionListener {
+            DebugConfig.info("Kuikly Desktop", "刷新两个页面")
+            refreshPage(leftBrowser, "左侧页面")
+            refreshPage(rightBrowser, "右侧页面")
+        }
 
         // 创建分割面板
         val splitPane =
@@ -122,7 +155,7 @@ private fun runPageWithTwoPanels() {
 /**
  * 创建浏览器面板
  */
-private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: String): JComponent {
+private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: String): Pair<JComponent, CefBrowser> {
     // 创建浏览器客户端
     val client = cefApp.createClient()
 
@@ -210,5 +243,30 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
 
     // 加载本地网页（包含 Web 渲染层）
     val browser = client.createBrowser(webRenderHtmlUrl, false, false)
-    return browser.uiComponent as JComponent
+    return Pair(browser.uiComponent as JComponent, browser)
+}
+
+/**
+ * 刷新页面 - 调用 JavaScript 中的 refresh 方法
+ */
+private fun refreshPage(browser: CefBrowser, panelName: String) {
+    try {
+        // 执行 JavaScript 代码调用 refresh 方法
+        val jsCode = """
+            console.log('[$panelName] 开始刷新页面...');
+            if (typeof window.refresh === 'function') {
+                window.refresh();
+                console.log('[$panelName] 调用 refresh() 成功');
+            } else if (typeof window.DesktopRenderLayer !== 'undefined' && typeof window.DesktopRenderLayer.refresh === 'function') {
+                window.DesktopRenderLayer.refresh();
+                console.log('[$panelName] 调用 DesktopRenderLayer.refresh() 成功');
+            }
+        """.trimIndent()
+        
+        browser.executeJavaScript(jsCode, "", 0)
+        DebugConfig.success("Kuikly Desktop", "$panelName 刷新命令已发送")
+        
+    } catch (e: Exception) {
+        DebugConfig.error("Kuikly Desktop", "$panelName 刷新失败: ${e.message}", e)
+    }
 }

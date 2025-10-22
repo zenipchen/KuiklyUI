@@ -20,6 +20,10 @@ package com.tencent.kuikly.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.InternalComposeApi
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.key
 import com.tencent.kuikly.compose.coroutines.internal.ComposeDispatcher
 import com.tencent.kuikly.compose.foundation.event.OnBackPressedDispatcher
 import com.tencent.kuikly.compose.foundation.event.OnBackPressedDispatcherOwner
@@ -43,7 +47,10 @@ import com.tencent.kuikly.core.module.VsyncModule
 import com.tencent.kuikly.core.nvi.serialization.json.JSONObject
 import com.tencent.kuikly.core.pager.Pager
 import com.tencent.kuikly.core.views.DivView
+import com.tencent.kuiklyx.coroutines.Kuikly
+import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.launch
 
 fun ComposeContainer.setContent(content: @Composable () -> Unit) {
     this.content = content
@@ -70,6 +77,10 @@ open class ComposeContainer :
     internal val imageCacheManager by lazy(LazyThreadSafetyMode.NONE) {
         KuiklyImageCacheManager(this)
     }
+
+    // 用于强制重组的状态管理
+    private var refreshKey by mutableStateOf(0)
+    private var eventData by mutableStateOf<Map<String, Any?>>(emptyMap())
 
     override fun viewDidLoad() {
         super.viewDidLoad()
@@ -185,6 +196,16 @@ open class ComposeContainer :
 
     override fun onReceivePagerEvent(pagerEvent: String, eventData: JSONObject) {
         super.onReceivePagerEvent(pagerEvent, eventData)
+
+        println("[ComposeContainer] 接收到页面事件: $pagerEvent, data: $eventData")
+
+        // 更新事件数据状态
+        val eventDataMap = mutableMapOf<String, Any?>()
+        for (key in eventData.keys()) {
+            eventDataMap[key] = eventData.opt(key)
+        }
+        this.eventData = eventDataMap
+
         if (pagerEvent == PAGER_EVENT_ROOT_VIEW_SIZE_CHANGED) {
             val width = eventData.optDouble(WIDTH)
             val height = eventData.optDouble(HEIGHT)
@@ -196,6 +217,27 @@ open class ComposeContainer :
             val fontWeightScale = eventData.optDouble("fontWeightScale", 1.0)
             val fontSizeScale = eventData.optDouble("fontSizeScale", 1.0)
             mediator?.configuration?.onFontConfigChange(fontSizeScale, fontWeightScale)
+        } else {
+            // 对于其他事件，检查是否需要强制刷新界面
+            val forceRefresh = eventData.optBoolean("forceRefresh", true)
+            val refreshKey = eventData.optString("refreshKey", "")
+
+            if (forceRefresh) {
+                if (refreshKey != null && refreshKey.isNotEmpty()) {
+                    // 使用提供的 refreshKey
+                    val newKey = refreshKey.hashCode()
+                    if (newKey != this.refreshKey) {
+                        this.refreshKey = newKey
+                    } else {
+                        // 如果哈希值相同，递增 refreshKey 来确保重组
+                        this.refreshKey++
+                    }
+                } else {
+                    // 没有提供 refreshKey 时，直接递增 refreshKey
+                    this.refreshKey++
+                }
+                println("[ComposeContainer] 触发界面重组，refreshKey: $refreshKey, event: $pagerEvent")
+            }
         }
     }
 
@@ -221,7 +263,10 @@ open class ComposeContainer :
 
     private fun setComposeContent(content: @Composable () -> Unit) {
         mediator?.setContent {
-            ProvideContainerCompositionLocals(content = content)
+            // 使用 refreshKey 作为 key 来强制重组
+            key(refreshKey) {
+                ProvideContainerCompositionLocals(content = content)
+            }
         }
     }
 
@@ -251,6 +296,18 @@ open class ComposeContainer :
      */
     open fun enableConsumeSnapshotWhenPause(): Boolean {
         return true
+    }
+
+
+    /**
+     * 手动触发界面重组
+     * 使用随机值确保每次调用都会触发重组
+     */
+    fun forceRefresh() {
+        // 生成随机刷新 key
+        val randomValue = (Math.random() * 1000000).toInt()
+        refreshKey = randomValue
+        println("[ComposeContainer] 手动触发界面重组，随机 refreshKey: $refreshKey")
     }
 
     /**
