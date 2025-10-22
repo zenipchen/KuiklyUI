@@ -16379,6 +16379,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var KtMap = kotlin_kotlin.$_$.a1;
   var isInterface = kotlin_kotlin.$_$.f2;
   var Pair = kotlin_kotlin.$_$.r3;
+  var replace = kotlin_kotlin.$_$.z2;
+  var to = kotlin_kotlin.$_$.b4;
+  var mapOf = kotlin_kotlin.$_$.l1;
   var toString_0 = kotlin_kotlin.$_$.a4;
   var onPageLoadComplete$default = kotlin_com_tencent_kuikly_open_core_render_web_base.$_$.s1;
   var printStackTrace = kotlin_kotlin.$_$.y3;
@@ -16514,6 +16517,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   protoOf(DesktopRenderViewDelegator).sendEvent = function (event, data) {
     console.log('[Desktop Render Layer] \u53D1\u9001\u4E8B\u4EF6: ' + event + ', data: ' + toString(data));
     this.delegator.og(event, data);
+  };
+  protoOf(DesktopRenderViewDelegator).refresh = function () {
+    console.log('[Desktop Render Layer] \u5237\u65B0\u8C03\u7528');
+    var tmp = Math.random();
+    var randomValue = (!(tmp == null) ? typeof tmp === 'number' : false) ? tmp : THROW_CCE();
+    var randomKey = 'refresh_' + replace(randomValue.toString(), '.', '');
+    var kotlinData = mapOf([to('refreshKey', randomKey), to('forceRefresh', true), to('randomValue', randomValue)]);
+    console.log('[Desktop Render Layer] \u4F7F\u7528\u968F\u673A\u5237\u65B0\u6570\u636E: ' + toString(kotlinData));
+    this.sendEvent('refresh', kotlinData);
   };
   protoOf(DesktopRenderViewDelegator).xm = function () {
     console.log('[Desktop Render Layer] KuiklyRenderView \u5DF2\u521B\u5EFA');

@@ -185,15 +185,15 @@ class KuiklyDesktopRenderSdk(
                 var callback = window.callNativeRegistry[pageId];
                 try {
                     var result = callback(methodId, arg0, arg1, arg2, arg3, arg4, arg5);
-                    console.log('[Kuikly Desktop] ✅ callNative 回调执行成功，结果:', result);
+                    // console.log('[Kuikly Desktop] ✅ callNative 回调执行成功，结果:', result);
                     
                     if (result === null || result === undefined) {
-                        console.log('[Kuikly Desktop] 🔧 回调返回 null/undefined，转换为空字符串');
+                        // console.log('[Kuikly Desktop] 🔧 回调返回 null/undefined，转换为空字符串');
                         return "";
                     } else if (typeof result === 'string') {
                         return result;
                     } else {
-                        console.log('[Kuikly Desktop] 🔧 回调返回非字符串类型，转换为字符串:', result);
+                        // console.log('[Kuikly Desktop] 🔧 回调返回非字符串类型，转换为字符串:', result);
                         return String(result);
                     }
                 } catch (e) {
@@ -330,7 +330,7 @@ class KuiklyDesktopRenderSdk(
             })();
         """.trimIndent()
 
-        println("[Kuikly Desktop] 🌐 正在执行 callNative: wait=${waitingCallNativeResults.hashCode()} methodId=$methodId, arg0=$arg0, requestId=$requestId instanceId=${instanceId}" )
+        // println("[Kuikly Desktop] 🌐 正在执行 callNative: wait=${waitingCallNativeResults.hashCode()} methodId=$methodId, arg0=$arg0, requestId=$requestId instanceId=${instanceId}" )
 
         // 使用 CountDownLatch 等待结果
         val latch = CountDownLatch(1)
@@ -365,7 +365,7 @@ class KuiklyDesktopRenderSdk(
                     waitingCallNativeResults.remove(requestId)
                 }
 
-                println("[Kuikly Desktop] ✅ callNative 执行完成，结果: $result ${requestId} ${instanceId}")
+                // println("[Kuikly Desktop] ✅ callNative 执行完成，结果: $result ${requestId} ${instanceId}")
                 return result
             }
             attempts++
@@ -460,7 +460,7 @@ class KuiklyDesktopRenderSdk(
                 "callNativeResult" -> {
                     val requestId = requestData.get("requestId")?.asString
                     val result = requestData.get("result")?.asString
-                    println("[Kuikly Desktop] 📨 收到 callNative 结果: requestId=$requestId, result=$result")
+                    // println("[Kuikly Desktop] 📨 收到 callNative 结果: requestId=$requestId, result=$result")
 
                     // 将结果传递给等待的线程
                     if (requestId != null) {
@@ -469,7 +469,7 @@ class KuiklyDesktopRenderSdk(
                             if (waitingResult != null) {
                                 val (_, resultRef) = waitingResult // 不再使用 latch
                                 resultRef.set(result ?: "")
-                                println("[Kuikly Desktop] ✅ callNative 结果已传递给等待线程: requestId=$requestId, result=$result ${instanceId}")
+                                // println("[Kuikly Desktop] ✅ callNative 结果已传递给等待线程: requestId=$requestId, result=$result ${instanceId}")
                             } else {
                                 println("[Kuikly Desktop] ⚠️ 未找到对应的等待线程: requestId=$requestId ${instanceId}")
                             }

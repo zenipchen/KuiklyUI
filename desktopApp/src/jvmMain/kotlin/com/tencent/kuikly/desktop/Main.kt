@@ -247,19 +247,24 @@ private fun createBrowserPanel(cefApp: CefApp, pageName: String, panelTitle: Str
 }
 
 /**
- * 刷新页面 - 调用 JavaScript 中的 refresh 方法
+ * 刷新页面 - 调用 DesktopRenderViewDelegator 实例的 refresh 方法
  */
 private fun refreshPage(browser: CefBrowser, panelName: String) {
     try {
-        // 执行 JavaScript 代码调用 refresh 方法
+        // 执行 JavaScript 代码调用 DesktopRenderViewDelegator 实例的 refresh 方法
         val jsCode = """
             console.log('[$panelName] 开始刷新页面...');
-            if (typeof window.refresh === 'function') {
-                window.refresh();
-                console.log('[$panelName] 调用 refresh() 成功');
-            } else if (typeof window.DesktopRenderLayer !== 'undefined' && typeof window.DesktopRenderLayer.refresh === 'function') {
-                window.DesktopRenderLayer.refresh();
-                console.log('[$panelName] 调用 DesktopRenderLayer.refresh() 成功');
+            
+            // 尝试通过 window.desktopRenderView 获取委托器实例
+            if (window.renderView ) {
+                if (typeof window.renderView.refresh === 'function') {
+                    window.renderView.refresh();
+                    console.log('[$panelName] 调用 window.renderView.refresh() 成功');
+                } else {
+                    console.warn('[$panelName] window.renderView.refresh 方法不存在');
+                }
+            } else {
+                console.warn('[$panelName] 未找到 renderView');
             }
         """.trimIndent()
         
