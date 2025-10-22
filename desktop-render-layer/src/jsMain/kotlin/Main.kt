@@ -29,11 +29,9 @@ fun main() {
     window.asDynamic().createRenderViewDelegator = { -> api.createRenderViewDelegator() }
     window.asDynamic().getKuiklyRenderViewClass = { -> api.getKuiklyRenderViewClass() }
     window.asDynamic().getKuiklyRenderCoreExecuteModeClass = { -> api.getKuiklyRenderCoreExecuteModeClass() }
-    window.asDynamic().refresh = { -> api.refresh() }
     
     console.log("DesktopRenderLayer API 已导出")
     console.log("createRenderViewDelegator 方法类型:", js("typeof window.createRenderViewDelegator"))
-    console.log("refresh 方法类型:", js("typeof window.refresh"))
 }
 
 // 确保 main 函数在模块加载时被调用
@@ -69,38 +67,6 @@ fun getKuiklyRenderCoreExecuteModeClass(): dynamic {
     return KuiklyRenderCoreExecuteMode::class.js
 }
 
-/**
- * 全局导出的刷新方法
- */
-@OptIn(ExperimentalJsExport::class)
-@JsExport
-fun refresh() {
-    console.log("[Desktop Render Layer] 全局 refresh 调用")
-    
-    // 获取当前活跃的 renderView 实例
-    val renderView = window.asDynamic().desktopRenderView
-    if (renderView && renderView.asDynamic().delegator) {
-        val delegator = renderView.asDynamic().delegator
-        if (delegator.asDynamic().sendEvent) {
-            // 生成随机刷新数据
-            val randomValue = js("Math.random()") as Double
-            val randomKey = "refresh_${randomValue.toString().replace(".", "")}"
-            
-            val kotlinData = mapOf(
-                "refreshKey" to randomKey,
-                "forceRefresh" to true,
-                "randomValue" to randomValue
-            )
-            
-            console.log("[Desktop Render Layer] 使用随机刷新数据: $kotlinData")
-            delegator.asDynamic().sendEvent("refresh", kotlinData)
-        } else {
-            console.warn("[Desktop Render Layer] delegator.sendEvent 方法不存在")
-        }
-    } else {
-        console.warn("[Desktop Render Layer] 未找到活跃的 renderView 或 delegator")
-    }
-}
 
 /**
  * 初始化全局对象
@@ -270,36 +236,6 @@ class DesktopRenderLayerAPI {
         return KuiklyRenderCoreExecuteMode::class.js
     }
     
-    /**
-     * 刷新方法
-     */
-    fun refresh() {
-        console.log("[Desktop Render Layer API] 刷新调用")
-        
-        // 获取当前活跃的 renderView 实例
-        val renderView = window.asDynamic().desktopRenderView
-        if (renderView && renderView.asDynamic().delegator) {
-            val delegator = renderView.asDynamic().delegator
-            if (delegator.asDynamic().sendEvent) {
-                // 生成随机刷新数据
-                val randomValue = js("Math.random()") as Double
-                val randomKey = "refresh_${randomValue.toString().replace(".", "")}"
-                
-                val kotlinData = mapOf(
-                    "refreshKey" to randomKey,
-                    "forceRefresh" to true,
-                    "randomValue" to randomValue
-                )
-                
-                console.log("[Desktop Render Layer API] 使用随机刷新数据: $kotlinData")
-                delegator.asDynamic().sendEvent("refresh", kotlinData)
-            } else {
-                console.warn("[Desktop Render Layer API] delegator.sendEvent 方法不存在")
-            }
-        } else {
-            console.warn("[Desktop Render Layer API] 未找到活跃的 renderView 或 delegator")
-        }
-    }
 }
 
 /**
@@ -409,6 +345,26 @@ class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
     fun sendEvent(event: String, data: Map<String, Any>) {
         console.log("[Desktop Render Layer] 发送事件: $event, data: $data")
         delegator.sendEvent(event, data)
+    }
+    
+    /**
+     * 刷新方法
+     */
+    fun refresh() {
+        console.log("[Desktop Render Layer] 刷新调用")
+
+        // 生成随机刷新数据
+        val randomValue = js("Math.random()") as Double
+        val randomKey = "refresh_${randomValue.toString().replace(".", "")}"
+        
+        val kotlinData = mapOf(
+            "refreshKey" to randomKey,
+            "forceRefresh" to true,
+            "randomValue" to randomValue
+        )
+        
+        console.log("[Desktop Render Layer] 使用随机刷新数据: $kotlinData")
+        sendEvent("refresh", kotlinData)
     }
 
     // 实现 KuiklyRenderViewDelegatorDelegate 接口

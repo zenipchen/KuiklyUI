@@ -28,7 +28,7 @@ echo "✅ 构建完成"
 # 拷贝 JavaScript 文件到 resources 目录
 echo "📋 拷贝 JavaScript 文件到 resources 目录..."
 JS_SOURCE="desktop-render-layer/build/kotlin-webpack/js/productionExecutable/desktopRenderLayer.js"
-JS_TARGET="desktopApp/src/jvmMain/resources/com/tencent/kuikly/desktop/desktopRenderLayer.js"
+JS_TARGET="desktop-render-sdk/src/jvmMain/resources/com/tencent/kuikly/desktop/sdk/desktopRenderLayer.js"
 
 # 确保目标目录存在
 mkdir -p "desktopApp/src/jvmMain/resources/com/tencent/kuikly/desktop/"
