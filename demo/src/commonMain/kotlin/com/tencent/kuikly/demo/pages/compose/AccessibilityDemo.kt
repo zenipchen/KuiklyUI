@@ -82,7 +82,7 @@ internal class AccessibilityDemoPager : ComposeContainer() {
     }
 }
 
-@HotPreview(widthDp = 300, heightDp = 480)
+@HotPreview(widthDp = 300, heightDp = 480, name = "sdfsddfdf")
 @Composable
 fun AccessibilityDemo() {
     LazyColumn(
@@ -98,7 +98,7 @@ fun AccessibilityDemo() {
 
         // 1. 基础语义标签示例
         item {
-            DemoCard(title = "基础语义标签") {
+            DemoCard(title = "基础32语义标签") {
                 BasicSemanticsDemo()
             }
         }
@@ -161,7 +161,6 @@ fun AccessibilityDemo() {
     }
 }
 
-//@HotPreview(widthDp = 1000, heightDp = 480)
 @Composable
 fun BasicSemanticsDemo() {
     Column {

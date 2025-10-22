@@ -29,11 +29,11 @@ fun main() {
     window.asDynamic().createRenderViewDelegator = { -> api.createRenderViewDelegator() }
     window.asDynamic().getKuiklyRenderViewClass = { -> api.getKuiklyRenderViewClass() }
     window.asDynamic().getKuiklyRenderCoreExecuteModeClass = { -> api.getKuiklyRenderCoreExecuteModeClass() }
-    window.asDynamic().sendEvent = { event: String, data: Any? -> api.sendEvent(event, data) }
+    window.asDynamic().refresh = { -> api.refresh() }
     
     console.log("DesktopRenderLayer API 已导出")
     console.log("createRenderViewDelegator 方法类型:", js("typeof window.createRenderViewDelegator"))
-    console.log("sendEvent 方法类型:", js("typeof window.sendEvent"))
+    console.log("refresh 方法类型:", js("typeof window.refresh"))
 }
 
 // 确保 main 函数在模块加载时被调用
@@ -70,41 +70,30 @@ fun getKuiklyRenderCoreExecuteModeClass(): dynamic {
 }
 
 /**
- * 全局导出的发送事件方法
+ * 全局导出的刷新方法
  */
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-fun sendEvent(event: String, data: Any?) {
-    console.log("[Desktop Render Layer] 全局 sendEvent 调用: $event, data: $data")
+fun refresh() {
+    console.log("[Desktop Render Layer] 全局 refresh 调用")
     
     // 获取当前活跃的 renderView 实例
     val renderView = window.asDynamic().desktopRenderView
     if (renderView && renderView.asDynamic().delegator) {
         val delegator = renderView.asDynamic().delegator
         if (delegator.asDynamic().sendEvent) {
-            // 转换 data 参数为 Map<String, Any>
-            val kotlinData = if (data != null) {
-                try {
-                    val dynamicData = data.asDynamic()
-                    if (js("typeof dynamicData") == "object" && !js("Array.isArray")(dynamicData)) {
-                        val map = mutableMapOf<String, Any>()
-                        for (key in js("Object.keys")(dynamicData)) {
-                            val keyStr = key as String
-                            map[keyStr] = dynamicData[keyStr]
-                        }
-                        map
-                    } else {
-                        mapOf("value" to data)
-                    }
-                } catch (e: Exception) {
-                    console.warn("[Desktop Render Layer] 转换 data 失败: ${e.message}")
-                    mapOf("value" to data)
-                }
-            } else {
-                emptyMap<String, Any>()
-            }
+            // 生成随机刷新数据
+            val randomValue = js("Math.random()") as Double
+            val randomKey = "refresh_${randomValue.toString().replace(".", "")}"
             
-            delegator.asDynamic().sendEvent(event, kotlinData)
+            val kotlinData = mapOf(
+                "refreshKey" to randomKey,
+                "forceRefresh" to true,
+                "randomValue" to randomValue
+            )
+            
+            console.log("[Desktop Render Layer] 使用随机刷新数据: $kotlinData")
+            delegator.asDynamic().sendEvent("refresh", kotlinData)
         } else {
             console.warn("[Desktop Render Layer] delegator.sendEvent 方法不存在")
         }
@@ -282,39 +271,28 @@ class DesktopRenderLayerAPI {
     }
     
     /**
-     * 发送事件
+     * 刷新方法
      */
-    fun sendEvent(event: String, data: Any?) {
-        console.log("[Desktop Render Layer API] 发送事件: $event, data: $data")
+    fun refresh() {
+        console.log("[Desktop Render Layer API] 刷新调用")
         
         // 获取当前活跃的 renderView 实例
         val renderView = window.asDynamic().desktopRenderView
         if (renderView && renderView.asDynamic().delegator) {
             val delegator = renderView.asDynamic().delegator
             if (delegator.asDynamic().sendEvent) {
-                // 转换 data 参数为 Map<String, Any>
-                val kotlinData = if (data != null) {
-                    try {
-                        val dynamicData = data.asDynamic()
-                        if (js("typeof dynamicData") == "object" && !js("Array.isArray")(dynamicData)) {
-                            val map = mutableMapOf<String, Any>()
-                            for (key in js("Object.keys")(dynamicData)) {
-                                val keyStr = key as String
-                                map[keyStr] = dynamicData[keyStr]
-                            }
-                            map
-                        } else {
-                            mapOf("value" to data)
-                        }
-                    } catch (e: Exception) {
-                        console.warn("[Desktop Render Layer API] 转换 data 失败: ${e.message}")
-                        mapOf("value" to data)
-                    }
-                } else {
-                    emptyMap<String, Any>()
-                }
+                // 生成随机刷新数据
+                val randomValue = js("Math.random()") as Double
+                val randomKey = "refresh_${randomValue.toString().replace(".", "")}"
                 
-                delegator.asDynamic().sendEvent(event, kotlinData)
+                val kotlinData = mapOf(
+                    "refreshKey" to randomKey,
+                    "forceRefresh" to true,
+                    "randomValue" to randomValue
+                )
+                
+                console.log("[Desktop Render Layer API] 使用随机刷新数据: $kotlinData")
+                delegator.asDynamic().sendEvent("refresh", kotlinData)
             } else {
                 console.warn("[Desktop Render Layer API] delegator.sendEvent 方法不存在")
             }
