@@ -58,9 +58,12 @@ kotlin {
     // sourceSet
     val commonMain by sourceSets.getting {
         dependencies {
-            implementation(project(":core"))
-            api(project(":compose"))
-            implementation(project(":core-annotations"))
+            implementation("com.tencent.kuikly-open:core:${Version.getKuiklyVersion()}")
+            implementation("com.tencent.kuikly-open:core-annotations:${Version.getKuiklyVersion()}")
+            implementation("com.tencent.kuikly-open:compose:${Version.getKuiklyVersion()}")
+//            implementation(project(":core"))
+//            api(project(":compose"))
+//            implementation(project(":core-annotations"))
 //            compileOnly(project(":core-annotations"))
             // Chat Demo 相关依赖
 //             implementation("com.tencent.kuiklybase:markdown:0.2.0")
