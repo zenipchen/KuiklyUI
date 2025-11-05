@@ -35,9 +35,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var NoSuchElementException_init_$Create$ = kotlin_kotlin.$_$.p;
   var IllegalStateException_init_$Create$ = kotlin_kotlin.$_$.n;
   var initMetadataForClass = kotlin_kotlin.$_$.z1;
+  var Collection = kotlin_kotlin.$_$.v;
   var Iterable = kotlin_kotlin.$_$.w;
   var KtList = kotlin_kotlin.$_$.x;
-  var Collection = kotlin_kotlin.$_$.v;
   var VOID = kotlin_kotlin.$_$.b;
   var ensureNotNull = kotlin_kotlin.$_$.u3;
   var IllegalStateException_init_$Create$_0 = kotlin_kotlin.$_$.o;
@@ -56,9 +56,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   initMetadataForObject(CrossPlatFeature, 'CrossPlatFeature');
   initMetadataForObject(BridgeManager, 'BridgeManager');
   initMetadataForClass(FastArrayList$listIterator$1);
-  initMetadataForClass(FastArrayList, 'FastArrayList', FastArrayList_init_$Create$, VOID, [Iterable, KtList, Collection]);
+  initMetadataForClass(FastArrayList, 'FastArrayList', FastArrayList_init_$Create$, VOID, [Collection, Iterable, KtList]);
   initMetadataForClass(FastHashSet$iterator$1);
-  initMetadataForClass(FastHashSet, 'FastHashSet', FastHashSet_init_$Create$, VOID, [Iterable, KtSet, Collection]);
+  initMetadataForClass(FastHashSet, 'FastHashSet', FastHashSet_init_$Create$, VOID, [Collection, Iterable, KtSet]);
   initMetadataForClass(FastLinkedHashMap$entries$1, VOID, VOID, VOID, [Entry]);
   initMetadataForClass(FastLinkedHashMap, 'FastLinkedHashMap', FastLinkedHashMap_init_$Create$, VOID, [KtMap]);
   initMetadataForCompanion(Companion);
@@ -458,9 +458,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var initMetadataForObject = kotlin_kotlin.$_$.c2;
   var NoSuchElementException_init_$Create$ = kotlin_kotlin.$_$.p;
   var IllegalArgumentException_init_$Create$ = kotlin_kotlin.$_$.m;
+  var Collection = kotlin_kotlin.$_$.v;
   var Iterable = kotlin_kotlin.$_$.w;
   var KtList = kotlin_kotlin.$_$.x;
-  var Collection = kotlin_kotlin.$_$.v;
   var toString_0 = kotlin_kotlin.$_$.a4;
   var Entry = kotlin_kotlin.$_$.y;
   var collectionSizeOrDefault = kotlin_kotlin.$_$.d1;
@@ -558,7 +558,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   initMetadataForClass(TextPostProcessorInput, 'TextPostProcessorInput');
   initMetadataForObject(KuiklyRenderAdapterManager, 'KuiklyRenderAdapterManager');
   initMetadataForClass(FastMutableList$listIterator$1);
-  initMetadataForClass(FastMutableList, 'FastMutableList', VOID, VOID, [Iterable, KtList, Collection]);
+  initMetadataForClass(FastMutableList, 'FastMutableList', VOID, VOID, [Collection, Iterable, KtList]);
   initMetadataForClass(FastMutableMap$entries$1, VOID, VOID, VOID, [Entry]);
   initMetadataForClass(FastMutableMap, 'FastMutableMap', VOID, VOID, [KtMap]);
   initMetadataForCompanion(Companion_0);
@@ -16752,7 +16752,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         var tmp_1;
         if (delegator.asDynamic().callNative) {
           var result = delegator.asDynamic().callNative(methodId, arg0, arg1, arg2, arg3, arg4, arg5);
-          console.log('[Desktop Render Layer] callNative \u6267\u884C\u5B8C\u6210\uFF0C\u7ED3\u679C: ' + result);
           var tmp_2;
           if (isSyncCall) {
             tmp_2 = result == null ? '' : result;
@@ -16886,12 +16885,6 @@ if (typeof Math.clz32 === 'undefined') {
     };
   }(Math.log, Math.LN2);
 }
-if (typeof String.prototype.startsWith === 'undefined') {
-  Object.defineProperty(String.prototype, 'startsWith', {value: function (searchString, position) {
-    position = position || 0;
-    return this.lastIndexOf(searchString, position) === position;
-  }});
-}
 if (typeof String.prototype.endsWith === 'undefined') {
   Object.defineProperty(String.prototype, 'endsWith', {value: function (searchString, position) {
     var subjectString = this.toString();
@@ -16901,6 +16894,12 @@ if (typeof String.prototype.endsWith === 'undefined') {
     position -= searchString.length;
     var lastIndex = subjectString.indexOf(searchString, position);
     return lastIndex !== -1 && lastIndex === position;
+  }});
+}
+if (typeof String.prototype.startsWith === 'undefined') {
+  Object.defineProperty(String.prototype, 'startsWith', {value: function (searchString, position) {
+    position = position || 0;
+    return this.lastIndexOf(searchString, position) === position;
   }});
 }
 //endregion
@@ -16946,22 +16945,22 @@ if (typeof String.prototype.endsWith === 'undefined') {
   initMetadataForClass(AbstractMutableCollection, 'AbstractMutableCollection', VOID, AbstractCollection, [AbstractCollection, Collection, Iterable]);
   initMetadataForClass(IteratorImpl, 'IteratorImpl');
   initMetadataForClass(ListIteratorImpl, 'ListIteratorImpl', VOID, IteratorImpl);
-  initMetadataForClass(AbstractMutableList, 'AbstractMutableList', VOID, AbstractMutableCollection, [AbstractMutableCollection, Iterable, KtList, Collection]);
+  initMetadataForClass(AbstractMutableList, 'AbstractMutableList', VOID, AbstractMutableCollection, [AbstractMutableCollection, Collection, Iterable, KtList]);
   initMetadataForClass(AbstractMap, 'AbstractMap', VOID, VOID, [KtMap]);
   initMetadataForClass(AbstractMutableMap, 'AbstractMutableMap', VOID, AbstractMap, [AbstractMap, KtMap]);
-  initMetadataForClass(AbstractMutableSet, 'AbstractMutableSet', VOID, AbstractMutableCollection, [AbstractMutableCollection, Iterable, KtSet, Collection]);
+  initMetadataForClass(AbstractMutableSet, 'AbstractMutableSet', VOID, AbstractMutableCollection, [AbstractMutableCollection, Collection, Iterable, KtSet]);
   initMetadataForCompanion(Companion_2);
-  initMetadataForClass(ArrayList, 'ArrayList', ArrayList_init_$Create$, AbstractMutableList, [AbstractMutableList, Iterable, KtList, Collection]);
+  initMetadataForClass(ArrayList, 'ArrayList', ArrayList_init_$Create$, AbstractMutableList, [AbstractMutableList, Collection, Iterable, KtList]);
   initMetadataForClass(HashMap, 'HashMap', HashMap_init_$Create$, AbstractMutableMap, [AbstractMutableMap, KtMap]);
-  initMetadataForClass(HashMapKeys, 'HashMapKeys', VOID, AbstractMutableSet, [Iterable, KtSet, Collection, AbstractMutableSet]);
+  initMetadataForClass(HashMapKeys, 'HashMapKeys', VOID, AbstractMutableSet, [Collection, Iterable, KtSet, AbstractMutableSet]);
   initMetadataForClass(HashMapValues, 'HashMapValues', VOID, AbstractMutableCollection, [Collection, Iterable, AbstractMutableCollection]);
-  initMetadataForClass(HashMapEntrySetBase, 'HashMapEntrySetBase', VOID, AbstractMutableSet, [Iterable, KtSet, Collection, AbstractMutableSet]);
+  initMetadataForClass(HashMapEntrySetBase, 'HashMapEntrySetBase', VOID, AbstractMutableSet, [Collection, Iterable, KtSet, AbstractMutableSet]);
   initMetadataForClass(HashMapEntrySet, 'HashMapEntrySet', VOID, HashMapEntrySetBase);
   initMetadataForClass(HashMapKeysDefault$iterator$1);
   initMetadataForClass(HashMapKeysDefault, 'HashMapKeysDefault', VOID, AbstractMutableSet);
   initMetadataForClass(HashMapValuesDefault$iterator$1);
   initMetadataForClass(HashMapValuesDefault, 'HashMapValuesDefault', VOID, AbstractMutableCollection);
-  initMetadataForClass(HashSet, 'HashSet', HashSet_init_$Create$, AbstractMutableSet, [AbstractMutableSet, Iterable, KtSet, Collection]);
+  initMetadataForClass(HashSet, 'HashSet', HashSet_init_$Create$, AbstractMutableSet, [AbstractMutableSet, Collection, Iterable, KtSet]);
   initMetadataForCompanion(Companion_3);
   initMetadataForClass(Itr, 'Itr');
   initMetadataForClass(KeysItr, 'KeysItr', VOID, Itr);
@@ -17007,7 +17006,7 @@ if (typeof String.prototype.endsWith === 'undefined') {
   initMetadataForClass(InternalHashMap, 'InternalHashMap', InternalHashMap_init_$Create$, VOID, [InternalMap]);
   initMetadataForObject(EmptyHolder, 'EmptyHolder');
   initMetadataForClass(LinkedHashMap, 'LinkedHashMap', LinkedHashMap_init_$Create$, HashMap, [HashMap, KtMap]);
-  initMetadataForClass(LinkedHashSet, 'LinkedHashSet', LinkedHashSet_init_$Create$, HashSet, [HashSet, Iterable, KtSet, Collection]);
+  initMetadataForClass(LinkedHashSet, 'LinkedHashSet', LinkedHashSet_init_$Create$, HashSet, [HashSet, Collection, Iterable, KtSet]);
   initMetadataForClass(Exception, 'Exception', Exception_init_$Create$, Error);
   initMetadataForClass(RuntimeException, 'RuntimeException', RuntimeException_init_$Create$, Exception);
   initMetadataForClass(IllegalArgumentException, 'IllegalArgumentException', IllegalArgumentException_init_$Create$, RuntimeException);
