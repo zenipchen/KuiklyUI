@@ -176,7 +176,7 @@ private fun initGlobalObject() {
                 if (delegator.asDynamic().callNative) {
 //                    console.log("[Desktop Render Layer] 调用 delegator.callNative")
                     val result = delegator.asDynamic().callNative(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
-                    console.log("[Desktop Render Layer] callNative 执行完成，结果: $result")
+//                    console.log("[Desktop Render Layer] callNative 执行完成，结果: $result")
                     
                     if (isSyncCall) {
                         // 同步调用，直接返回结果
