@@ -48,7 +48,7 @@ import com.tencent.kuikly.core.views.DivView
 import com.tencent.kuiklyx.coroutines.Kuikly
 import kotlinx.coroutines.Dispatchers
 import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 fun ComposeContainer.setContent(content: @Composable () -> Unit) {
     this.content = content
@@ -290,7 +290,7 @@ open class ComposeContainer :
      */
     fun forceRefresh() {
         // 生成随机刷新 key
-        val randomValue = (Math.random() * 1000000).toInt()
+        val randomValue = Random(1000000).nextInt()
         refreshKey = randomValue
         println("[ComposeContainer] 手动触发界面重组，随机 refreshKey: $refreshKey")
     }
