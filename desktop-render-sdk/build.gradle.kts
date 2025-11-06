@@ -113,7 +113,11 @@ tasks.register<Jar>("sdkFatJar") {
     archiveClassifier.set("fat")
     
     // 包含编译后的类文件
-    from(sourceSets["jvmMain"].output)
+    from(sourceSets["jvmMain"].output) {
+        // 排除 kotlin.Metadata 类
+        exclude("**/kotlin/Metadata.class")
+        exclude("**/kotlin/Metadata\$*.class")
+    }
     
     // 包含资源文件
     from(sourceSets["jvmMain"].resources) {
@@ -133,6 +137,10 @@ tasks.register<Jar>("sdkFatJar") {
         exclude("**/kotlinx-coroutines-core-*.jar")
         exclude("**/annotation-*.jar")
         exclude("**/collection-*.jar")
+        
+        // 排除 kotlin.Metadata 类
+        exclude("**/kotlin/Metadata.class")
+        exclude("**/kotlin/Metadata\$*.class")
     }
     
     // 排除重复的 META-INF 文件
