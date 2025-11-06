@@ -60,7 +60,7 @@ kotlin {
         dependencies {
             implementation("com.tencent.kuikly-open:core:${Version.getKuiklyVersion()}")
             implementation("com.tencent.kuikly-open:core-annotations:${Version.getKuiklyVersion()}")
-            implementation("com.tencent.kuikly-open:compose:${Version.getKuiklyVersion()}")
+            implementation("com.tencent.kuikly-open:compose:2.0.0-Preview-2.0.21-SNAPSHOT")
 //            implementation(project(":core"))
 //            api(project(":compose"))
 //            implementation(project(":core-annotations"))

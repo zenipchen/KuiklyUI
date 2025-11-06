@@ -91,42 +91,42 @@ fun AccessibilityDemo() {
     ) {
         item {
             Text(
-                "无障碍功能演示",
+                "无障碍",
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
         // 1. 基础语义标签示例
         item {
-            DemoCard(title = "基础32语义标签") {
+            DemoCard(title = "2") {
                 BasicSemanticsDemo()
             }
         }
 
         // 2. 无障碍描述示例
         item {
-            DemoCard(title = "无障碍描述") {
+            DemoCard(title = "") {
                 AccessibilityDescriptionDemo()
             }
         }
 
         // 5. 无障碍组示例
         item {
-            DemoCard(title = "无障碍组 进来首个聚焦位置") {
+            DemoCard(title = "无进来首个聚焦位置") {
                 AccessibilityGroupDemo()
             }
         }
 
         // 3. 无障碍动作示例
         item {
-            DemoCard(title = "无障碍动作") {
+            DemoCard(title = "无2作") {
                 AccessibilityActionDemo()
             }
         }
 
         // 4. 无障碍状态示例
         item {
-            DemoCard(title = "无障碍状态") {
+            DemoCard(title = "无障状态") {
                 AccessibilityStateDemo()
             }
         }
