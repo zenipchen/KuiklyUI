@@ -91,49 +91,49 @@ fun AccessibilityDemo() {
     ) {
         item {
             Text(
-                "无障碍",
+                "无  1",
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
         // 1. 基础语义标签示例
         item {
-            DemoCard(title = "2") {
+            DemoCard(title = "dd11") {
                 BasicSemanticsDemo()
             }
         }
 
         // 2. 无障碍描述示例
         item {
-            DemoCard(title = "") {
+            DemoCard(title = "3") {
                 AccessibilityDescriptionDemo()
             }
         }
 
         // 5. 无障碍组示例
         item {
-            DemoCard(title = "无进来首个聚焦位置") {
+            DemoCard(title = "焦11") {
                 AccessibilityGroupDemo()
             }
         }
 
         // 3. 无障碍动作示例
         item {
-            DemoCard(title = "无2作") {
+            DemoCard(title = "无2") {
                 AccessibilityActionDemo()
             }
         }
 
         // 4. 无障碍状态示例
         item {
-            DemoCard(title = "无障状态") {
+            DemoCard(title = "无") {
                 AccessibilityStateDemo()
             }
         }
 
         // 6. 无障碍标题示例
         item {
-            DemoCard(title = "无障碍标题") {
+            DemoCard(title = "无障碍标题33") {
                 AccessibilityHeadingDemo()
             }
         }
@@ -193,7 +193,7 @@ fun AccessibilityDescriptionDemo() {
             modifier = Modifier
                 .size(100.dp)
                 .semantics {
-                    contentDescription = "这是一张示例图片，展示了一个红色的圆形"
+                    contentDescription = "这是一示例图片，展示了一个红色的圆形"
                 }
 //                .background(MaterialTheme.colors.primary)
         )
