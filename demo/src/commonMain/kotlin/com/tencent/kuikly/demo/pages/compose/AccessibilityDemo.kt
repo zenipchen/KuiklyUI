@@ -105,14 +105,14 @@ fun AccessibilityDemo() {
 
         // 2. 无障碍描述示例
         item {
-            DemoCard(title = "3") {
+            DemoCard(title = "33") {
                 AccessibilityDescriptionDemo()
             }
         }
 
         // 5. 无障碍组示例
         item {
-            DemoCard(title = "焦11") {
+            DemoCard(title = "焦11235") {
                 AccessibilityGroupDemo()
             }
         }
