@@ -6,7 +6,7 @@ import java.lang.reflect.Type
 
 actual fun invokeComposeFunc(clasName: String, func: String, target: Any, currentComposer: Composer) {
     try {
-        val clazz = ComposeContainer::class.java.classLoader.loadClass(clasName)
+        val clazz = target::class.java.classLoader.loadClass(clasName)
         val method = findMethod(clazz, func)
 
         if (method != null) {
