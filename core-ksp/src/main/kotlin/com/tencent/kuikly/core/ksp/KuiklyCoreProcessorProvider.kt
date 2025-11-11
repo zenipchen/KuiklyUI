@@ -188,6 +188,7 @@ class CoreProcessor(
         // 生成预览 Pager 类
         val fileSpec = FileSpec.builder(packageName, className)
             .addImport("com.tencent.kuikly.compose", "setContent")
+            .addImport("androidx.compose.runtime", "currentComposer")
             .addImport("", "invokeComposeFunc")
             .addType(
                 TypeSpec.classBuilder(className)
@@ -203,7 +204,7 @@ class CoreProcessor(
                             .addModifiers(KModifier.OVERRIDE)
                             .addStatement("super.willInit()")
                             .addStatement("setContent {")
-                            .addStatement("   invokeComposeFunc(%S, %S, this@"  + className + ");", containingClassName, functionName)
+                            .addStatement("    invokeComposeFunc(%S, %S, this@%L, currentComposer)", containingClassName, functionName, className)
                             .addStatement("}")
                             .build()
                     )
