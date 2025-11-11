@@ -98,14 +98,14 @@ fun AccessibilityDemo() {
 
         // 1. 基础语义标签示例
         item {
-            DemoCard(title = "dd11") {
+            DemoCard(title = "d12") {
                 BasicSemanticsDemo()
             }
         }
 
         // 2. 无障碍描述示例
         item {
-            DemoCard(title = "33") {
+            DemoCard(title = "3333") {
                 AccessibilityDescriptionDemo()
             }
         }

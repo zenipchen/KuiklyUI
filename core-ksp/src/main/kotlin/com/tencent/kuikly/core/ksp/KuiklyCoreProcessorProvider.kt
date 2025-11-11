@@ -165,9 +165,30 @@ class CoreProcessor(
         val packageName = functionDeclaration.packageName.asString()
         val className = "${functionName}PreviewPager"
         
+        // 获取函数所在的类名
+        val containingClassName = when (val parent = functionDeclaration.parent) {
+            is KSClassDeclaration -> parent.qualifiedName?.asString() ?: ""
+            else -> {
+                // 如果是顶层函数，Kotlin 会生成一个以文件名+Kt 结尾的类
+                val file = functionDeclaration.containingFile
+                if (file != null && packageName.isNotEmpty()) {
+                    // 对于顶层函数，使用包名 + 文件名（去掉扩展名）+ Kt
+                    val fileName = file.fileName.replace(".kt", "").replace(".kts", "")
+                    if (fileName.isNotEmpty()) {
+                        "$packageName.${fileName}Kt"
+                    } else {
+                        ""
+                    }
+                } else {
+                    ""
+                }
+            }
+        }
+        
         // 生成预览 Pager 类
         val fileSpec = FileSpec.builder(packageName, className)
             .addImport("com.tencent.kuikly.compose", "setContent")
+            .addImport("", "invokeComposeFunc")
             .addType(
                 TypeSpec.classBuilder(className)
                     .addAnnotation(
@@ -182,7 +203,7 @@ class CoreProcessor(
                             .addModifiers(KModifier.OVERRIDE)
                             .addStatement("super.willInit()")
                             .addStatement("setContent {")
-                            .addStatement("    %L()", functionName)
+                            .addStatement("   invokeComposeFunc(%S, %S, this@"  + className + ");", containingClassName, functionName)
                             .addStatement("}")
                             .build()
                     )
