@@ -199,35 +199,7 @@ class KuiklyDesktopRenderSdk(
         val jsCode = """
             (function(){
                 var result = window.callNative($methodId, ${arg0.toJsString()}, ${arg1.toJsString()}, ${arg2.toJsString()}, ${arg3.toJsString()}, ${arg4.toJsString()}, ${arg5.toJsString()});
-                
-                // 确保返回值是字符串类型
-                var finalResult = "";
-                if (result === null || result === undefined) {
-                    finalResult = "";
-                } else if (typeof result === 'string') {
-                    finalResult = result;
-                } else {
-                    finalResult = String(result);
-                }
-                
-                // 通过 cefQuery 返回结果
-                if (window.cefQuery) {
-                    window.cefQuery({
-                        request: JSON.stringify({
-                            type: 'callNativeResult',
-                            requestId: '$requestId',
-                            result: finalResult
-                        }),
-                        onSuccess: function(response) {
-                            //console.log('[Kuikly Desktop] ✅ callNative 结果已返回: requestId=$requestId, result=' + finalResult);
-                        },
-                        onFailure: function(error_code, error_message) {
-                            console.error('[Kuikly Desktop] ❌ callNative 结果返回失败:', error_message);
-                        }
-                    });
-                } else {
-                    console.warn('[Kuikly Desktop] ⚠️ cefQuery 未找到，无法返回结果');
-                }
+                window.cefQuerySendResult('${requestId}', result);
             })();
         """.trimIndent()
 
