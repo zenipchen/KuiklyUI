@@ -92,7 +92,9 @@ class KuiklyDesktopRenderSdk(
     // 用于执行 callKotlinMethod 的线程池
 
     private val waitingCallNativeResults = mutableMapOf<String, Pair<CountDownLatch, AtomicReference<String?>>>()
-    
+
+    var onFirstFramePaintCallback: Runnable ?= null
+
     init {
         kuiklyCoreEntry.delegate = this
         // 确保页面注册被触发
@@ -351,6 +353,11 @@ class KuiklyDesktopRenderSdk(
 
                     callback?.success("OK")
                     return true
+                }
+                "onFirstFramePaint" -> {
+                    onFirstFramePaintCallback?.run()
+                    callback?.success("OK")
+                    return true;
                 }
                 else -> {
                     println("[Kuikly Desktop] ⚠️ 未知请求类型: $type")

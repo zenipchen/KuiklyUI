@@ -1,6 +1,8 @@
 import com.tencent.kuikly.core.render.web.IKuiklyRenderExport
+import com.tencent.kuikly.core.render.web.IKuiklyRenderViewLifecycleCallback
 import com.tencent.kuikly.core.render.web.KuiklyRenderView
 import com.tencent.kuikly.core.render.web.context.KuiklyRenderCoreExecuteMode
+import com.tencent.kuikly.core.render.web.exception.ErrorReason
 import com.tencent.kuikly.core.render.web.expand.KuiklyRenderViewDelegatorDelegate
 import com.tencent.kuikly.core.render.web.expand.components.*
 import com.tencent.kuikly.core.render.web.expand.components.list.KRListView
@@ -313,6 +315,13 @@ class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
         
         // 使用 core-render-web 的委托器进行初始化
         delegator.onAttach(container, pageName, kotlinPageData, kotlinSize)
+
+        delegator.addKuiklyRenderViewLifeCycleCallback(object: LifeCycleCallbakc() {
+            override fun onFirstFramePaint() {
+                val onFirstFramePaintEvent = document.createEvent("onFirstFramePaint")
+                window.dispatchEvent(onFirstFramePaintEvent)
+            }
+        })
     }
 
     /**

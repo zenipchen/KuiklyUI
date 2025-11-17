@@ -350,7 +350,18 @@
             }
         }
 
+        // 尽早监听（<head> 里就放上）
+        window.addEventListener('onFirstFramePaint', function (e) {
+             window.cefQuery({
+                    request: JSON.stringify({
+                        type: 'onFirstFramePaint',
+                    }),
+                    onSuccess: function(response) {
+                    },
+                    onFailure: function(error_code, error_message) {
+                    }
+                });
+        }, false);
     </script>
-
 </body>
 </html>
