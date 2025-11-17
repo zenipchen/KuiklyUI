@@ -362,6 +362,11 @@
                     }
                 });
         }, false);
+
+        window.addEventListener('unload', () => {
+            console.log("unload");
+            window.renderView.detach();
+        });
     </script>
 </body>
 </html>

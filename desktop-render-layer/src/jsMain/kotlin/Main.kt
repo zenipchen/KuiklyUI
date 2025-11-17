@@ -10,6 +10,7 @@ import com.tencent.kuikly.core.render.web.ktx.SizeI
 import com.tencent.kuikly.core.render.web.runtime.web.expand.KuiklyRenderViewDelegator
 import kotlinx.browser.window
 import kotlinx.browser.document
+import org.w3c.dom.CustomEvent
 import kotlin.js.JsExport
 import kotlin.js.ExperimentalJsExport
 
@@ -318,7 +319,7 @@ class DesktopRenderViewDelegator : KuiklyRenderViewDelegatorDelegate {
 
         delegator.addKuiklyRenderViewLifeCycleCallback(object: LifeCycleCallbakc() {
             override fun onFirstFramePaint() {
-                val onFirstFramePaintEvent = document.createEvent("onFirstFramePaint")
+                val onFirstFramePaintEvent = CustomEvent("onFirstFramePaint")
                 window.dispatchEvent(onFirstFramePaintEvent)
             }
         })

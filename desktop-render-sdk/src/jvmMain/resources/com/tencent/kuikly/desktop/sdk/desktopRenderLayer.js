@@ -35,9 +35,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var NoSuchElementException_init_$Create$ = kotlin_kotlin.$_$.p;
   var IllegalStateException_init_$Create$ = kotlin_kotlin.$_$.n;
   var initMetadataForClass = kotlin_kotlin.$_$.z1;
+  var Collection = kotlin_kotlin.$_$.v;
   var KtList = kotlin_kotlin.$_$.x;
   var Iterable = kotlin_kotlin.$_$.w;
-  var Collection = kotlin_kotlin.$_$.v;
   var VOID = kotlin_kotlin.$_$.b;
   var ensureNotNull = kotlin_kotlin.$_$.u3;
   var IllegalStateException_init_$Create$_0 = kotlin_kotlin.$_$.o;
@@ -56,9 +56,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   initMetadataForObject(CrossPlatFeature, 'CrossPlatFeature');
   initMetadataForObject(BridgeManager, 'BridgeManager');
   initMetadataForClass(FastArrayList$listIterator$1);
-  initMetadataForClass(FastArrayList, 'FastArrayList', FastArrayList_init_$Create$, VOID, [KtList, Iterable, Collection]);
+  initMetadataForClass(FastArrayList, 'FastArrayList', FastArrayList_init_$Create$, VOID, [Collection, KtList, Iterable]);
   initMetadataForClass(FastHashSet$iterator$1);
-  initMetadataForClass(FastHashSet, 'FastHashSet', FastHashSet_init_$Create$, VOID, [KtSet, Iterable, Collection]);
+  initMetadataForClass(FastHashSet, 'FastHashSet', FastHashSet_init_$Create$, VOID, [Collection, KtSet, Iterable]);
   initMetadataForClass(FastLinkedHashMap$entries$1, VOID, VOID, VOID, [Entry]);
   initMetadataForClass(FastLinkedHashMap, 'FastLinkedHashMap', FastLinkedHashMap_init_$Create$, VOID, [KtMap]);
   initMetadataForCompanion(Companion);
@@ -458,9 +458,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var initMetadataForObject = kotlin_kotlin.$_$.c2;
   var NoSuchElementException_init_$Create$ = kotlin_kotlin.$_$.p;
   var IllegalArgumentException_init_$Create$ = kotlin_kotlin.$_$.m;
+  var Collection = kotlin_kotlin.$_$.v;
   var KtList = kotlin_kotlin.$_$.x;
   var Iterable = kotlin_kotlin.$_$.w;
-  var Collection = kotlin_kotlin.$_$.v;
   var toString_0 = kotlin_kotlin.$_$.a4;
   var Entry = kotlin_kotlin.$_$.y;
   var collectionSizeOrDefault = kotlin_kotlin.$_$.d1;
@@ -558,7 +558,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   initMetadataForClass(TextPostProcessorInput, 'TextPostProcessorInput');
   initMetadataForObject(KuiklyRenderAdapterManager, 'KuiklyRenderAdapterManager');
   initMetadataForClass(FastMutableList$listIterator$1);
-  initMetadataForClass(FastMutableList, 'FastMutableList', VOID, VOID, [KtList, Iterable, Collection]);
+  initMetadataForClass(FastMutableList, 'FastMutableList', VOID, VOID, [Collection, KtList, Iterable]);
   initMetadataForClass(FastMutableMap$entries$1, VOID, VOID, VOID, [Entry]);
   initMetadataForClass(FastMutableMap, 'FastMutableMap', VOID, VOID, [KtMap]);
   initMetadataForCompanion(Companion_0);
@@ -13890,6 +13890,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       return Unit_instance;
     };
   }
+  function KuiklyRenderViewDelegator$addKuiklyRenderViewLifeCycleCallback$lambda($callback) {
+    return function (it) {
+      it.vg($callback);
+      return Unit_instance;
+    };
+  }
   function KuiklyRenderViewDelegator$initPerformanceManager$1(this$0) {
     this.k1d_1 = this$0;
   }
@@ -14028,6 +14034,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   protoOf(KuiklyRenderViewDelegator).og = function (event, data) {
     runKuiklyRenderViewTask(this, KuiklyRenderViewDelegator$sendEvent$lambda(event, data));
   };
+  protoOf(KuiklyRenderViewDelegator).n1d = function (callback) {
+    runKuiklyRenderViewTask(this, KuiklyRenderViewDelegator$addKuiklyRenderViewLifeCycleCallback$lambda(callback));
+  };
   function pendingTaskList$factory() {
     return getPropertyCallableRef('pendingTaskList', 1, KProperty1, function (receiver) {
       return _get_pendingTaskList__cixfl5(receiver);
@@ -14043,13 +14052,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return false;
   }
   function setElementPosition($this, x, y) {
-    if ($this.e1e_1) {
-      var tmp = $this.n1d_1.firstElementChild;
+    if ($this.f1e_1) {
+      var tmp = $this.o1d_1.firstElementChild;
       (tmp instanceof HTMLElement ? tmp : THROW_CCE()).style.left = '' + x + 'px';
-      var tmp_0 = $this.n1d_1.firstElementChild;
+      var tmp_0 = $this.o1d_1.firstElementChild;
       (tmp_0 instanceof HTMLElement ? tmp_0 : THROW_CCE()).style.top = '' + y + 'px';
     } else {
-      $this.n1d_1.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+      $this.o1d_1.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
     }
   }
   function getNewPageIndex($this, delta, offset, newPageIndex) {
@@ -14057,12 +14066,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     // Inline function 'kotlin.math.abs' call
     if (Math.abs(delta) > offset) {
       if (delta > 0) {
-        if ($this.y1d_1 > 0) {
-          resultPageIndex = $this.y1d_1 - 1;
+        if ($this.z1d_1 > 0) {
+          resultPageIndex = $this.z1d_1 - 1;
         }
       } else {
-        if ($this.y1d_1 < $this.x1d_1 - 1) {
-          resultPageIndex = $this.y1d_1 + 1;
+        if ($this.z1d_1 < $this.y1d_1 - 1) {
+          resultPageIndex = $this.z1d_1 + 1;
         }
       }
     }
@@ -14092,8 +14101,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
        while (inductionVariable < last);
   }
   function Companion_0() {
-    this.f1e_1 = 20;
-    this.g1e_1 = 200;
+    this.g1e_1 = 20;
+    this.h1e_1 = 200;
   }
   var Companion_instance_0;
   function Companion_getInstance_0() {
@@ -14104,12 +14113,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       var tmp;
       if ($isAnimation) {
         var tmp_0;
-        if (this$0.e1e_1) {
-          var tmp_1 = this$0.n1d_1.firstElementChild;
+        if (this$0.f1e_1) {
+          var tmp_1 = this$0.o1d_1.firstElementChild;
           (tmp_1 instanceof HTMLElement ? tmp_1 : THROW_CCE()).style.transition = 'all 200ms';
           tmp_0 = Unit_instance;
         } else {
-          this$0.n1d_1.style.transition = 'transform 200ms';
+          this$0.o1d_1.style.transition = 'transform 200ms';
           tmp_0 = Unit_instance;
         }
         tmp = tmp_0;
@@ -14121,12 +14130,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   function H5ListPagingHelper$handlePagerScrollTo$lambda_0(this$0) {
     return function () {
       var tmp;
-      if (this$0.e1e_1) {
-        var tmp_0 = this$0.n1d_1.firstElementChild;
+      if (this$0.f1e_1) {
+        var tmp_0 = this$0.o1d_1.firstElementChild;
         (tmp_0 instanceof HTMLElement ? tmp_0 : THROW_CCE()).style.transition = '';
         tmp = Unit_instance;
       } else {
-        this$0.n1d_1.style.transition = '';
+        this$0.o1d_1.style.transition = '';
         tmp = Unit_instance;
       }
       return Unit_instance;
@@ -14134,14 +14143,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function H5ListPagingHelper$setContentOffset$lambda(this$0, $offsetX, $offsetY, $animate) {
     return function () {
-      this$0.h1e(-$offsetX, -$offsetY, $animate);
+      this$0.i1e(-$offsetX, -$offsetY, $animate);
       return Unit_instance;
     };
   }
   function H5ListPagingHelper(ele, listElement) {
-    this.n1d_1 = ele;
-    this.o1d_1 = listElement;
-    this.p1d_1 = 0.0;
+    this.o1d_1 = ele;
+    this.p1d_1 = listElement;
     this.q1d_1 = 0.0;
     this.r1d_1 = 0.0;
     this.s1d_1 = 0.0;
@@ -14151,91 +14159,92 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     this.w1d_1 = 0.0;
     this.x1d_1 = 0.0;
     this.y1d_1 = 0.0;
-    this.z1d_1 = false;
-    this.a1e_1 = null;
-    this.b1e_1 = false;
-    this.c1e_1 = 'column';
-    this.d1e_1 = 0;
-    this.e1e_1 = checkIOSVersion(this);
+    this.z1d_1 = 0.0;
+    this.a1e_1 = false;
+    this.b1e_1 = null;
+    this.c1e_1 = false;
+    this.d1e_1 = 'column';
+    this.e1e_1 = 0;
+    this.f1e_1 = checkIOSVersion(this);
   }
-  protoOf(H5ListPagingHelper).i1e = function (it) {
-    this.d1e_1 = 1;
-    this.a1e_1 = it;
-    this.n1d_1.style.overflowX = 'visible';
-    this.n1d_1.style.overflowY = 'visible';
-    if (this.e1e_1) {
-      this.n1d_1.style.position = 'relative';
-      var tmp = this.n1d_1.firstElementChild;
+  protoOf(H5ListPagingHelper).j1e = function (it) {
+    this.e1e_1 = 1;
+    this.b1e_1 = it;
+    this.o1d_1.style.overflowX = 'visible';
+    this.o1d_1.style.overflowY = 'visible';
+    if (this.f1e_1) {
+      this.o1d_1.style.position = 'relative';
+      var tmp = this.o1d_1.firstElementChild;
       (tmp instanceof HTMLElement ? tmp : THROW_CCE()).style.position = 'absolute';
     }
-    if (!this.n1d_1.classList.contains('page-list')) {
-      this.n1d_1.classList.add('page-list');
-      this.y1d_1 = 0.0;
+    if (!this.o1d_1.classList.contains('page-list')) {
+      this.o1d_1.classList.add('page-list');
+      this.z1d_1 = 0.0;
     }
-    if (this.c1e_1 === 'column') {
+    if (this.d1e_1 === 'column') {
       // Inline function 'kotlin.apply' call
-      this.n1d_1.style.setProperty('overscroll-behavior-y', this.b1e_1 ? 'auto' : 'none');
-      var tmp_0 = this.n1d_1.firstElementChild;
+      this.o1d_1.style.setProperty('overscroll-behavior-y', this.c1e_1 ? 'auto' : 'none');
+      var tmp_0 = this.o1d_1.firstElementChild;
       var containerHeight = (tmp_0 instanceof HTMLElement ? tmp_0 : THROW_CCE()).offsetHeight;
-      var pageHeight = this.n1d_1.offsetHeight;
-      this.s1d_1 = containerHeight - pageHeight;
+      var pageHeight = this.o1d_1.offsetHeight;
+      this.t1d_1 = containerHeight - pageHeight;
       var tmp_1 = this;
       // Inline function 'kotlin.math.round' call
       var x = containerHeight / pageHeight;
-      tmp_1.x1d_1 = round(x);
+      tmp_1.y1d_1 = round(x);
     } else {
       // Inline function 'kotlin.apply' call
-      this.n1d_1.style.setProperty('overscroll-behavior-x', this.b1e_1 ? 'auto' : 'none');
-      var tmp_2 = this.n1d_1.firstElementChild;
+      this.o1d_1.style.setProperty('overscroll-behavior-x', this.c1e_1 ? 'auto' : 'none');
+      var tmp_2 = this.o1d_1.firstElementChild;
       var containerWidth = (tmp_2 instanceof HTMLElement ? tmp_2 : THROW_CCE()).offsetWidth;
-      var pageWidth = this.n1d_1.offsetWidth;
-      this.r1d_1 = containerWidth - pageWidth;
+      var pageWidth = this.o1d_1.offsetWidth;
+      this.s1d_1 = containerWidth - pageWidth;
       var tmp_3 = this;
       // Inline function 'kotlin.math.round' call
       var x_0 = containerWidth / pageWidth;
-      tmp_3.x1d_1 = round(x_0);
+      tmp_3.y1d_1 = round(x_0);
     }
-    var offsetX = this.n1d_1.scrollLeft;
-    var offsetY = this.n1d_1.scrollTop;
+    var offsetX = this.o1d_1.scrollLeft;
+    var offsetY = this.o1d_1.scrollTop;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
     var eventsParams = toPanEventParams(it);
     var tmp_4 = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp_4.t1d_1 = eventsParams.d1('y');
+    tmp_4.u1d_1 = eventsParams.d1('y');
     var tmp_5 = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp_5.v1d_1 = eventsParams.d1('x');
-    var offsetMap = this.o1d_1.j1e(offsetX, offsetY, this.d1e_1);
-    var tmp0_safe_receiver = this.o1d_1.k1e();
+    tmp_5.w1d_1 = eventsParams.d1('x');
+    var offsetMap = this.p1d_1.k1e(offsetX, offsetY, this.e1e_1);
+    var tmp0_safe_receiver = this.p1d_1.l1e();
     if (tmp0_safe_receiver == null)
       null;
     else {
       tmp0_safe_receiver.zq(offsetMap);
     }
   };
-  protoOf(H5ListPagingHelper).l1e = function (it) {
-    if (this.a1e_1 == null) {
+  protoOf(H5ListPagingHelper).m1e = function (it) {
+    if (this.b1e_1 == null) {
       return Unit_instance;
     }
-    var tmp = this.a1e_1;
+    var tmp = this.b1e_1;
     var lastEventsParams = toPanEventParams(tmp instanceof TouchEvent ? tmp : THROW_CCE());
     var eventsParams = toPanEventParams(it);
-    this.a1e_1 = it;
+    this.b1e_1 = it;
     var tmp_0 = this;
     var tmp_1 = eventsParams.d1('y');
-    tmp_0.u1d_1 = (!(tmp_1 == null) ? typeof tmp_1 === 'number' : false) ? tmp_1 : THROW_CCE();
+    tmp_0.v1d_1 = (!(tmp_1 == null) ? typeof tmp_1 === 'number' : false) ? tmp_1 : THROW_CCE();
     var tmp_2 = this;
     var tmp_3 = eventsParams.d1('x');
-    tmp_2.w1d_1 = (!(tmp_3 == null) ? typeof tmp_3 === 'number' : false) ? tmp_3 : THROW_CCE();
+    tmp_2.x1d_1 = (!(tmp_3 == null) ? typeof tmp_3 === 'number' : false) ? tmp_3 : THROW_CCE();
     var tmp_4 = lastEventsParams.d1('y');
     var lastEventY = (!(tmp_4 == null) ? typeof tmp_4 === 'number' : false) ? tmp_4 : THROW_CCE();
     var tmp_5 = lastEventsParams.d1('x');
     var lastEventX = (!(tmp_5 == null) ? typeof tmp_5 === 'number' : false) ? tmp_5 : THROW_CCE();
-    var deltaY = this.u1d_1 - lastEventY;
-    var deltaX = this.w1d_1 - lastEventX;
+    var deltaY = this.v1d_1 - lastEventY;
+    var deltaX = this.x1d_1 - lastEventX;
     // Inline function 'kotlin.math.abs' call
     var absDeltaY = Math.abs(deltaY);
     // Inline function 'kotlin.math.abs' call
@@ -14243,38 +14252,38 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var delta = 0.0;
     var canScroll = true;
     var needParentNodeScroll = false;
-    if (this.c1e_1 === 'column' && absDeltaY > absDeltaX) {
+    if (this.d1e_1 === 'column' && absDeltaY > absDeltaX) {
       delta = deltaY;
-      this.q1d_1 = this.q1d_1 + deltaY;
+      this.r1d_1 = this.r1d_1 + deltaY;
       if (deltaY > 0) {
-        if (this.q1d_1 > 0) {
-          this.q1d_1 = 0.0;
-          if (this.y1d_1 === 0.0) {
+        if (this.r1d_1 > 0) {
+          this.r1d_1 = 0.0;
+          if (this.z1d_1 === 0.0) {
             canScroll = false;
           }
         }
       } else {
-        if (this.q1d_1 < -this.s1d_1) {
-          this.q1d_1 = -this.s1d_1;
-          if (this.y1d_1 === this.x1d_1 - 1) {
+        if (this.r1d_1 < -this.t1d_1) {
+          this.r1d_1 = -this.t1d_1;
+          if (this.z1d_1 === this.y1d_1 - 1) {
             canScroll = false;
           }
         }
       }
-    } else if (this.c1e_1 === 'row' && absDeltaX > absDeltaY) {
+    } else if (this.d1e_1 === 'row' && absDeltaX > absDeltaY) {
       delta = deltaX;
-      this.p1d_1 = this.p1d_1 + deltaX;
+      this.q1d_1 = this.q1d_1 + deltaX;
       if (deltaX > 0) {
-        if (this.p1d_1 >= 0) {
-          this.p1d_1 = 0.0;
-          if (this.y1d_1 === 0.0) {
+        if (this.q1d_1 >= 0) {
+          this.q1d_1 = 0.0;
+          if (this.z1d_1 === 0.0) {
             canScroll = false;
           }
         }
       } else {
-        if (this.p1d_1 <= -this.r1d_1) {
-          this.p1d_1 = -this.r1d_1;
-          if (this.y1d_1 === this.x1d_1 - 1) {
+        if (this.q1d_1 <= -this.s1d_1) {
+          this.q1d_1 = -this.s1d_1;
+          if (this.z1d_1 === this.y1d_1 - 1) {
             canScroll = false;
           }
         }
@@ -14294,84 +14303,84 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
     }
     Log_instance.ni(['pagelist scroll']);
-    setElementPosition(this, this.p1d_1, this.q1d_1);
+    setElementPosition(this, this.q1d_1, this.r1d_1);
     // Inline function 'kotlin.math.abs' call
     var x = delta;
     if (Math.abs(x) < 2) {
       return Unit_instance;
     }
-    this.z1d_1 = true;
-    var tmp_6 = this.o1d_1;
+    this.a1e_1 = true;
+    var tmp_6 = this.p1d_1;
     // Inline function 'kotlin.math.abs' call
-    var x_0 = this.p1d_1;
+    var x_0 = this.q1d_1;
     var tmp_7 = Math.abs(x_0);
     // Inline function 'kotlin.math.abs' call
-    var x_1 = this.q1d_1;
+    var x_1 = this.r1d_1;
     var tmp$ret$4 = Math.abs(x_1);
-    var offsetMap = tmp_6.j1e(tmp_7, tmp$ret$4, this.d1e_1);
-    var tmp0_safe_receiver = this.o1d_1.m1e();
+    var offsetMap = tmp_6.k1e(tmp_7, tmp$ret$4, this.e1e_1);
+    var tmp0_safe_receiver = this.p1d_1.n1e();
     if (tmp0_safe_receiver == null)
       null;
     else {
       tmp0_safe_receiver.zq(offsetMap);
     }
   };
-  protoOf(H5ListPagingHelper).n1e = function (it) {
-    if (!this.z1d_1) {
+  protoOf(H5ListPagingHelper).o1e = function (it) {
+    if (!this.a1e_1) {
       return Unit_instance;
     }
-    this.d1e_1 = 0;
-    this.z1d_1 = false;
-    var deltaY = this.u1d_1 - this.t1d_1;
-    var deltaX = this.w1d_1 - this.v1d_1;
+    this.e1e_1 = 0;
+    this.a1e_1 = false;
+    var deltaY = this.v1d_1 - this.u1d_1;
+    var deltaX = this.x1d_1 - this.w1d_1;
     var offset = 50.0;
     var scrollOffsetX = 0.0;
     var scrollOffsetY = 0.0;
-    var newPageIndex = this.y1d_1;
-    if (this.c1e_1 === 'column') {
-      Log_instance.ni(['delta y: ', deltaY, ' currentTranslateY: ', this.q1d_1]);
+    var newPageIndex = this.z1d_1;
+    if (this.d1e_1 === 'column') {
+      Log_instance.ni(['delta y: ', deltaY, ' currentTranslateY: ', this.r1d_1]);
       newPageIndex = getNewPageIndex(this, deltaY, offset, newPageIndex);
-      scrollOffsetY = (-this.n1d_1.offsetHeight | 0) * newPageIndex;
-      this.q1d_1 = scrollOffsetY;
+      scrollOffsetY = (-this.o1d_1.offsetHeight | 0) * newPageIndex;
+      this.r1d_1 = scrollOffsetY;
     } else {
-      Log_instance.ni(['delta x: ', deltaX, ' currentTranslateX: ', this.p1d_1]);
+      Log_instance.ni(['delta x: ', deltaX, ' currentTranslateX: ', this.q1d_1]);
       newPageIndex = getNewPageIndex(this, deltaX, offset, newPageIndex);
-      scrollOffsetX = (-this.n1d_1.offsetWidth | 0) * newPageIndex;
-      this.p1d_1 = scrollOffsetX;
+      scrollOffsetX = (-this.o1d_1.offsetWidth | 0) * newPageIndex;
+      this.q1d_1 = scrollOffsetX;
     }
-    if (!(newPageIndex === this.y1d_1)) {
-      this.y1d_1 = newPageIndex;
+    if (!(newPageIndex === this.z1d_1)) {
+      this.z1d_1 = newPageIndex;
       it.stopPropagation();
     }
-    this.h1e(scrollOffsetX, scrollOffsetY, true);
-    var tmp = this.o1d_1;
+    this.i1e(scrollOffsetX, scrollOffsetY, true);
+    var tmp = this.p1d_1;
     // Inline function 'kotlin.math.abs' call
-    var x = this.p1d_1;
+    var x = this.q1d_1;
     var tmp_0 = Math.abs(x);
     // Inline function 'kotlin.math.abs' call
-    var x_0 = this.q1d_1;
+    var x_0 = this.r1d_1;
     var tmp$ret$1 = Math.abs(x_0);
-    var offsetMap = tmp.j1e(tmp_0, tmp$ret$1, this.d1e_1);
-    var tmp0_safe_receiver = this.o1d_1.o1e();
+    var offsetMap = tmp.k1e(tmp_0, tmp$ret$1, this.e1e_1);
+    var tmp0_safe_receiver = this.p1d_1.p1e();
     if (tmp0_safe_receiver == null)
       null;
     else {
       tmp0_safe_receiver.zq(offsetMap);
     }
-    var tmp1_safe_receiver = this.o1d_1.p1e();
+    var tmp1_safe_receiver = this.p1d_1.q1e();
     if (tmp1_safe_receiver == null)
       null;
     else {
       tmp1_safe_receiver.zq(offsetMap);
     }
-    var tmp2_safe_receiver = this.o1d_1.m1e();
+    var tmp2_safe_receiver = this.p1d_1.n1e();
     if (tmp2_safe_receiver == null)
       null;
     else {
       tmp2_safe_receiver.zq(offsetMap);
     }
   };
-  protoOf(H5ListPagingHelper).h1e = function (scrollOffsetX, scrollOffsetY, isAnimation) {
+  protoOf(H5ListPagingHelper).i1e = function (scrollOffsetX, scrollOffsetY, isAnimation) {
     var tmp = kuiklyWindow;
     tmp.setTimeout(H5ListPagingHelper$handlePagerScrollTo$lambda(isAnimation, this, scrollOffsetX, scrollOffsetY), 20);
     if (isAnimation) {
@@ -14379,53 +14388,53 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       tmp_0.setTimeout(H5ListPagingHelper$handlePagerScrollTo$lambda_0(this), 200);
     }
   };
-  protoOf(H5ListPagingHelper).q1e = function (offsetX, offsetY, animate) {
-    var elementHeight = this.n1d_1.offsetHeight;
-    var elementWidth = this.n1d_1.offsetWidth;
-    if (this.c1e_1 === 'column' && elementHeight > 0) {
+  protoOf(H5ListPagingHelper).r1e = function (offsetX, offsetY, animate) {
+    var elementHeight = this.o1d_1.offsetHeight;
+    var elementWidth = this.o1d_1.offsetWidth;
+    if (this.d1e_1 === 'column' && elementHeight > 0) {
       var tmp = this;
       // Inline function 'kotlin.math.round' call
       var x = offsetY / elementHeight;
-      tmp.y1d_1 = round(x);
-      this.q1d_1 = -offsetY;
-    } else if (this.c1e_1 === 'row' && elementWidth > 0) {
+      tmp.z1d_1 = round(x);
+      this.r1d_1 = -offsetY;
+    } else if (this.d1e_1 === 'row' && elementWidth > 0) {
       var tmp_0 = this;
       // Inline function 'kotlin.math.round' call
       var x_0 = offsetX / elementWidth;
-      tmp_0.y1d_1 = round(x_0);
-      this.p1d_1 = -offsetX;
+      tmp_0.z1d_1 = round(x_0);
+      this.q1d_1 = -offsetX;
     } else {
       Log_instance.ni(['ele offset is invalid', elementWidth, elementHeight]);
     }
-    this.n1d_1.style.overflowX = 'visible';
-    this.n1d_1.style.overflowY = 'visible';
-    this.n1d_1.classList.add('page-list');
-    var offsetMap = this.o1d_1.j1e(offsetX, offsetY, this.d1e_1);
-    var tmp0_safe_receiver = this.o1d_1.o1e();
+    this.o1d_1.style.overflowX = 'visible';
+    this.o1d_1.style.overflowY = 'visible';
+    this.o1d_1.classList.add('page-list');
+    var offsetMap = this.p1d_1.k1e(offsetX, offsetY, this.e1e_1);
+    var tmp0_safe_receiver = this.p1d_1.p1e();
     if (tmp0_safe_receiver == null)
       null;
     else {
       tmp0_safe_receiver.zq(offsetMap);
     }
-    var tmp1_safe_receiver = this.o1d_1.p1e();
+    var tmp1_safe_receiver = this.p1d_1.q1e();
     if (tmp1_safe_receiver == null)
       null;
     else {
       tmp1_safe_receiver.zq(offsetMap);
     }
-    var tmp2_safe_receiver = this.o1d_1.m1e();
+    var tmp2_safe_receiver = this.p1d_1.n1e();
     if (tmp2_safe_receiver == null)
       null;
     else {
       tmp2_safe_receiver.zq(offsetMap);
     }
     if (animate) {
-      this.h1e(-offsetX, -offsetY, animate);
+      this.i1e(-offsetX, -offsetY, animate);
     } else {
       var tmp_1 = kuiklyWindow;
       tmp_1.setTimeout(H5ListPagingHelper$setContentOffset$lambda(this, offsetX, offsetY, animate), 200);
     }
-    var tmp3_safe_receiver = this.n1d_1.firstElementChild;
+    var tmp3_safe_receiver = this.o1d_1.firstElementChild;
     var tmp4_safe_receiver = tmp3_safe_receiver == null ? null : tmp3_safe_receiver.children;
     var length = tmp4_safe_receiver == null ? null : tmp4_safe_receiver.length;
     if (!(length == null)) {
@@ -14434,7 +14443,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         do {
           var i = inductionVariable;
           inductionVariable = inductionVariable + 1 | 0;
-          var tmp5_safe_receiver = this.n1d_1.firstElementChild;
+          var tmp5_safe_receiver = this.o1d_1.firstElementChild;
           var tmp6_safe_receiver = tmp5_safe_receiver == null ? null : tmp5_safe_receiver.children;
           var tmp_2;
           if (tmp6_safe_receiver == null) {
@@ -14456,7 +14465,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   };
   function checkHasRefreshChild($this) {
-    var tmp0_safe_receiver = $this.n1f_1.firstElementChild;
+    var tmp0_safe_receiver = $this.o1f_1.firstElementChild;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
     var firstChild = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.firstElementChild;
@@ -14467,19 +14476,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function Companion_1() {
     Companion_instance_1 = this;
-    this.v1f_1 = 'touchstart';
-    this.w1f_1 = 'touchend';
-    this.x1f_1 = 'touchmove';
-    this.y1f_1 = 'scroll';
-    this.z1f_1 = 200;
-    this.a1g_1 = new Long(250, 0);
-    this.b1g_1 = 'ease-in';
-    this.c1g_1 = 50;
-    this.d1g_1 = 'list-no-scrollbar';
-    this.e1g_1 = 'column';
-    this.f1g_1 = 'row';
-    this.g1g_1 = 'none';
-    this.h1g_1 = 2;
+    this.w1f_1 = 'touchstart';
+    this.x1f_1 = 'touchend';
+    this.y1f_1 = 'touchmove';
+    this.z1f_1 = 'scroll';
+    this.a1g_1 = 200;
+    this.b1g_1 = new Long(250, 0);
+    this.c1g_1 = 'ease-in';
+    this.d1g_1 = 50;
+    this.e1g_1 = 'list-no-scrollbar';
+    this.f1g_1 = 'column';
+    this.g1g_1 = 'row';
+    this.h1g_1 = 'none';
+    this.i1g_1 = 2;
   }
   var Companion_instance_1;
   function Companion_getInstance_1() {
@@ -14489,84 +14498,84 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function H5ListView$handleTouchEnd$lambda(this$0) {
     return function () {
-      this$0.n1f_1.style.transform = '';
+      this$0.o1f_1.style.transform = '';
       return Unit_instance;
     };
   }
   function H5ListView$setScrollEvent$lambda(this$0) {
     return function (it) {
       var tmp;
-      if (this$0.f1f_1) {
-        var tmp_0 = this$0.t1f_1;
-        tmp_0.i1e(it instanceof TouchEvent ? it : THROW_CCE());
+      if (this$0.g1f_1) {
+        var tmp_0 = this$0.u1f_1;
+        tmp_0.j1e(it instanceof TouchEvent ? it : THROW_CCE());
         return Unit_instance;
       }
       var tmp_1;
-      if (this$0.h1f_1) {
-        var tmp_2 = this$0.u1f_1;
-        tmp_2.h1h(it instanceof TouchEvent ? it : THROW_CCE());
+      if (this$0.i1f_1) {
+        var tmp_2 = this$0.v1f_1;
+        tmp_2.i1h(it instanceof TouchEvent ? it : THROW_CCE());
         return Unit_instance;
       }
-      this$0.i1h(it instanceof TouchEvent ? it : THROW_CCE());
+      this$0.j1h(it instanceof TouchEvent ? it : THROW_CCE());
       return Unit_instance;
     };
   }
   function H5ListView$setScrollEvent$lambda_0(this$0) {
     return function (it) {
       var tmp;
-      if (this$0.f1f_1) {
-        var tmp_0 = this$0.t1f_1;
-        tmp_0.l1e(it instanceof TouchEvent ? it : THROW_CCE());
+      if (this$0.g1f_1) {
+        var tmp_0 = this$0.u1f_1;
+        tmp_0.m1e(it instanceof TouchEvent ? it : THROW_CCE());
         return Unit_instance;
       }
       var tmp_1;
-      if (this$0.h1f_1) {
-        var tmp_2 = this$0.u1f_1;
-        tmp_2.j1h(it instanceof TouchEvent ? it : THROW_CCE());
+      if (this$0.i1f_1) {
+        var tmp_2 = this$0.v1f_1;
+        tmp_2.k1h(it instanceof TouchEvent ? it : THROW_CCE());
         return Unit_instance;
       }
-      this$0.k1h(it instanceof TouchEvent ? it : THROW_CCE());
+      this$0.l1h(it instanceof TouchEvent ? it : THROW_CCE());
       return Unit_instance;
     };
   }
   function H5ListView$setScrollEvent$lambda_1(this$0) {
     return function (it) {
       var tmp;
-      if (this$0.f1f_1) {
-        var tmp_0 = this$0.t1f_1;
-        tmp_0.n1e(it instanceof TouchEvent ? it : THROW_CCE());
+      if (this$0.g1f_1) {
+        var tmp_0 = this$0.u1f_1;
+        tmp_0.o1e(it instanceof TouchEvent ? it : THROW_CCE());
         return Unit_instance;
       }
       var tmp_1;
-      if (this$0.h1f_1) {
-        var tmp_2 = this$0.u1f_1;
-        tmp_2.l1h(it instanceof TouchEvent ? it : THROW_CCE());
+      if (this$0.i1f_1) {
+        var tmp_2 = this$0.v1f_1;
+        tmp_2.m1h(it instanceof TouchEvent ? it : THROW_CCE());
         return Unit_instance;
       }
-      this$0.m1h();
+      this$0.n1h();
       return Unit_instance;
     };
   }
   function H5ListView$setScrollEvent$lambda_2(this$0) {
     return function (it) {
       var tmp;
-      if (this$0.f1f_1) {
+      if (this$0.g1f_1) {
         return Unit_instance;
       }
       var tmp_0;
-      if (this$0.h1f_1) {
-        var tmp_1 = this$0.u1f_1;
-        tmp_1.n1h(it instanceof TouchEvent ? it : THROW_CCE());
+      if (this$0.i1f_1) {
+        var tmp_1 = this$0.v1f_1;
+        tmp_1.o1h(it instanceof TouchEvent ? it : THROW_CCE());
         return Unit_instance;
       }
-      this$0.o1h();
+      this$0.p1h();
       return Unit_instance;
     };
   }
   function H5ListView$setScrollEndEvent$lambda$lambda(this$0) {
     return function () {
-      var offsetMap = this$0.j1e(this$0.n1f_1.scrollLeft, this$0.n1f_1.scrollTop, this$0.e1f_1);
-      var tmp0_safe_receiver = this$0.s1f_1;
+      var offsetMap = this$0.k1e(this$0.o1f_1.scrollLeft, this$0.o1f_1.scrollTop, this$0.f1f_1);
+      var tmp0_safe_receiver = this$0.t1f_1;
       var tmp;
       if (tmp0_safe_receiver == null) {
         tmp = null;
@@ -14580,19 +14589,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   function H5ListView$setScrollEndEvent$lambda(this$0) {
     return function (it) {
       var tmp;
-      if (this$0.s1e_1 > 0) {
-        kuiklyWindow.clearTimeout(this$0.s1e_1);
+      if (this$0.t1e_1 > 0) {
+        kuiklyWindow.clearTimeout(this$0.t1e_1);
         tmp = Unit_instance;
       }
       var tmp_0 = this$0;
       var tmp_1 = kuiklyWindow;
-      tmp_0.s1e_1 = tmp_1.setTimeout(H5ListView$setScrollEndEvent$lambda$lambda(this$0), 200);
+      tmp_0.t1e_1 = tmp_1.setTimeout(H5ListView$setScrollEndEvent$lambda$lambda(this$0), 200);
       return Unit_instance;
     };
   }
   function H5ListView$setContentInset$lambda(this$0, $contentInset) {
     return function () {
-      var tmp = this$0.n1f_1.style;
+      var tmp = this$0.o1f_1.style;
       var tmp_0;
       if ($contentInset.u10_1) {
         tmp_0 = 'transform 250ms ease-in';
@@ -14600,14 +14609,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         tmp_0 = '';
       }
       tmp.transition = tmp_0;
-      this$0.n1f_1.style.transform = 'translate(' + $contentInset.r10_1 + 'px, ' + $contentInset.q10_1 + 'px)';
+      this$0.o1f_1.style.transform = 'translate(' + $contentInset.r10_1 + 'px, ' + $contentInset.q10_1 + 'px)';
       return Unit_instance;
     };
   }
   function H5ListView$setContentInsetWhenEndDrag$lambda(this$0, $contentInset, $transform) {
     return function () {
-      this$0.n1f_1.style.transition = '';
-      this$0.n1f_1.style.transform = $contentInset.r10_1 === 0.0 && $contentInset.q10_1 === 0.0 ? '' : $transform;
+      this$0.o1f_1.style.transition = '';
+      this$0.o1f_1.style.transform = $contentInset.r10_1 === 0.0 && $contentInset.q10_1 === 0.0 ? '' : $transform;
       return Unit_instance;
     };
   }
@@ -14622,84 +14631,84 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var this_1 = this_0.style;
     this_1.overflowX = 'hidden';
     this_1.overflowY = 'scroll';
-    tmp.r1e_1 = this_0;
-    this.s1e_1 = 0;
+    tmp.s1e_1 = this_0;
+    this.t1e_1 = 0;
     var tmp_0 = this;
     // Inline function 'kotlin.collections.mutableMapOf' call
-    tmp_0.t1e_1 = LinkedHashMap_init_$Create$();
-    this.u1e_1 = 0.0;
+    tmp_0.u1e_1 = LinkedHashMap_init_$Create$();
     this.v1e_1 = 0.0;
     this.w1e_1 = 0.0;
     this.x1e_1 = 0.0;
     this.y1e_1 = 0.0;
     this.z1e_1 = 0.0;
-    this.a1f_1 = true;
+    this.a1f_1 = 0.0;
     this.b1f_1 = true;
-    this.c1f_1 = 'column';
-    this.d1f_1 = 'none';
-    this.e1f_1 = 0;
-    this.f1f_1 = false;
+    this.c1f_1 = true;
+    this.d1f_1 = 'column';
+    this.e1f_1 = 'none';
+    this.f1f_1 = 0;
     this.g1f_1 = false;
     this.h1f_1 = false;
     this.i1f_1 = false;
-    this.j1f_1 = 0.0;
-    this.k1f_1 = false;
-    this.l1f_1 = 8;
-    this.m1f_1 = -1;
+    this.j1f_1 = false;
+    this.k1f_1 = 0.0;
+    this.l1f_1 = false;
+    this.m1f_1 = 8;
+    this.n1f_1 = -1;
     var tmp_1 = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp_1.n1f_1 = this.r1e_1;
-    this.o1f_1 = null;
+    tmp_1.o1f_1 = this.s1e_1;
     this.p1f_1 = null;
     this.q1f_1 = null;
     this.r1f_1 = null;
     this.s1f_1 = null;
-    this.t1f_1 = new H5ListPagingHelper(this.n1f_1, this);
-    this.u1f_1 = new H5NestScrollHelper(this.n1f_1, this);
+    this.t1f_1 = null;
+    this.u1f_1 = new H5ListPagingHelper(this.o1f_1, this);
+    this.v1f_1 = new H5NestScrollHelper(this.o1f_1, this);
   }
   protoOf(H5ListView).mn = function () {
-    return this.n1f_1;
-  };
-  protoOf(H5ListView).a10 = function (_set____db54di) {
-    this.o1f_1 = _set____db54di;
-  };
-  protoOf(H5ListView).m1e = function () {
     return this.o1f_1;
   };
-  protoOf(H5ListView).c10 = function (_set____db54di) {
+  protoOf(H5ListView).a10 = function (_set____db54di) {
     this.p1f_1 = _set____db54di;
   };
-  protoOf(H5ListView).k1e = function () {
+  protoOf(H5ListView).n1e = function () {
     return this.p1f_1;
   };
-  protoOf(H5ListView).d10 = function (_set____db54di) {
+  protoOf(H5ListView).c10 = function (_set____db54di) {
     this.q1f_1 = _set____db54di;
   };
-  protoOf(H5ListView).p1e = function () {
+  protoOf(H5ListView).l1e = function () {
     return this.q1f_1;
   };
-  protoOf(H5ListView).e10 = function (_set____db54di) {
+  protoOf(H5ListView).d10 = function (_set____db54di) {
     this.r1f_1 = _set____db54di;
   };
-  protoOf(H5ListView).o1e = function () {
+  protoOf(H5ListView).q1e = function () {
     return this.r1f_1;
   };
-  protoOf(H5ListView).f10 = function (_set____db54di) {
+  protoOf(H5ListView).e10 = function (_set____db54di) {
     this.s1f_1 = _set____db54di;
+  };
+  protoOf(H5ListView).p1e = function () {
+    return this.s1f_1;
+  };
+  protoOf(H5ListView).f10 = function (_set____db54di) {
+    this.t1f_1 = _set____db54di;
   };
   protoOf(H5ListView).h10 = function (params) {
     var tmp = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp.a1f_1 = params === 1;
+    tmp.b1f_1 = params === 1;
     // Inline function 'kotlin.apply' call
-    var this_0 = this.n1f_1.style;
-    if (this.c1f_1 === 'column') {
-      this_0.overflowY = this.a1f_1 ? 'scroll' : 'hidden';
+    var this_0 = this.o1f_1.style;
+    if (this.d1f_1 === 'column') {
+      this_0.overflowY = this.b1f_1 ? 'scroll' : 'hidden';
       this_0.overflowX = 'hidden';
     } else {
-      this_0.overflowX = this.a1f_1 ? 'scroll' : 'hidden';
+      this_0.overflowX = this.b1f_1 ? 'scroll' : 'hidden';
       this_0.overflowY = 'hidden';
     }
     return true;
@@ -14708,20 +14717,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var tmp = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp.g1f_1 = params === 1;
-    this.t1f_1.b1e_1 = this.g1f_1;
+    tmp.h1f_1 = params === 1;
+    this.u1f_1.c1e_1 = this.h1f_1;
     return true;
   };
   protoOf(H5ListView).m10 = function (propValue) {
-    this.h1f_1 = true;
-    this.u1f_1.m10(propValue);
+    this.i1f_1 = true;
+    this.v1f_1.m10(propValue);
     return true;
   };
   protoOf(H5ListView).k10 = function (params) {
     var tmp = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp.f1f_1 = params === 1;
+    tmp.g1f_1 = params === 1;
     return true;
   };
   protoOf(H5ListView).j10 = function (params) {
@@ -14735,7 +14744,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
     var direction = tmp;
     // Inline function 'kotlin.apply' call
-    var this_0 = this.n1f_1.style;
+    var this_0 = this.o1f_1.style;
     if (direction === 'column') {
       this_0.overflowX = 'hidden';
       this_0.overflowY = 'scroll';
@@ -14743,107 +14752,107 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       this_0.overflowX = 'scroll';
       this_0.overflowY = 'hidden';
     }
-    this.c1f_1 = direction;
-    this.t1f_1.c1e_1 = this.c1f_1;
-    this.u1f_1.x1g_1 = this.c1f_1;
+    this.d1f_1 = direction;
+    this.u1f_1.d1e_1 = this.d1f_1;
+    this.v1f_1.y1g_1 = this.d1f_1;
     return true;
   };
-  protoOf(H5ListView).j1e = function (offsetX, offsetY, isDragging) {
+  protoOf(H5ListView).k1e = function (offsetX, offsetY, isDragging) {
     // Inline function 'kotlin.collections.set' call
-    this.t1e_1.k2('offsetX', offsetX);
+    this.u1e_1.k2('offsetX', offsetX);
     // Inline function 'kotlin.collections.set' call
-    this.t1e_1.k2('offsetY', offsetY);
-    var tmp6 = this.t1e_1;
+    this.u1e_1.k2('offsetY', offsetY);
+    var tmp6 = this.u1e_1;
     var tmp7 = 'viewWidth';
     // Inline function 'kotlin.collections.set' call
-    var value = this.n1f_1.offsetWidth;
+    var value = this.o1f_1.offsetWidth;
     tmp6.k2(tmp7, value);
-    var tmp9 = this.t1e_1;
+    var tmp9 = this.u1e_1;
     var tmp10 = 'viewHeight';
     // Inline function 'kotlin.collections.set' call
-    var value_0 = this.n1f_1.offsetHeight;
+    var value_0 = this.o1f_1.offsetHeight;
     tmp9.k2(tmp10, value_0);
-    var tmp12 = this.t1e_1;
+    var tmp12 = this.u1e_1;
     var tmp13 = 'contentWidth';
     // Inline function 'kotlin.collections.set' call
-    var value_1 = this.n1f_1.scrollWidth;
+    var value_1 = this.o1f_1.scrollWidth;
     tmp12.k2(tmp13, value_1);
-    var tmp15 = this.t1e_1;
+    var tmp15 = this.u1e_1;
     var tmp16 = 'contentHeight';
     // Inline function 'kotlin.collections.set' call
-    var value_2 = this.n1f_1.scrollHeight;
+    var value_2 = this.o1f_1.scrollHeight;
     tmp15.k2(tmp16, value_2);
-    var tmp18 = this.t1e_1;
+    var tmp18 = this.u1e_1;
     // Inline function 'kotlin.collections.set' call
     var key = 'isDragging';
     tmp18.k2(key, isDragging);
-    return this.t1e_1;
+    return this.u1e_1;
   };
-  protoOf(H5ListView).i1h = function (it) {
-    this.e1f_1 = 1;
-    this.j1f_1 = 0.0;
-    this.k1f_1 = checkHasRefreshChild(this);
-    this.m1f_1 = -1;
-    var offsetX = this.n1f_1.scrollLeft;
-    var offsetY = this.n1f_1.scrollTop;
-    this.u1e_1 = offsetX;
-    this.v1e_1 = offsetY;
+  protoOf(H5ListView).j1h = function (it) {
+    this.f1f_1 = 1;
+    this.k1f_1 = 0.0;
+    this.l1f_1 = checkHasRefreshChild(this);
+    this.n1f_1 = -1;
+    var offsetX = this.o1f_1.scrollLeft;
+    var offsetY = this.o1f_1.scrollTop;
+    this.v1e_1 = offsetX;
+    this.w1e_1 = offsetY;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
     var eventsParams = toPanEventParams(it);
     var tmp = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp.w1e_1 = eventsParams.d1('y');
+    tmp.x1e_1 = eventsParams.d1('y');
     var tmp_0 = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp_0.y1e_1 = eventsParams.d1('x');
+    tmp_0.z1e_1 = eventsParams.d1('x');
     // Inline function 'kotlin.collections.set' call
-    this.t1e_1.k2('offsetX', offsetX);
+    this.u1e_1.k2('offsetX', offsetX);
     // Inline function 'kotlin.collections.set' call
-    this.t1e_1.k2('offsetY', offsetY);
-    var offsetMap = this.j1e(offsetX, offsetY, this.e1f_1);
-    this.i1f_1 = (offsetY === 0.0 && !this.f1f_1);
-    var tmp0_safe_receiver = this.p1f_1;
+    this.u1e_1.k2('offsetY', offsetY);
+    var offsetMap = this.k1e(offsetX, offsetY, this.f1f_1);
+    this.j1f_1 = (offsetY === 0.0 && !this.g1f_1);
+    var tmp0_safe_receiver = this.q1f_1;
     if (tmp0_safe_receiver == null)
       null;
     else {
       tmp0_safe_receiver.zq(offsetMap);
     }
   };
-  protoOf(H5ListView).k1h = function (it) {
+  protoOf(H5ListView).l1h = function (it) {
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
     var eventsParams = toPanEventParams(it);
     var tmp = eventsParams.d1('y');
-    var deltaY = ((!(tmp == null) ? typeof tmp === 'number' : false) ? tmp : THROW_CCE()) - this.w1e_1;
+    var deltaY = ((!(tmp == null) ? typeof tmp === 'number' : false) ? tmp : THROW_CCE()) - this.x1e_1;
     var tmp_0 = eventsParams.d1('x');
-    var deltaX = ((!(tmp_0 == null) ? typeof tmp_0 === 'number' : false) ? tmp_0 : THROW_CCE()) - this.y1e_1;
+    var deltaX = ((!(tmp_0 == null) ? typeof tmp_0 === 'number' : false) ? tmp_0 : THROW_CCE()) - this.z1e_1;
     // Inline function 'kotlin.math.abs' call
     var absDeltaY = Math.abs(deltaY);
     // Inline function 'kotlin.math.abs' call
     var absDeltaX = Math.abs(deltaX);
-    if (this.m1f_1 === -1) {
-      if (absDeltaY > this.l1f_1 && absDeltaY > absDeltaX) {
-        this.m1f_1 = 1;
-      } else if (absDeltaX > this.l1f_1 && absDeltaX > absDeltaY) {
-        this.m1f_1 = 0;
+    if (this.n1f_1 === -1) {
+      if (absDeltaY > this.m1f_1 && absDeltaY > absDeltaX) {
+        this.n1f_1 = 1;
+      } else if (absDeltaX > this.m1f_1 && absDeltaX > absDeltaY) {
+        this.n1f_1 = 0;
       }
     }
-    if (this.c1f_1 === 'column' && this.m1f_1 === 1 || (this.c1f_1 === 'row' && this.m1f_1 === 0)) {
+    if (this.d1f_1 === 'column' && this.n1f_1 === 1 || (this.d1f_1 === 'row' && this.n1f_1 === 0)) {
       it.stopPropagation();
     }
-    if (this.i1f_1 && deltaY > 0 && this.k1f_1 && this.m1f_1 === 1) {
+    if (this.j1f_1 && deltaY > 0 && this.l1f_1 && this.n1f_1 === 1) {
       var tmp_1 = this;
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
-      tmp_1.x1e_1 = eventsParams.d1('y');
-      this.n1f_1.style.transform = 'translate(0, ' + deltaY + 'px)';
-      this.n1f_1.style.overflowY = 'visible';
-      this.n1f_1.style.overflowX = 'visible';
-      var offsetMap = this.j1e(this.n1f_1.scrollLeft, -deltaY, this.e1f_1);
-      var tmp0_safe_receiver = this.o1f_1;
+      tmp_1.y1e_1 = eventsParams.d1('y');
+      this.o1f_1.style.transform = 'translate(0, ' + deltaY + 'px)';
+      this.o1f_1.style.overflowY = 'visible';
+      this.o1f_1.style.overflowX = 'visible';
+      var offsetMap = this.k1e(this.o1f_1.scrollLeft, -deltaY, this.f1f_1);
+      var tmp0_safe_receiver = this.p1f_1;
       if (tmp0_safe_receiver == null)
         null;
       else {
@@ -14851,56 +14860,56 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       }
     }
   };
-  protoOf(H5ListView).m1h = function () {
-    this.e1f_1 = 0;
-    var offsetX = this.n1f_1.scrollLeft;
-    var offsetY = this.n1f_1.scrollTop;
-    if (this.i1f_1) {
-      var deltaY = this.x1e_1 - this.w1e_1;
-      if (this.j1f_1 === 0.0) {
-        this.n1f_1.style.transform = 'translate(0, 0)';
-        if (this.a1f_1) {
-          this.n1f_1.style.overflowY = 'scroll';
+  protoOf(H5ListView).n1h = function () {
+    this.f1f_1 = 0;
+    var offsetX = this.o1f_1.scrollLeft;
+    var offsetY = this.o1f_1.scrollTop;
+    if (this.j1f_1) {
+      var deltaY = this.y1e_1 - this.x1e_1;
+      if (this.k1f_1 === 0.0) {
+        this.o1f_1.style.transform = 'translate(0, 0)';
+        if (this.b1f_1) {
+          this.o1f_1.style.overflowY = 'scroll';
         }
         var tmp = kuiklyWindow;
         tmp.setTimeout(H5ListView$handleTouchEnd$lambda(this), 0);
-      } else if (deltaY > this.j1f_1) {
-        this.n1f_1.style.transition = 'transform 250ms ease-in';
-        this.n1f_1.style.transform = 'translate(0, ' + this.j1f_1 + 'px)';
+      } else if (deltaY > this.k1f_1) {
+        this.o1f_1.style.transition = 'transform 250ms ease-in';
+        this.o1f_1.style.transform = 'translate(0, ' + this.k1f_1 + 'px)';
       }
       if (deltaY > 0) {
         offsetY = -deltaY;
       }
     }
     // Inline function 'kotlin.collections.set' call
-    this.t1e_1.k2('offsetX', offsetX);
-    var tmp3 = this.t1e_1;
+    this.u1e_1.k2('offsetX', offsetX);
+    var tmp3 = this.u1e_1;
     // Inline function 'kotlin.collections.set' call
     var value = offsetY;
     tmp3.k2('offsetY', value);
-    var offsetMap = this.j1e(offsetX, offsetY, this.e1f_1);
-    var tmp0_safe_receiver = this.r1f_1;
+    var offsetMap = this.k1e(offsetX, offsetY, this.f1f_1);
+    var tmp0_safe_receiver = this.s1f_1;
     if (tmp0_safe_receiver == null)
       null;
     else {
       tmp0_safe_receiver.zq(offsetMap);
     }
-    var tmp1_safe_receiver = this.q1f_1;
+    var tmp1_safe_receiver = this.r1f_1;
     if (tmp1_safe_receiver == null)
       null;
     else {
       tmp1_safe_receiver.zq(offsetMap);
     }
-    var tmp2_safe_receiver = this.o1f_1;
+    var tmp2_safe_receiver = this.p1f_1;
     if (tmp2_safe_receiver == null)
       null;
     else {
       tmp2_safe_receiver.zq(offsetMap);
     }
   };
-  protoOf(H5ListView).o1h = function () {
-    var offsetMap = this.j1e(this.n1f_1.scrollLeft, this.n1f_1.scrollTop, this.e1f_1);
-    var tmp0_safe_receiver = this.o1f_1;
+  protoOf(H5ListView).p1h = function () {
+    var offsetMap = this.k1e(this.o1f_1.scrollLeft, this.o1f_1.scrollTop, this.f1f_1);
+    var tmp0_safe_receiver = this.p1f_1;
     if (tmp0_safe_receiver == null)
       null;
     else {
@@ -14908,17 +14917,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
   };
   protoOf(H5ListView).b10 = function () {
-    var tmp = this.n1f_1;
+    var tmp = this.o1f_1;
     tmp.addEventListener('touchstart', H5ListView$setScrollEvent$lambda(this), json([to('passive', true)]));
-    var tmp_0 = this.n1f_1;
-    tmp_0.addEventListener('touchmove', H5ListView$setScrollEvent$lambda_0(this), json([to('passive', !this.f1f_1 && !this.h1f_1)]));
-    var tmp_1 = this.n1f_1;
+    var tmp_0 = this.o1f_1;
+    tmp_0.addEventListener('touchmove', H5ListView$setScrollEvent$lambda_0(this), json([to('passive', !this.g1f_1 && !this.i1f_1)]));
+    var tmp_1 = this.o1f_1;
     tmp_1.addEventListener('touchend', H5ListView$setScrollEvent$lambda_1(this), json([to('passive', true)]));
-    var tmp_2 = this.n1f_1;
+    var tmp_2 = this.o1f_1;
     tmp_2.addEventListener('scroll', H5ListView$setScrollEvent$lambda_2(this), json([to('passive', false)]));
   };
   protoOf(H5ListView).g10 = function () {
-    var tmp = this.n1f_1;
+    var tmp = this.o1f_1;
     tmp.addEventListener('scroll', H5ListView$setScrollEndEvent$lambda(this), json([to('passive', true)]));
   };
   protoOf(H5ListView).n10 = function (params) {
@@ -14940,11 +14949,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     if (isNaN_0(offsetX) || isNaN_0(offsetY)) {
       return Unit_instance;
     }
-    if (this.f1f_1) {
-      this.t1f_1.q1e(offsetX, offsetY, animate);
+    if (this.g1f_1) {
+      this.u1f_1.r1e(offsetX, offsetY, animate);
       return Unit_instance;
     }
-    var tmp = this.n1f_1;
+    var tmp = this.o1f_1;
     var tmp_0;
     if (animate) {
       // Inline function 'org.w3c.dom.SMOOTH' call
@@ -14969,11 +14978,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var tmp = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp.b1f_1 = params === 1;
-    if (this.b1f_1) {
-      this.n1f_1.classList.remove('list-no-scrollbar');
+    tmp.c1f_1 = params === 1;
+    if (this.c1f_1) {
+      this.o1f_1.classList.remove('list-no-scrollbar');
     } else {
-      this.n1f_1.classList.add('list-no-scrollbar');
+      this.o1f_1.classList.add('list-no-scrollbar');
     }
     return true;
   };
@@ -15000,17 +15009,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var contentInset = new KRListViewContentInset(contentInsetString);
     var transform = 'translate(' + contentInset.r10_1 + 'px, ' + contentInset.q10_1 + 'px)';
     if (contentInset.q10_1 === 0.0) {
-      this.n1f_1.style.overflowY = 'scroll';
-      this.n1f_1.style.overflowX = 'hidden';
+      this.o1f_1.style.overflowY = 'scroll';
+      this.o1f_1.style.overflowX = 'hidden';
       var tmp_0 = KuiklyRenderCoreContextScheduler_instance;
       tmp_0.mi(250, H5ListView$setContentInsetWhenEndDrag$lambda(this, contentInset, transform));
     } else {
-      this.j1f_1 = contentInset.q10_1;
+      this.k1f_1 = contentInset.q10_1;
     }
   };
   protoOf(H5ListView).rg = function () {
-    if (this.s1e_1 > 0) {
-      kuiklyWindow.clearTimeout(this.s1e_1);
+    if (this.t1e_1 > 0) {
+      kuiklyWindow.clearTimeout(this.t1e_1);
     }
   };
   var KRNestedScrollMode_SELF_ONLY_instance;
@@ -15041,7 +15050,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function KRNestedScrollMode(name, ordinal, value) {
     Enum.call(this, name, ordinal);
-    this.r1h_1 = value;
+    this.s1h_1 = value;
   }
   var KRNestedScrollState_CAN_SCROLL_instance;
   var KRNestedScrollState_SCROLL_BOUNDARY_instance;
@@ -15057,7 +15066,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function KRNestedScrollState(name, ordinal, value) {
     Enum.call(this, name, ordinal);
-    this.u1h_1 = value;
+    this.v1h_1 = value;
   }
   function KRNestedScrollMode_SELF_ONLY_getInstance() {
     KRNestedScrollMode_initEntries();
@@ -15088,7 +15097,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     o['cancelable'] = true;
     o['composed'] = false;
     var scrollEvent = new CustomEvent('nestedScrollToParent', o);
-    $this.i1g_1.dispatchEvent(scrollEvent);
+    $this.j1g_1.dispatchEvent(scrollEvent);
   }
   function dispatchScrollEventToChild($this, deltaX, deltaY) {
     var detail = json([to('deltaX', deltaX), to('deltaY', deltaY)]);
@@ -15102,7 +15111,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     dispatchToChildElements($this, scrollEvent);
   }
   function dispatchToChildElements($this, event) {
-    var childElements = $this.i1g_1.querySelectorAll('[data-nested-scroll]');
+    var childElements = $this.j1g_1.querySelectorAll('[data-nested-scroll]');
     var inductionVariable = 0;
     var last = childElements.length;
     if (inductionVariable < last)
@@ -15126,36 +15135,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   function startInertiaScroll($this, initialVelocityX, initialVelocityY) {
     var currentVelocityX = {_v: initialVelocityX};
     var currentVelocityY = {_v: initialVelocityY};
-    var currentX = {_v: $this.i1g_1.scrollLeft};
-    var currentY = {_v: $this.i1g_1.scrollTop};
+    var currentX = {_v: $this.j1g_1.scrollLeft};
+    var currentY = {_v: $this.j1g_1.scrollTop};
     var tmp = $this;
     var tmp_0 = kuiklyWindow;
-    tmp.d1h_1 = tmp_0.requestAnimationFrame(H5NestScrollHelper$startInertiaScroll$animate$ref(currentVelocityX, $this, currentVelocityY, currentX, currentY));
+    tmp.e1h_1 = tmp_0.requestAnimationFrame(H5NestScrollHelper$startInertiaScroll$animate$ref(currentVelocityX, $this, currentVelocityY, currentX, currentY));
   }
   function cancelInertiaScroll($this) {
-    kuiklyWindow.cancelAnimationFrame($this.d1h_1);
+    kuiklyWindow.cancelAnimationFrame($this.e1h_1);
   }
   function startInertiaScroll$animate(currentVelocityX, this$0, currentVelocityY, currentX, currentY, timestamp) {
     var tmp;
     // Inline function 'kotlin.math.abs' call
     var x = currentVelocityX._v;
-    if (Math.abs(x) < this$0.f1h_1) {
+    if (Math.abs(x) < this$0.g1h_1) {
       // Inline function 'kotlin.math.abs' call
       var x_0 = currentVelocityY._v;
-      tmp = Math.abs(x_0) < this$0.f1h_1;
+      tmp = Math.abs(x_0) < this$0.g1h_1;
     } else {
       tmp = false;
     }
     if (tmp) {
-      kuiklyWindow.cancelAnimationFrame(this$0.d1h_1);
+      kuiklyWindow.cancelAnimationFrame(this$0.e1h_1);
       return Unit_instance;
     }
-    currentVelocityX._v = currentVelocityX._v * this$0.e1h_1;
-    currentVelocityY._v = currentVelocityY._v * this$0.e1h_1;
+    currentVelocityX._v = currentVelocityX._v * this$0.f1h_1;
+    currentVelocityY._v = currentVelocityY._v * this$0.f1h_1;
     currentX._v = currentX._v - currentVelocityX._v;
     currentY._v = currentY._v - currentVelocityY._v;
-    var maxScrollX = this$0.i1g_1.scrollWidth - this$0.i1g_1.clientWidth | 0;
-    var maxScrollY = this$0.i1g_1.scrollHeight - this$0.i1g_1.clientHeight | 0;
+    var maxScrollX = this$0.j1g_1.scrollWidth - this$0.j1g_1.clientWidth | 0;
+    var maxScrollY = this$0.j1g_1.scrollHeight - this$0.j1g_1.clientHeight | 0;
     if (currentX._v < 0) {
       currentX._v = 0.0;
       currentVelocityX._v = 0.0;
@@ -15170,13 +15179,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       currentY._v = maxScrollY;
       currentVelocityY._v = 0.0;
     }
-    if (this$0.x1g_1 === 'column') {
-      this$0.i1g_1.scrollTo(this$0.i1g_1.scrollLeft, currentY._v);
+    if (this$0.y1g_1 === 'column') {
+      this$0.j1g_1.scrollTo(this$0.j1g_1.scrollLeft, currentY._v);
     } else {
-      this$0.i1g_1.scrollTo(currentX._v, this$0.i1g_1.scrollTop);
+      this$0.j1g_1.scrollTo(currentX._v, this$0.j1g_1.scrollTop);
     }
-    var offsetMap = this$0.j1g_1.j1e(currentX._v, currentY._v, this$0.s1g_1);
-    var tmp0_safe_receiver = this$0.j1g_1.m1e();
+    var offsetMap = this$0.k1g_1.k1e(currentX._v, currentY._v, this$0.t1g_1);
+    var tmp0_safe_receiver = this$0.k1g_1.n1e();
     if (tmp0_safe_receiver == null)
       null;
     else {
@@ -15184,34 +15193,34 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     }
     var tmp_0 = this$0;
     var tmp_1 = kuiklyWindow;
-    tmp_0.d1h_1 = tmp_1.requestAnimationFrame(H5NestScrollHelper$startInertiaScroll$animate$ref_0(currentVelocityX, this$0, currentVelocityY, currentX, currentY));
+    tmp_0.e1h_1 = tmp_1.requestAnimationFrame(H5NestScrollHelper$startInertiaScroll$animate$ref_0(currentVelocityX, this$0, currentVelocityY, currentX, currentY));
   }
   function H5NestScrollHelper$lambda(this$0) {
     return function (event) {
       var tmp;
-      if (event.target == this$0.i1g_1) {
+      if (event.target == this$0.j1g_1) {
         return Unit_instance;
       }
       // Inline function 'kotlin.js.unsafeCast' call
       var deltaY = event.detail.deltaY;
       // Inline function 'kotlin.js.unsafeCast' call
       var deltaX = event.detail.deltaX;
-      this$0.v1g_1 = deltaY;
-      this$0.w1g_1 = deltaX;
+      this$0.w1g_1 = deltaY;
+      this$0.x1g_1 = deltaX;
       return Unit_instance;
     };
   }
   function H5NestScrollHelper$lambda_0(this$0) {
     return function (event) {
       var tmp;
-      if (event.target == this$0.i1g_1) {
+      if (event.target == this$0.j1g_1) {
         // Inline function 'kotlin.js.unsafeCast' call
         var deltaY = event.detail.deltaY;
         // Inline function 'kotlin.js.unsafeCast' call
         var deltaX = event.detail.deltaX;
-        this$0.v1g_1 = deltaY;
-        this$0.w1g_1 = deltaX;
-        this$0.u1g_1 = KRNestedScrollState_SCROLL_BOUNDARY_getInstance();
+        this$0.w1g_1 = deltaY;
+        this$0.x1g_1 = deltaX;
+        this$0.v1g_1 = KRNestedScrollState_SCROLL_BOUNDARY_getInstance();
         tmp = Unit_instance;
       }
       return Unit_instance;
@@ -15234,70 +15243,70 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return l;
   }
   function H5NestScrollHelper(ele, listElement) {
-    this.i1g_1 = ele;
-    this.j1g_1 = listElement;
-    this.k1g_1 = KRNestedScrollMode_SELF_FIRST_getInstance();
+    this.j1g_1 = ele;
+    this.k1g_1 = listElement;
     this.l1g_1 = KRNestedScrollMode_SELF_FIRST_getInstance();
-    this.m1g_1 = 0.0;
+    this.m1g_1 = KRNestedScrollMode_SELF_FIRST_getInstance();
     this.n1g_1 = 0.0;
     this.o1g_1 = 0.0;
     this.p1g_1 = 0.0;
     this.q1g_1 = 0.0;
     this.r1g_1 = 0.0;
-    this.s1g_1 = 0;
-    this.t1g_1 = KRNestedScrollState_CAN_SCROLL_getInstance();
+    this.s1g_1 = 0.0;
+    this.t1g_1 = 0;
     this.u1g_1 = KRNestedScrollState_CAN_SCROLL_getInstance();
-    this.v1g_1 = 0.0;
+    this.v1g_1 = KRNestedScrollState_CAN_SCROLL_getInstance();
     this.w1g_1 = 0.0;
-    this.x1g_1 = 'column';
-    this.y1g_1 = new Long(0, 0);
-    this.z1g_1 = 0.0;
+    this.x1g_1 = 0.0;
+    this.y1g_1 = 'column';
+    this.z1g_1 = new Long(0, 0);
     this.a1h_1 = 0.0;
     this.b1h_1 = 0.0;
     this.c1h_1 = 0.0;
-    this.d1h_1 = 0;
-    this.e1h_1 = 0.97;
-    this.f1h_1 = 0.1;
-    this.g1h_1 = false;
-    this.i1g_1.setAttribute('data-nested-scroll', 'true');
-    this.i1g_1.addEventListener('nestedScrollToParent', H5NestScrollHelper$lambda(this), json([to('passive', false)]));
-    this.i1g_1.addEventListener('nestedScrollToChild', H5NestScrollHelper$lambda_0(this), json([to('passive', false)]));
+    this.d1h_1 = 0.0;
+    this.e1h_1 = 0;
+    this.f1h_1 = 0.97;
+    this.g1h_1 = 0.1;
+    this.h1h_1 = false;
+    this.j1g_1.setAttribute('data-nested-scroll', 'true');
+    this.j1g_1.addEventListener('nestedScrollToParent', H5NestScrollHelper$lambda(this), json([to('passive', false)]));
+    this.j1g_1.addEventListener('nestedScrollToChild', H5NestScrollHelper$lambda_0(this), json([to('passive', false)]));
   }
   protoOf(H5NestScrollHelper).m10 = function (propValue) {
     if (typeof propValue === 'string') {
       // Inline function 'kotlin.apply' call
       var this_0 = JSONObject_init_$Create$(propValue);
-      this.k1g_1 = getNestScrollMode(this, this_0.zu('forward', ''));
-      this.l1g_1 = getNestScrollMode(this, this_0.zu('backward', ''));
+      this.l1g_1 = getNestScrollMode(this, this_0.zu('forward', ''));
+      this.m1g_1 = getNestScrollMode(this, this_0.zu('backward', ''));
     }
     return true;
   };
-  protoOf(H5NestScrollHelper).h1h = function (event) {
-    this.s1g_1 = 1;
+  protoOf(H5NestScrollHelper).i1h = function (event) {
+    this.t1g_1 = 1;
     // Inline function 'org.w3c.dom.get' call
     // Inline function 'kotlin.js.asDynamic' call
     var touch = (event instanceof TouchEvent ? event : THROW_CCE()).touches[0];
     if (!(touch == null)) {
-      this.o1g_1 = touch.clientY;
-      this.q1g_1 = touch.clientX;
-      this.b1h_1 = this.o1g_1;
-      this.c1h_1 = this.q1g_1;
-      this.y1g_1 = numberToLong((new Date()).getTime());
+      this.p1g_1 = touch.clientY;
+      this.r1g_1 = touch.clientX;
+      this.c1h_1 = this.p1g_1;
+      this.d1h_1 = this.r1g_1;
+      this.z1g_1 = numberToLong((new Date()).getTime());
     }
-    this.m1g_1 = this.i1g_1.scrollTop;
-    this.n1g_1 = this.i1g_1.scrollLeft;
+    this.n1g_1 = this.j1g_1.scrollTop;
+    this.o1g_1 = this.j1g_1.scrollLeft;
+    this.v1g_1 = KRNestedScrollState_CAN_SCROLL_getInstance();
     this.u1g_1 = KRNestedScrollState_CAN_SCROLL_getInstance();
-    this.t1g_1 = KRNestedScrollState_CAN_SCROLL_getInstance();
-    this.p1g_1 = this.o1g_1;
-    this.r1g_1 = this.q1g_1;
-    this.v1g_1 = 0.0;
+    this.q1g_1 = this.p1g_1;
+    this.s1g_1 = this.r1g_1;
     this.w1g_1 = 0.0;
-    this.z1g_1 = 0.0;
+    this.x1g_1 = 0.0;
     this.a1h_1 = 0.0;
-    this.g1h_1 = false;
+    this.b1h_1 = 0.0;
+    this.h1h_1 = false;
     cancelInertiaScroll(this);
   };
-  protoOf(H5NestScrollHelper).j1h = function (event) {
+  protoOf(H5NestScrollHelper).k1h = function (event) {
     // Inline function 'org.w3c.dom.get' call
     // Inline function 'kotlin.js.asDynamic' call
     var touch = (event instanceof TouchEvent ? event : THROW_CCE()).touches[0];
@@ -15307,123 +15316,123 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var distanceX = 0.0;
     if (!(touch == null)) {
       var currentTime = (new Date()).getTime();
-      var timeDelta = currentTime - this.y1g_1.n();
+      var timeDelta = currentTime - this.z1g_1.n();
       if (timeDelta > 0) {
-        this.z1g_1 = (touch.clientY - this.b1h_1) / timeDelta;
-        this.a1h_1 = (touch.clientX - this.c1h_1) / timeDelta;
+        this.a1h_1 = (touch.clientY - this.c1h_1) / timeDelta;
+        this.b1h_1 = (touch.clientX - this.d1h_1) / timeDelta;
       }
-      this.y1g_1 = numberToLong(currentTime);
-      this.b1h_1 = touch.clientY;
-      this.c1h_1 = touch.clientX;
-      distanceY = touch.clientY - this.o1g_1 - this.v1g_1;
-      distanceX = touch.clientX - this.q1g_1 - this.w1g_1;
-      deltaY = touch.clientY - this.p1g_1;
-      deltaX = touch.clientX - this.r1g_1;
-      this.p1g_1 = touch.clientY;
-      this.r1g_1 = touch.clientX;
+      this.z1g_1 = numberToLong(currentTime);
+      this.c1h_1 = touch.clientY;
+      this.d1h_1 = touch.clientX;
+      distanceY = touch.clientY - this.p1g_1 - this.w1g_1;
+      distanceX = touch.clientX - this.r1g_1 - this.x1g_1;
+      deltaY = touch.clientY - this.q1g_1;
+      deltaX = touch.clientX - this.s1g_1;
+      this.q1g_1 = touch.clientY;
+      this.s1g_1 = touch.clientX;
     }
-    var canScrollUp = this.i1g_1.scrollTop > 0;
+    var canScrollUp = this.j1g_1.scrollTop > 0;
     // Inline function 'kotlin.math.ceil' call
-    var x = this.i1g_1.scrollTop + this.i1g_1.offsetHeight;
+    var x = this.j1g_1.scrollTop + this.j1g_1.offsetHeight;
     var tmp$ret$2 = Math.ceil(x);
-    var canScrollDown = numberToInt(tmp$ret$2) < this.i1g_1.scrollHeight;
-    var canScrollLeft = this.i1g_1.scrollLeft > 0;
+    var canScrollDown = numberToInt(tmp$ret$2) < this.j1g_1.scrollHeight;
+    var canScrollLeft = this.j1g_1.scrollLeft > 0;
     // Inline function 'kotlin.math.ceil' call
-    var x_0 = this.i1g_1.scrollLeft + this.i1g_1.offsetWidth;
+    var x_0 = this.j1g_1.scrollLeft + this.j1g_1.offsetWidth;
     var tmp$ret$3 = Math.ceil(x_0);
-    var canScrollRight = numberToInt(tmp$ret$3) < this.i1g_1.scrollWidth;
-    var delta = this.x1g_1 === 'column' ? deltaY : deltaX;
-    var scrollMode = delta < 0 ? this.k1g_1 : this.l1g_1;
+    var canScrollRight = numberToInt(tmp$ret$3) < this.j1g_1.scrollWidth;
+    var delta = this.y1g_1 === 'column' ? deltaY : deltaX;
+    var scrollMode = delta < 0 ? this.l1g_1 : this.m1g_1;
     switch (scrollMode.i1_1) {
       case 1:
-        if (this.x1g_1 === 'column') {
-          this.g1h_1 = deltaY < 0 && canScrollDown || (deltaY > 0 && canScrollUp);
-        } else if (this.x1g_1 === 'row') {
-          this.g1h_1 = deltaX < 0 && canScrollRight || (deltaX > 0 && canScrollLeft);
+        if (this.y1g_1 === 'column') {
+          this.h1h_1 = deltaY < 0 && canScrollDown || (deltaY > 0 && canScrollUp);
+        } else if (this.y1g_1 === 'row') {
+          this.h1h_1 = deltaX < 0 && canScrollRight || (deltaX > 0 && canScrollLeft);
         }
 
-        this.u1g_1 = KRNestedScrollState_CAN_SCROLL_getInstance();
+        this.v1g_1 = KRNestedScrollState_CAN_SCROLL_getInstance();
         break;
       case 2:
-        this.g1h_1 = this.u1g_1.equals(KRNestedScrollState_SCROLL_BOUNDARY_getInstance());
+        this.h1h_1 = this.v1g_1.equals(KRNestedScrollState_SCROLL_BOUNDARY_getInstance());
         break;
       case 0:
-        this.g1h_1 = true;
+        this.h1h_1 = true;
         break;
       default:
         noWhenBranchMatchedException();
         break;
     }
-    if (this.g1h_1) {
+    if (this.h1h_1) {
       event.preventDefault();
       event.stopPropagation();
-      if (this.x1g_1 === 'column') {
-        this.i1g_1.scrollTo(this.i1g_1.scrollLeft, this.m1g_1 - distanceY);
+      if (this.y1g_1 === 'column') {
+        this.j1g_1.scrollTo(this.j1g_1.scrollLeft, this.n1g_1 - distanceY);
       } else {
-        this.i1g_1.scrollTo(this.n1g_1 - distanceX, this.i1g_1.scrollTop);
+        this.j1g_1.scrollTo(this.o1g_1 - distanceX, this.j1g_1.scrollTop);
       }
-      var offsetMap = this.j1g_1.j1e(this.i1g_1.scrollLeft, this.i1g_1.scrollTop, this.s1g_1);
-      var tmp1_safe_receiver = this.j1g_1.m1e();
+      var offsetMap = this.k1g_1.k1e(this.j1g_1.scrollLeft, this.j1g_1.scrollTop, this.t1g_1);
+      var tmp1_safe_receiver = this.k1g_1.n1e();
       if (tmp1_safe_receiver == null)
         null;
       else {
         tmp1_safe_receiver.zq(offsetMap);
       }
-    } else if (this.t1g_1.equals(KRNestedScrollState_CAN_SCROLL_getInstance())) {
+    } else if (this.u1g_1.equals(KRNestedScrollState_CAN_SCROLL_getInstance())) {
       if (scrollMode.equals(KRNestedScrollMode_SELF_FIRST_getInstance())) {
         dispatchScrollEventToChild(this, distanceX, distanceY);
         dispatchScrollEventToParent(this, distanceX, distanceY);
       }
     }
     if (scrollMode.equals(KRNestedScrollMode_SELF_FIRST_getInstance())) {
-      this.t1g_1 = this.g1h_1 ? KRNestedScrollState_CAN_SCROLL_getInstance() : KRNestedScrollState_SCROLL_BOUNDARY_getInstance();
+      this.u1g_1 = this.h1h_1 ? KRNestedScrollState_CAN_SCROLL_getInstance() : KRNestedScrollState_SCROLL_BOUNDARY_getInstance();
     }
   };
-  protoOf(H5NestScrollHelper).l1h = function (event) {
-    this.s1g_1 = 0;
-    if (!this.g1h_1) {
+  protoOf(H5NestScrollHelper).m1h = function (event) {
+    this.t1g_1 = 0;
+    if (!this.h1h_1) {
       return Unit_instance;
     }
     var tmp;
     // Inline function 'kotlin.math.abs' call
-    var x = this.a1h_1;
-    if (Math.abs(x) > this.f1h_1) {
+    var x = this.b1h_1;
+    if (Math.abs(x) > this.g1h_1) {
       tmp = true;
     } else {
       // Inline function 'kotlin.math.abs' call
-      var x_0 = this.z1g_1;
-      tmp = Math.abs(x_0) > this.f1h_1;
+      var x_0 = this.a1h_1;
+      tmp = Math.abs(x_0) > this.g1h_1;
     }
     if (tmp) {
-      var frameVelocityX = this.a1h_1 * 6.67;
-      var frameVelocityY = this.z1g_1 * 6.67;
+      var frameVelocityX = this.b1h_1 * 6.67;
+      var frameVelocityY = this.a1h_1 * 6.67;
       startInertiaScroll(this, frameVelocityX, frameVelocityY);
     }
-    var offsetX = this.i1g_1.scrollLeft;
-    var offsetY = this.i1g_1.scrollTop;
-    var offsetMap = this.j1g_1.j1e(offsetX, offsetY, this.s1g_1);
-    var tmp0_safe_receiver = this.j1g_1.o1e();
+    var offsetX = this.j1g_1.scrollLeft;
+    var offsetY = this.j1g_1.scrollTop;
+    var offsetMap = this.k1g_1.k1e(offsetX, offsetY, this.t1g_1);
+    var tmp0_safe_receiver = this.k1g_1.p1e();
     if (tmp0_safe_receiver == null)
       null;
     else {
       tmp0_safe_receiver.zq(offsetMap);
     }
-    var tmp1_safe_receiver = this.j1g_1.p1e();
+    var tmp1_safe_receiver = this.k1g_1.q1e();
     if (tmp1_safe_receiver == null)
       null;
     else {
       tmp1_safe_receiver.zq(offsetMap);
     }
-    var tmp2_safe_receiver = this.j1g_1.m1e();
+    var tmp2_safe_receiver = this.k1g_1.n1e();
     if (tmp2_safe_receiver == null)
       null;
     else {
       tmp2_safe_receiver.zq(offsetMap);
     }
   };
-  protoOf(H5NestScrollHelper).n1h = function (event) {
-    var offsetMap = this.j1g_1.j1e(this.i1g_1.scrollLeft, this.i1g_1.scrollTop, this.s1g_1);
-    var tmp0_safe_receiver = this.j1g_1.m1e();
+  protoOf(H5NestScrollHelper).o1h = function (event) {
+    var offsetMap = this.k1g_1.k1e(this.j1g_1.scrollLeft, this.j1g_1.scrollTop, this.t1g_1);
+    var tmp0_safe_receiver = this.k1g_1.n1e();
     if (tmp0_safe_receiver == null)
       null;
     else {
@@ -15440,24 +15449,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return AnimationProcessor_instance;
   }
   function getAnimationJson($this) {
-    var tmp = $this.a1i_1;
-    var _unary__edvuaz = $this.z1h_1;
-    $this.z1h_1 = _unary__edvuaz + 1 | 0;
+    var tmp = $this.b1i_1;
+    var _unary__edvuaz = $this.a1i_1;
+    $this.a1i_1 = _unary__edvuaz + 1 | 0;
     var animIndex = 'kuikly-animation_' + tmp + '_create-animation__' + _unary__edvuaz;
     var selector = '[animation="' + animIndex + '"]';
-    var stepList = 'transition: ' + $this.y1h_1.join(',') + ';';
-    var animationList = $this.x1h_1.join(';');
-    H5StyleSheet_getInstance().f1i_1.i1i(selector + ' { ' + stepList + animationList + ' }');
-    // Inline function 'com.tencent.kuikly.core.render.web.collection.array.clear' call
-    // Inline function 'kotlin.js.asDynamic' call
-    $this.x1h_1.length = 0;
+    var stepList = 'transition: ' + $this.z1h_1.join(',') + ';';
+    var animationList = $this.y1h_1.join(';');
+    H5StyleSheet_getInstance().g1i_1.j1i(selector + ' { ' + stepList + animationList + ' }');
     // Inline function 'com.tencent.kuikly.core.render.web.collection.array.clear' call
     // Inline function 'kotlin.js.asDynamic' call
     $this.y1h_1.length = 0;
+    // Inline function 'com.tencent.kuikly.core.render.web.collection.array.clear' call
+    // Inline function 'kotlin.js.asDynamic' call
+    $this.z1h_1.length = 0;
     return animIndex;
   }
   function Companion_2() {
-    this.j1i_1 = 0;
+    this.k1i_1 = 0;
   }
   var Companion_instance_2;
   function Companion_getInstance_2() {
@@ -15471,24 +15480,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function H5Animation$step$lambda_0(this$0, $duration, $timingFunction, $delay) {
     return function (rule) {
-      this$0.x1h_1.push(rule.y6_1 + '!important');
-      this$0.y1h_1.push(rule.x6_1 + ' ' + toString($duration) + 's ' + toString($timingFunction) + ' ' + toString($delay) + 's');
+      this$0.y1h_1.push(rule.y6_1 + '!important');
+      this$0.z1h_1.push(rule.x6_1 + ' ' + toString($duration) + 's ' + toString($timingFunction) + ' ' + toString($delay) + 's');
       return Unit_instance;
     };
   }
   function H5Animation(options) {
-    this.v1h_1 = new Array();
     this.w1h_1 = new Array();
     this.x1h_1 = new Array();
     this.y1h_1 = new Array();
-    this.z1h_1 = 0;
+    this.z1h_1 = new Array();
+    this.a1i_1 = 0;
     var tmp = this;
-    Companion_instance_2.j1i_1 = Companion_instance_2.j1i_1 + 1 | 0;
-    tmp.a1i_1 = Companion_instance_2.j1i_1;
-    this.b1i_1 = options.p1c_1;
-    this.c1i_1 = options.q1c_1;
-    this.d1i_1 = options.n1c_1;
-    this.e1i_1 = options.o1c_1;
+    Companion_instance_2.k1i_1 = Companion_instance_2.k1i_1 + 1 | 0;
+    tmp.b1i_1 = Companion_instance_2.k1i_1;
+    this.c1i_1 = options.p1c_1;
+    this.d1i_1 = options.q1c_1;
+    this.e1i_1 = options.n1c_1;
+    this.f1i_1 = options.o1c_1;
   }
   protoOf(H5Animation).x15 = function (ele) {
     return getAnimationJson(this);
@@ -15496,9 +15505,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   protoOf(H5Animation).w15 = function (options) {
     var tmp;
     // Inline function 'com.tencent.kuikly.core.render.web.collection.array.isEmpty' call
-    if (this.v1h_1.length === 0) {
+    if (this.w1h_1.length === 0) {
       // Inline function 'com.tencent.kuikly.core.render.web.collection.array.isEmpty' call
-      tmp = this.w1h_1.length === 0;
+      tmp = this.x1h_1.length === 0;
     } else {
       tmp = false;
     }
@@ -15514,64 +15523,64 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var tmp3_elvis_lhs = options['timingFunction'];
     var timingFunction = tmp3_elvis_lhs == null ? 'linear' : tmp3_elvis_lhs;
     var transforms = new Array();
-    this.w1h_1.forEach(H5Animation$step$lambda(transforms));
+    this.x1h_1.forEach(H5Animation$step$lambda(transforms));
     var transformSequence = transforms.length > 0 ? 'transform:' + transforms.join(' ') + '!important' : '';
     if (!(transformSequence === '')) {
-      this.x1h_1.push(transformSequence);
-      this.x1h_1.push('transform-origin: ' + toString(transformOrigin));
-      this.y1h_1.push('transform ' + toString(duration) + 's ' + toString(timingFunction) + ' ' + toString(delay) + 's');
+      this.y1h_1.push(transformSequence);
+      this.y1h_1.push('transform-origin: ' + toString(transformOrigin));
+      this.z1h_1.push('transform ' + toString(duration) + 's ' + toString(timingFunction) + ' ' + toString(delay) + 's');
     }
-    this.v1h_1.forEach(H5Animation$step$lambda_0(this, duration, timingFunction, delay));
-    // Inline function 'com.tencent.kuikly.core.render.web.collection.array.clear' call
-    // Inline function 'kotlin.js.asDynamic' call
-    this.v1h_1.length = 0;
+    this.w1h_1.forEach(H5Animation$step$lambda_0(this, duration, timingFunction, delay));
     // Inline function 'com.tencent.kuikly.core.render.web.collection.array.clear' call
     // Inline function 'kotlin.js.asDynamic' call
     this.w1h_1.length = 0;
+    // Inline function 'com.tencent.kuikly.core.render.web.collection.array.clear' call
+    // Inline function 'kotlin.js.asDynamic' call
+    this.x1h_1.length = 0;
     return this;
   };
   protoOf(H5Animation).jm = function (angle) {
-    this.w1h_1.push(new Pair('rotate', 'rotate(' + angle + 'deg)'));
+    this.x1h_1.push(new Pair('rotate', 'rotate(' + angle + 'deg)'));
     return this;
   };
   protoOf(H5Animation).lm = function (skewX, skewY) {
-    this.w1h_1.push(new Pair('skew', 'skew(' + skewX + 'deg, ' + skewY + 'deg)'));
+    this.x1h_1.push(new Pair('skew', 'skew(' + skewX + 'deg, ' + skewY + 'deg)'));
     return this;
   };
   protoOf(H5Animation).km = function (scaleX, scaleY) {
-    this.w1h_1.push(new Pair('scale', 'scale(' + scaleX + ', ' + scaleY + ')'));
+    this.x1h_1.push(new Pair('scale', 'scale(' + scaleX + ', ' + scaleY + ')'));
     return this;
   };
   protoOf(H5Animation).im = function (translateX, translateY) {
-    this.w1h_1.push(new Pair('translate', 'translate(' + translateX + 'px, ' + translateY + 'px)'));
+    this.x1h_1.push(new Pair('translate', 'translate(' + translateX + 'px, ' + translateY + 'px)'));
     return this;
   };
   protoOf(H5Animation).mm = function (opacity) {
-    this.v1h_1.push(new Pair('opacity', 'opacity: ' + opacity));
+    this.w1h_1.push(new Pair('opacity', 'opacity: ' + opacity));
     return this;
   };
   protoOf(H5Animation).nm = function (value) {
-    this.v1h_1.push(new Pair('background-color', 'background-color: ' + value));
+    this.w1h_1.push(new Pair('background-color', 'background-color: ' + value));
     return this;
   };
   protoOf(H5Animation).qm = function (value) {
-    this.v1h_1.push(new Pair('width', 'width: ' + value + 'px'));
+    this.w1h_1.push(new Pair('width', 'width: ' + value + 'px'));
     return this;
   };
   protoOf(H5Animation).rm = function (value) {
-    this.v1h_1.push(new Pair('height', 'height: ' + value + 'px'));
+    this.w1h_1.push(new Pair('height', 'height: ' + value + 'px'));
     return this;
   };
   protoOf(H5Animation).pm = function (value) {
-    this.v1h_1.push(new Pair('top', 'top: ' + value + 'px'));
+    this.w1h_1.push(new Pair('top', 'top: ' + value + 'px'));
     return this;
   };
   protoOf(H5Animation).om = function (value) {
-    this.v1h_1.push(new Pair('left', 'left: ' + value + 'px'));
+    this.w1h_1.push(new Pair('left', 'left: ' + value + 'px'));
     return this;
   };
   function appendStyleSheet($this) {
-    var style = $this.g1i_1;
+    var style = $this.h1i_1;
     if (!(style == null)) {
       // Inline function 'org.w3c.dom.get' call
       // Inline function 'kotlin.js.asDynamic' call
@@ -15585,41 +15594,41 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       var tmp = $this;
       // Inline function 'kotlin.js.unsafeCast' call
       // Inline function 'kotlin.js.asDynamic' call
-      tmp.h1i_1 = style.sheet;
+      tmp.i1i_1 = style.sheet;
     }
   }
   function StyleSheet() {
-    this.g1i_1 = null;
     this.h1i_1 = null;
+    this.i1i_1 = null;
     var tmp = this;
     // Inline function 'kotlin.js.unsafeCast' call
     // Inline function 'kotlin.js.asDynamic' call
-    tmp.g1i_1 = kuiklyDocument.createElement('style');
+    tmp.h1i_1 = kuiklyDocument.createElement('style');
   }
-  protoOf(StyleSheet).k1i = function (cssText, index) {
-    if (this.h1i_1 == null) {
+  protoOf(StyleSheet).l1i = function (cssText, index) {
+    if (this.i1i_1 == null) {
       appendStyleSheet(this);
     }
-    var tmp0_safe_receiver = this.h1i_1;
+    var tmp0_safe_receiver = this.i1i_1;
     if (tmp0_safe_receiver == null)
       null;
     else
       tmp0_safe_receiver.insertRule(cssText, index);
   };
-  protoOf(StyleSheet).i1i = function (cssText, index, $super) {
+  protoOf(StyleSheet).j1i = function (cssText, index, $super) {
     index = index === VOID ? 0 : index;
     var tmp;
     if ($super === VOID) {
-      this.k1i(cssText, index);
+      this.l1i(cssText, index);
       tmp = Unit_instance;
     } else {
-      tmp = $super.k1i.call(this, cssText, index);
+      tmp = $super.l1i.call(this, cssText, index);
     }
     return tmp;
   };
   function H5StyleSheet() {
     H5StyleSheet_instance = this;
-    this.f1i_1 = new StyleSheet();
+    this.g1i_1 = new StyleSheet();
   }
   var H5StyleSheet_instance;
   function H5StyleSheet_getInstance() {
@@ -15672,29 +15681,29 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return EventProcessor_instance;
   }
   function H5Event(screenX, screenY, clientX, clientY, pageX, pageY) {
-    this.l1i_1 = screenX;
-    this.m1i_1 = screenY;
-    this.n1i_1 = clientX;
-    this.o1i_1 = clientY;
-    this.p1i_1 = pageX;
-    this.q1i_1 = pageY;
+    this.m1i_1 = screenX;
+    this.n1i_1 = screenY;
+    this.o1i_1 = clientX;
+    this.p1i_1 = clientY;
+    this.q1i_1 = pageX;
+    this.r1i_1 = pageY;
   }
   protoOf(H5Event).cz = function () {
-    return this.n1i_1;
-  };
-  protoOf(H5Event).dz = function () {
     return this.o1i_1;
   };
+  protoOf(H5Event).dz = function () {
+    return this.p1i_1;
+  };
   protoOf(H5Event).toString = function () {
-    return 'H5Event(screenX=' + this.l1i_1 + ', screenY=' + this.m1i_1 + ', clientX=' + this.n1i_1 + ', clientY=' + this.o1i_1 + ', pageX=' + this.p1i_1 + ', pageY=' + this.q1i_1 + ')';
+    return 'H5Event(screenX=' + this.m1i_1 + ', screenY=' + this.n1i_1 + ', clientX=' + this.o1i_1 + ', clientY=' + this.p1i_1 + ', pageX=' + this.q1i_1 + ', pageY=' + this.r1i_1 + ')';
   };
   protoOf(H5Event).hashCode = function () {
-    var result = this.l1i_1;
-    result = imul(result, 31) + this.m1i_1 | 0;
+    var result = this.m1i_1;
     result = imul(result, 31) + this.n1i_1 | 0;
     result = imul(result, 31) + this.o1i_1 | 0;
     result = imul(result, 31) + this.p1i_1 | 0;
     result = imul(result, 31) + this.q1i_1 | 0;
+    result = imul(result, 31) + this.r1i_1 | 0;
     return result;
   };
   protoOf(H5Event).equals = function (other) {
@@ -15703,8 +15712,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     if (!(other instanceof H5Event))
       return false;
     var tmp0_other_with_cast = other instanceof H5Event ? other : THROW_CCE();
-    if (!(this.l1i_1 === tmp0_other_with_cast.l1i_1))
-      return false;
     if (!(this.m1i_1 === tmp0_other_with_cast.m1i_1))
       return false;
     if (!(this.n1i_1 === tmp0_other_with_cast.n1i_1))
@@ -15715,11 +15722,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       return false;
     if (!(this.q1i_1 === tmp0_other_with_cast.q1i_1))
       return false;
+    if (!(this.r1i_1 === tmp0_other_with_cast.r1i_1))
+      return false;
     return true;
   };
   function setupListeners($this) {
-    $this.r1i_1.addEventListener('touchstart', TouchEventHandlers$DoubleTapHandler$setupListeners$lambda($this));
-    $this.r1i_1.addEventListener('mousedown', TouchEventHandlers$DoubleTapHandler$setupListeners$lambda_0($this));
+    $this.s1i_1.addEventListener('touchstart', TouchEventHandlers$DoubleTapHandler$setupListeners$lambda($this));
+    $this.s1i_1.addEventListener('mousedown', TouchEventHandlers$DoubleTapHandler$setupListeners$lambda_0($this));
   }
   function handleTap($this, event) {
     if (event.touches.length === 1) {
@@ -15730,14 +15739,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       var x = touch == null ? null : touch.clientX;
       var y = touch == null ? null : touch.clientY;
       if (!(x == null) && !(y == null)) {
-        if (currentTime - $this.v1i_1 < $this.t1i_1 && abs(x - $this.w1i_1 | 0) < $this.u1i_1 && abs(y - $this.x1i_1 | 0) < $this.u1i_1) {
+        if (currentTime - $this.w1i_1 < $this.u1i_1 && abs(x - $this.x1i_1 | 0) < $this.v1i_1 && abs(y - $this.y1i_1 | 0) < $this.v1i_1) {
           event.preventDefault();
-          $this.s1i_1(event);
-          $this.v1i_1 = 0.0;
+          $this.t1i_1(event);
+          $this.w1i_1 = 0.0;
         } else {
-          $this.v1i_1 = currentTime;
-          $this.w1i_1 = x;
-          $this.x1i_1 = y;
+          $this.w1i_1 = currentTime;
+          $this.x1i_1 = x;
+          $this.y1i_1 = y;
         }
       }
     }
@@ -15746,14 +15755,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var currentTime = Date.now();
     var x = event.clientX;
     var y = event.clientY;
-    if (currentTime - $this.v1i_1 < $this.t1i_1 && abs(x - $this.w1i_1 | 0) < $this.u1i_1 && abs(y - $this.x1i_1 | 0) < $this.u1i_1) {
+    if (currentTime - $this.w1i_1 < $this.u1i_1 && abs(x - $this.x1i_1 | 0) < $this.v1i_1 && abs(y - $this.y1i_1 | 0) < $this.v1i_1) {
       event.preventDefault();
-      $this.s1i_1(event);
-      $this.v1i_1 = 0.0;
+      $this.t1i_1(event);
+      $this.w1i_1 = 0.0;
     } else {
-      $this.v1i_1 = currentTime;
-      $this.w1i_1 = x;
-      $this.x1i_1 = y;
+      $this.w1i_1 = currentTime;
+      $this.x1i_1 = x;
+      $this.y1i_1 = y;
     }
   }
   function TouchEventHandlers$DoubleTapHandler$setupListeners$lambda(this$0) {
@@ -15777,31 +15786,31 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     };
   }
   function setupListeners_0($this) {
-    $this.y1i_1.addEventListener('contextmenu', TouchEventHandlers$LongPressHandler$setupListeners$lambda);
-    $this.y1i_1.addEventListener('touchstart', TouchEventHandlers$LongPressHandler$setupListeners$lambda_0($this));
-    $this.y1i_1.addEventListener('touchmove', TouchEventHandlers$LongPressHandler$setupListeners$lambda_1($this));
-    $this.y1i_1.addEventListener('touchend', TouchEventHandlers$LongPressHandler$setupListeners$lambda_2($this));
-    $this.y1i_1.addEventListener('touchcancel', TouchEventHandlers$LongPressHandler$setupListeners$lambda_3($this));
-    $this.y1i_1.addEventListener('mousedown', TouchEventHandlers$LongPressHandler$setupListeners$lambda_4($this));
-    $this.y1i_1.addEventListener('mousemove', TouchEventHandlers$LongPressHandler$setupListeners$lambda_5($this));
-    $this.y1i_1.addEventListener('mouseup', TouchEventHandlers$LongPressHandler$setupListeners$lambda_6($this));
-    $this.y1i_1.addEventListener('mouseleave', TouchEventHandlers$LongPressHandler$setupListeners$lambda_7($this));
+    $this.z1i_1.addEventListener('contextmenu', TouchEventHandlers$LongPressHandler$setupListeners$lambda);
+    $this.z1i_1.addEventListener('touchstart', TouchEventHandlers$LongPressHandler$setupListeners$lambda_0($this));
+    $this.z1i_1.addEventListener('touchmove', TouchEventHandlers$LongPressHandler$setupListeners$lambda_1($this));
+    $this.z1i_1.addEventListener('touchend', TouchEventHandlers$LongPressHandler$setupListeners$lambda_2($this));
+    $this.z1i_1.addEventListener('touchcancel', TouchEventHandlers$LongPressHandler$setupListeners$lambda_3($this));
+    $this.z1i_1.addEventListener('mousedown', TouchEventHandlers$LongPressHandler$setupListeners$lambda_4($this));
+    $this.z1i_1.addEventListener('mousemove', TouchEventHandlers$LongPressHandler$setupListeners$lambda_5($this));
+    $this.z1i_1.addEventListener('mouseup', TouchEventHandlers$LongPressHandler$setupListeners$lambda_6($this));
+    $this.z1i_1.addEventListener('mouseleave', TouchEventHandlers$LongPressHandler$setupListeners$lambda_7($this));
   }
   function startTimer($this, event) {
     cancelTimer($this);
-    $this.f1j_1 = false;
+    $this.g1j_1 = false;
     var tmp = $this;
     var tmp_0 = kuiklyWindow;
-    tmp.c1j_1 = tmp_0.setTimeout(TouchEventHandlers$LongPressHandler$startTimer$lambda($this, event), $this.a1j_1);
+    tmp.d1j_1 = tmp_0.setTimeout(TouchEventHandlers$LongPressHandler$startTimer$lambda($this, event), $this.b1j_1);
   }
   function cancelTimer($this) {
-    var tmp0_safe_receiver = $this.c1j_1;
+    var tmp0_safe_receiver = $this.d1j_1;
     if (tmp0_safe_receiver == null)
       null;
     else {
       // Inline function 'kotlin.let' call
       kuiklyWindow.clearTimeout(tmp0_safe_receiver);
-      $this.c1j_1 = null;
+      $this.d1j_1 = null;
     }
   }
   function TouchEventHandlers$LongPressHandler$setupListeners$lambda(event) {
@@ -15818,8 +15827,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         // Inline function 'kotlin.js.asDynamic' call
         var touch = event.touches[0];
         if (!(touch == null)) {
-          this$0.d1j_1 = touch.clientX;
-          this$0.e1j_1 = touch.clientY;
+          this$0.e1j_1 = touch.clientX;
+          this$0.f1j_1 = touch.clientY;
         }
         startTimer(this$0, event);
         tmp = Unit_instance;
@@ -15841,7 +15850,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           var moveX = touch.clientX;
           var moveY = touch.clientY;
           var tmp_1;
-          if (abs(moveX - this$0.d1j_1 | 0) > this$0.b1j_1 || abs(moveY - this$0.e1j_1 | 0) > this$0.b1j_1) {
+          if (abs(moveX - this$0.e1j_1 | 0) > this$0.c1j_1 || abs(moveY - this$0.f1j_1 | 0) > this$0.c1j_1) {
             cancelTimer(this$0);
             tmp_1 = Unit_instance;
           }
@@ -15870,8 +15879,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         THROW_CCE();
       var tmp;
       if (event.button === 0) {
-        this$0.d1j_1 = event.clientX;
-        this$0.e1j_1 = event.clientY;
+        this$0.e1j_1 = event.clientX;
+        this$0.f1j_1 = event.clientY;
         startTimer(this$0, event);
         tmp = Unit_instance;
       }
@@ -15885,7 +15894,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       var moveX = event.clientX;
       var moveY = event.clientY;
       var tmp;
-      if (abs(moveX - this$0.d1j_1 | 0) > this$0.b1j_1 || abs(moveY - this$0.e1j_1 | 0) > this$0.b1j_1) {
+      if (abs(moveX - this$0.e1j_1 | 0) > this$0.c1j_1 || abs(moveY - this$0.f1j_1 | 0) > this$0.c1j_1) {
         cancelTimer(this$0);
         tmp = Unit_instance;
       }
@@ -15906,40 +15915,40 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function TouchEventHandlers$LongPressHandler$startTimer$lambda(this$0, $event) {
     return function () {
-      this$0.f1j_1 = true;
+      this$0.g1j_1 = true;
       $event.preventDefault();
-      this$0.z1i_1($event);
+      this$0.a1j_1($event);
       return Unit_instance;
     };
   }
   function DoubleTapHandler(element, onDoubleTap, doubleTapDelay, moveTolerance) {
     doubleTapDelay = doubleTapDelay === VOID ? 300 : doubleTapDelay;
     moveTolerance = moveTolerance === VOID ? 10 : moveTolerance;
-    this.r1i_1 = element;
-    this.s1i_1 = onDoubleTap;
-    this.t1i_1 = doubleTapDelay;
-    this.u1i_1 = moveTolerance;
-    this.v1i_1 = 0.0;
-    this.w1i_1 = 0;
+    this.s1i_1 = element;
+    this.t1i_1 = onDoubleTap;
+    this.u1i_1 = doubleTapDelay;
+    this.v1i_1 = moveTolerance;
+    this.w1i_1 = 0.0;
     this.x1i_1 = 0;
+    this.y1i_1 = 0;
     setupListeners(this);
   }
   function LongPressHandler(element, onLongPress, longPressDelay, moveTolerance) {
     longPressDelay = longPressDelay === VOID ? 700 : longPressDelay;
     moveTolerance = moveTolerance === VOID ? 10 : moveTolerance;
-    this.y1i_1 = element;
-    this.z1i_1 = onLongPress;
-    this.a1j_1 = longPressDelay;
-    this.b1j_1 = moveTolerance;
-    this.c1j_1 = null;
-    this.d1j_1 = 0;
+    this.z1i_1 = element;
+    this.a1j_1 = onLongPress;
+    this.b1j_1 = longPressDelay;
+    this.c1j_1 = moveTolerance;
+    this.d1j_1 = null;
     this.e1j_1 = 0;
-    this.f1j_1 = false;
+    this.f1j_1 = 0;
+    this.g1j_1 = false;
     setupListeners_0(this);
   }
   function ImageProcessor() {
-    this.g1j_1 = 'assets://';
-    this.h1j_1 = 'assets/';
+    this.h1j_1 = 'assets://';
+    this.i1j_1 = 'assets/';
   }
   protoOf(ImageProcessor).fq = function (src) {
     return replace(src, 'assets://', 'assets/');
@@ -15958,7 +15967,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return ListProcessor_instance;
   }
   function _get_measureElement__nr340d($this) {
-    var tmp0 = $this.z1j_1;
+    var tmp0 = $this.a1k_1;
     // Inline function 'kotlin.getValue' call
     measureElement$factory();
     return tmp0.a1();
@@ -16066,17 +16075,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     return new Pair(realWidth, realHeight);
   }
   function getCanvasContext($this) {
-    if ($this.i1j_1 == null) {
+    if ($this.j1j_1 == null) {
       var tmp = kuiklyDocument.createElement('canvas');
       var canvas = tmp instanceof HTMLCanvasElement ? tmp : THROW_CCE();
       var tmp_0 = $this;
       var tmp_1 = canvas.getContext('2d');
-      tmp_0.i1j_1 = tmp_1 instanceof CanvasRenderingContext2D ? tmp_1 : THROW_CCE();
+      tmp_0.j1j_1 = tmp_1 instanceof CanvasRenderingContext2D ? tmp_1 : THROW_CCE();
     }
-    return $this.i1j_1;
+    return $this.j1j_1;
   }
   function getDefaultFontFamily($this) {
-    if ($this.j1j_1 === '') {
+    if ($this.k1j_1 === '') {
       var tmp = $this;
       var tmp0_safe_receiver = kuiklyDocument.documentElement;
       var tmp_0;
@@ -16087,12 +16096,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         tmp_0 = kuiklyWindow.getComputedStyle(tmp0_safe_receiver).fontFamily;
       }
       var tmp1_elvis_lhs = tmp_0;
-      tmp.j1j_1 = tmp1_elvis_lhs == null ? '' : tmp1_elvis_lhs;
+      tmp.k1j_1 = tmp1_elvis_lhs == null ? '' : tmp1_elvis_lhs;
     }
-    return $this.j1j_1;
+    return $this.k1j_1;
   }
   function calculateRenderViewSizeByCanvas($this, constraintSize, view, renderText) {
-    if (!$this.k1j_1) {
+    if (!$this.l1j_1) {
       return calculateRenderViewSizeByDom($this, constraintSize, view, renderText);
     }
     var ele = view.mn();
@@ -16120,7 +16129,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var lines = {_v: 0.0};
     var totalHeight = {_v: 0.0};
     textArray.forEach(RichTextProcessor$calculateRenderViewSizeByCanvas$lambda(canvasCtx, lines, maxWidth, totalHeight));
-    if (!$this.k1j_1) {
+    if (!$this.l1j_1) {
       return calculateRenderViewSizeByDom($this, constraintSize, view, renderText);
     }
     style.width = '';
@@ -16256,12 +16265,12 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       var metrics = tmp0_safe_receiver == null ? null : tmp0_safe_receiver.measureText(line);
       var tmp;
       if (metrics == null) {
-        RichTextProcessor_getInstance().k1j_1 = false;
+        RichTextProcessor_getInstance().l1j_1 = false;
         return Unit_instance;
       }
       var tmp_0;
       if (!(typeof metrics.fontBoundingBoxAscent === 'number')) {
-        RichTextProcessor_getInstance().k1j_1 = false;
+        RichTextProcessor_getInstance().l1j_1 = false;
         return Unit_instance;
       }
       $lines._v = $lines._v + 1;
@@ -16276,25 +16285,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
   function RichTextProcessor() {
     RichTextProcessor_instance = this;
-    this.i1j_1 = null;
-    this.j1j_1 = '';
-    this.k1j_1 = true;
-    this.l1j_1 = 'placeholderWidth';
-    this.m1j_1 = 'placeholderHeight';
-    this.n1j_1 = 'color';
-    this.o1j_1 = 'fontSize';
-    this.p1j_1 = 'textDecoration';
-    this.q1j_1 = 'fontWeight';
-    this.r1j_1 = 'fontStyle';
-    this.s1j_1 = 'fontFamily';
-    this.t1j_1 = 'letterSpacing';
-    this.u1j_1 = 'strokeWidth';
-    this.v1j_1 = 'strokeColor';
-    this.w1j_1 = 'fontVariant';
-    this.x1j_1 = 'headIndent';
-    this.y1j_1 = 'lineHeight';
+    this.j1j_1 = null;
+    this.k1j_1 = '';
+    this.l1j_1 = true;
+    this.m1j_1 = 'placeholderWidth';
+    this.n1j_1 = 'placeholderHeight';
+    this.o1j_1 = 'color';
+    this.p1j_1 = 'fontSize';
+    this.q1j_1 = 'textDecoration';
+    this.r1j_1 = 'fontWeight';
+    this.s1j_1 = 'fontStyle';
+    this.t1j_1 = 'fontFamily';
+    this.u1j_1 = 'letterSpacing';
+    this.v1j_1 = 'strokeWidth';
+    this.w1j_1 = 'strokeColor';
+    this.x1j_1 = 'fontVariant';
+    this.y1j_1 = 'headIndent';
+    this.z1j_1 = 'lineHeight';
     var tmp = this;
-    tmp.z1j_1 = lazy(RichTextProcessor$measureElement$delegate$lambda);
+    tmp.a1k_1 = lazy(RichTextProcessor$measureElement$delegate$lambda);
   }
   protoOf(RichTextProcessor).wu = function (constraintSize, view, renderText) {
     var tmp;
@@ -16357,24 +16366,25 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (factory) {
   if (true)
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(/*! ./KuiklyCore-render-web-base.js */ "./kotlin/KuiklyCore-render-web-base.js"), __webpack_require__(/*! ./kotlin-kotlin-stdlib.js */ "./kotlin/kotlin-kotlin-stdlib.js"), __webpack_require__(/*! ./KuiklyCore-render-web-h5.js */ "./kotlin/KuiklyCore-render-web-h5.js"), __webpack_require__(/*! ./KuiklyCore-core.js */ "./kotlin/KuiklyCore-core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [exports, __webpack_require__(/*! ./kotlin-kotlin-stdlib.js */ "./kotlin/kotlin-kotlin-stdlib.js"), __webpack_require__(/*! ./KuiklyCore-render-web-base.js */ "./kotlin/KuiklyCore-render-web-base.js"), __webpack_require__(/*! ./KuiklyCore-render-web-h5.js */ "./kotlin/KuiklyCore-render-web-h5.js"), __webpack_require__(/*! ./KuiklyCore-core.js */ "./kotlin/KuiklyCore-core.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   else {}
-}(function (_, kotlin_com_tencent_kuikly_open_core_render_web_base, kotlin_kotlin, kotlin_com_tencent_kuikly_open_core_render_web_h5, kotlin_com_tencent_kuikly_open_core) {
+}(function (_, kotlin_kotlin, kotlin_com_tencent_kuikly_open_core_render_web_base, kotlin_com_tencent_kuikly_open_core_render_web_h5, kotlin_com_tencent_kuikly_open_core) {
   'use strict';
   //region block: imports
-  var KuiklyRenderView = kotlin_com_tencent_kuikly_open_core_render_web_base.$_$.q1;
-  var KuiklyRenderCoreExecuteMode = kotlin_com_tencent_kuikly_open_core_render_web_base.$_$.a;
   var protoOf = kotlin_kotlin.$_$.o2;
   var initMetadataForClass = kotlin_kotlin.$_$.z1;
+  var KuiklyRenderView = kotlin_com_tencent_kuikly_open_core_render_web_base.$_$.q1;
+  var KuiklyRenderCoreExecuteMode = kotlin_com_tencent_kuikly_open_core_render_web_base.$_$.a;
+  var Unit_instance = kotlin_kotlin.$_$.u;
+  var VOID = kotlin_kotlin.$_$.b;
   var KuiklyRenderViewDelegator = kotlin_com_tencent_kuikly_open_core_render_web_h5.$_$.a;
   var toString = kotlin_kotlin.$_$.p2;
   var LinkedHashMap_init_$Create$ = kotlin_kotlin.$_$.f;
   var iterator = kotlin_kotlin.$_$.h2;
   var THROW_CCE = kotlin_kotlin.$_$.s3;
-  var Unit_instance = kotlin_kotlin.$_$.u;
   var Exception = kotlin_kotlin.$_$.o3;
   var KtMap = kotlin_kotlin.$_$.a1;
   var isInterface = kotlin_kotlin.$_$.f2;
@@ -16393,13 +16403,40 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   var onGetLaunchData = kotlin_com_tencent_kuikly_open_core_render_web_base.$_$.c1;
   var onGetPerformanceData = kotlin_com_tencent_kuikly_open_core_render_web_base.$_$.d1;
   var KuiklyRenderViewDelegatorDelegate = kotlin_com_tencent_kuikly_open_core_render_web_base.$_$.i1;
-  var VOID = kotlin_kotlin.$_$.b;
   var toInt = kotlin_kotlin.$_$.e3;
   //endregion
   //region block: pre-declaration
+  initMetadataForClass(LifeCycleCallbakc, 'LifeCycleCallbakc', LifeCycleCallbakc);
   initMetadataForClass(DesktopRenderLayerAPI, 'DesktopRenderLayerAPI', DesktopRenderLayerAPI);
+  initMetadataForClass(DesktopRenderViewDelegator$init$1, VOID, VOID, LifeCycleCallbakc);
   initMetadataForClass(DesktopRenderViewDelegator, 'DesktopRenderViewDelegator', DesktopRenderViewDelegator, VOID, [KuiklyRenderViewDelegatorDelegate]);
   //endregion
+  function LifeCycleCallbakc() {
+  }
+  protoOf(LifeCycleCallbakc).zf = function () {
+  };
+  protoOf(LifeCycleCallbakc).ag = function () {
+  };
+  protoOf(LifeCycleCallbakc).bg = function () {
+  };
+  protoOf(LifeCycleCallbakc).cg = function () {
+  };
+  protoOf(LifeCycleCallbakc).dg = function () {
+  };
+  protoOf(LifeCycleCallbakc).eg = function () {
+  };
+  protoOf(LifeCycleCallbakc).xf = function () {
+  };
+  protoOf(LifeCycleCallbakc).yf = function () {
+  };
+  protoOf(LifeCycleCallbakc).fg = function () {
+  };
+  protoOf(LifeCycleCallbakc).gg = function () {
+  };
+  protoOf(LifeCycleCallbakc).hg = function () {
+  };
+  protoOf(LifeCycleCallbakc).ig = function () {
+  };
   function initDesktopRenderLayer() {
     main();
   }
@@ -16423,10 +16460,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   protoOf(DesktopRenderLayerAPI).getKuiklyRenderCoreExecuteModeClass = function () {
     return KuiklyRenderCoreExecuteMode;
   };
+  function DesktopRenderViewDelegator$init$1() {
+    LifeCycleCallbakc.call(this);
+  }
+  protoOf(DesktopRenderViewDelegator$init$1).fg = function () {
+    var onFirstFramePaintEvent = new CustomEvent('onFirstFramePaint');
+    window.dispatchEvent(onFirstFramePaintEvent);
+  };
   function DesktopRenderViewDelegator() {
     this.delegator = new KuiklyRenderViewDelegator(this);
   }
-  protoOf(DesktopRenderViewDelegator).a1k = function () {
+  protoOf(DesktopRenderViewDelegator).b1k = function () {
     return this.delegator;
   };
   protoOf(DesktopRenderViewDelegator).init = function (container, pageName, pageData, size) {
@@ -16501,6 +16545,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     var kotlinSize = tmp_0;
     console.log('[Desktop Render Layer] \u8F6C\u6362\u540E\u7684 size: ' + kotlinSize.toString());
     this.delegator.l1d(container, pageName, kotlinPageData, kotlinSize);
+    this.delegator.n1d(new DesktopRenderViewDelegator$init$1());
   };
   protoOf(DesktopRenderViewDelegator).resume = function () {
     console.log('[Desktop Render Layer] \u9875\u9762\u663E\u793A');
@@ -16539,7 +16584,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
       console.error('[Desktop Render Layer] \u9875\u9762\u52A0\u8F7D\u5931\u8D25: ' + toString_0(errorReason));
     }
   };
-  protoOf(DesktopRenderViewDelegator).b1k = function (throwable, errorReason, executeMode) {
+  protoOf(DesktopRenderViewDelegator).c1k = function (throwable, errorReason, executeMode) {
     console.error('[Desktop Render Layer] \u672A\u5904\u7406\u5F02\u5E38: ' + throwable.message + ', reason: ' + errorReason.toString() + ', mode: ' + executeMode.toString());
     printStackTrace(throwable);
   };
@@ -16885,6 +16930,12 @@ if (typeof Math.clz32 === 'undefined') {
     };
   }(Math.log, Math.LN2);
 }
+if (typeof String.prototype.startsWith === 'undefined') {
+  Object.defineProperty(String.prototype, 'startsWith', {value: function (searchString, position) {
+    position = position || 0;
+    return this.lastIndexOf(searchString, position) === position;
+  }});
+}
 if (typeof String.prototype.endsWith === 'undefined') {
   Object.defineProperty(String.prototype, 'endsWith', {value: function (searchString, position) {
     var subjectString = this.toString();
@@ -16894,12 +16945,6 @@ if (typeof String.prototype.endsWith === 'undefined') {
     position -= searchString.length;
     var lastIndex = subjectString.indexOf(searchString, position);
     return lastIndex !== -1 && lastIndex === position;
-  }});
-}
-if (typeof String.prototype.startsWith === 'undefined') {
-  Object.defineProperty(String.prototype, 'startsWith', {value: function (searchString, position) {
-    position = position || 0;
-    return this.lastIndexOf(searchString, position) === position;
   }});
 }
 //endregion
@@ -16945,22 +16990,22 @@ if (typeof String.prototype.startsWith === 'undefined') {
   initMetadataForClass(AbstractMutableCollection, 'AbstractMutableCollection', VOID, AbstractCollection, [AbstractCollection, Iterable, Collection]);
   initMetadataForClass(IteratorImpl, 'IteratorImpl');
   initMetadataForClass(ListIteratorImpl, 'ListIteratorImpl', VOID, IteratorImpl);
-  initMetadataForClass(AbstractMutableList, 'AbstractMutableList', VOID, AbstractMutableCollection, [AbstractMutableCollection, KtList, Iterable, Collection]);
+  initMetadataForClass(AbstractMutableList, 'AbstractMutableList', VOID, AbstractMutableCollection, [AbstractMutableCollection, Collection, KtList, Iterable]);
   initMetadataForClass(AbstractMap, 'AbstractMap', VOID, VOID, [KtMap]);
   initMetadataForClass(AbstractMutableMap, 'AbstractMutableMap', VOID, AbstractMap, [AbstractMap, KtMap]);
-  initMetadataForClass(AbstractMutableSet, 'AbstractMutableSet', VOID, AbstractMutableCollection, [AbstractMutableCollection, KtSet, Iterable, Collection]);
+  initMetadataForClass(AbstractMutableSet, 'AbstractMutableSet', VOID, AbstractMutableCollection, [AbstractMutableCollection, Collection, KtSet, Iterable]);
   initMetadataForCompanion(Companion_2);
-  initMetadataForClass(ArrayList, 'ArrayList', ArrayList_init_$Create$, AbstractMutableList, [AbstractMutableList, KtList, Iterable, Collection]);
+  initMetadataForClass(ArrayList, 'ArrayList', ArrayList_init_$Create$, AbstractMutableList, [AbstractMutableList, Collection, KtList, Iterable]);
   initMetadataForClass(HashMap, 'HashMap', HashMap_init_$Create$, AbstractMutableMap, [AbstractMutableMap, KtMap]);
-  initMetadataForClass(HashMapKeys, 'HashMapKeys', VOID, AbstractMutableSet, [KtSet, Iterable, Collection, AbstractMutableSet]);
+  initMetadataForClass(HashMapKeys, 'HashMapKeys', VOID, AbstractMutableSet, [Collection, KtSet, Iterable, AbstractMutableSet]);
   initMetadataForClass(HashMapValues, 'HashMapValues', VOID, AbstractMutableCollection, [Iterable, Collection, AbstractMutableCollection]);
-  initMetadataForClass(HashMapEntrySetBase, 'HashMapEntrySetBase', VOID, AbstractMutableSet, [KtSet, Iterable, Collection, AbstractMutableSet]);
+  initMetadataForClass(HashMapEntrySetBase, 'HashMapEntrySetBase', VOID, AbstractMutableSet, [Collection, KtSet, Iterable, AbstractMutableSet]);
   initMetadataForClass(HashMapEntrySet, 'HashMapEntrySet', VOID, HashMapEntrySetBase);
   initMetadataForClass(HashMapKeysDefault$iterator$1);
   initMetadataForClass(HashMapKeysDefault, 'HashMapKeysDefault', VOID, AbstractMutableSet);
   initMetadataForClass(HashMapValuesDefault$iterator$1);
   initMetadataForClass(HashMapValuesDefault, 'HashMapValuesDefault', VOID, AbstractMutableCollection);
-  initMetadataForClass(HashSet, 'HashSet', HashSet_init_$Create$, AbstractMutableSet, [AbstractMutableSet, KtSet, Iterable, Collection]);
+  initMetadataForClass(HashSet, 'HashSet', HashSet_init_$Create$, AbstractMutableSet, [AbstractMutableSet, Collection, KtSet, Iterable]);
   initMetadataForCompanion(Companion_3);
   initMetadataForClass(Itr, 'Itr');
   initMetadataForClass(KeysItr, 'KeysItr', VOID, Itr);
@@ -17006,7 +17051,7 @@ if (typeof String.prototype.startsWith === 'undefined') {
   initMetadataForClass(InternalHashMap, 'InternalHashMap', InternalHashMap_init_$Create$, VOID, [InternalMap]);
   initMetadataForObject(EmptyHolder, 'EmptyHolder');
   initMetadataForClass(LinkedHashMap, 'LinkedHashMap', LinkedHashMap_init_$Create$, HashMap, [HashMap, KtMap]);
-  initMetadataForClass(LinkedHashSet, 'LinkedHashSet', LinkedHashSet_init_$Create$, HashSet, [HashSet, KtSet, Iterable, Collection]);
+  initMetadataForClass(LinkedHashSet, 'LinkedHashSet', LinkedHashSet_init_$Create$, HashSet, [HashSet, Collection, KtSet, Iterable]);
   initMetadataForClass(Exception, 'Exception', Exception_init_$Create$, Error);
   initMetadataForClass(RuntimeException, 'RuntimeException', RuntimeException_init_$Create$, Exception);
   initMetadataForClass(IllegalArgumentException, 'IllegalArgumentException', IllegalArgumentException_init_$Create$, RuntimeException);
