@@ -370,6 +370,12 @@
         window.stopKuikly = function() {
             window.renderView.pause();
         }
+
+        window.scaleIt = function(ratio){
+          const el = document.getElementById('kuikly-render-container');
+          el.style.transform = 'scale(' + ratio + ')';
+          el.style.transformOrigin = 'top left';   // 固定左上角为原点
+        }
     </script>
 </body>
 </html>
