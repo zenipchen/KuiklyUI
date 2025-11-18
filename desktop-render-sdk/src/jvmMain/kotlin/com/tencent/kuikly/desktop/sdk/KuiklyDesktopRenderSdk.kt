@@ -40,7 +40,9 @@ class KuiklyDesktopRenderSdk(
     private val pageName: String = "Unknown",
     private val classLoader: ClassLoader? = null
 ) : IKuiklyCoreEntry.Delegate {
-    
+
+    var isRunning: Boolean = true
+
     /**
      * 浏览器抽象接口
      * 
@@ -48,6 +50,7 @@ class KuiklyDesktopRenderSdk(
      * 支持适配器模式，可以轻松扩展到其他浏览器引擎。
      */
     interface Browser {
+
         /**
          * 执行 JavaScript 代码
          * 
@@ -111,7 +114,6 @@ class KuiklyDesktopRenderSdk(
                 arg4: Any?,
                 arg5: Any?
             ): Any? {
-                println("[Kuikly Desktop][$pageName] 🌉 NativeBridge.callNative 被调用: methodId=$methodId, arg0=$arg0")
                 return this@KuiklyDesktopRenderSdk.callNative(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
             }
         }
@@ -175,6 +177,9 @@ class KuiklyDesktopRenderSdk(
         arg4: Any?,
         arg5: Any?
     ): Any? {
+        if (!isRunning) {
+            return ""
+        }
         val browser = this.browser ?: run {
             println("[Kuikly Desktop] ❌ browser 为 null，无法调用 JS")
             return null
@@ -285,6 +290,7 @@ class KuiklyDesktopRenderSdk(
             val requestData = gson.fromJson(request, com.google.gson.JsonObject::class.java)
             val type = requestData.get("type")?.asString
 
+            println("[Kuikly Desktop] handleCefQuery ${type} ${request} ${requestId} ${instanceId}")
             when (type) {
                 "callKotlinMethod" -> {
                     val methodId = requestData.get("methodId")?.asInt ?: 0
@@ -439,6 +445,9 @@ class KuiklyDesktopRenderSdk(
      * 关闭线程池并清理相关资源。
      */
     fun destroy() {
+
+        isRunning = false
+
         println("[Kuikly Desktop] 🧹 正在清理资源...")
         
         // 关闭 Kotlin 方法执行线程池

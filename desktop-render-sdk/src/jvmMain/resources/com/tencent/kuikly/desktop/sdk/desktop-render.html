@@ -367,6 +367,10 @@
             console.log("unload");
             window.renderView.detach();
         });
+
+        window.stopKuikly = function() {
+            window.renderView.pause();
+        }
     </script>
 </body>
 </html>
