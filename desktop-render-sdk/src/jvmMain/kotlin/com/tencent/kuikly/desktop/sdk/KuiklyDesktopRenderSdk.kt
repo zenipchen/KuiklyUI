@@ -290,7 +290,6 @@ class KuiklyDesktopRenderSdk(
             val requestData = gson.fromJson(request, com.google.gson.JsonObject::class.java)
             val type = requestData.get("type")?.asString
 
-            println("[Kuikly Desktop] handleCefQuery ${type} ${request} ${requestId} ${instanceId}")
             when (type) {
                 "callKotlinMethod" -> {
                     val methodId = requestData.get("methodId")?.asInt ?: 0
