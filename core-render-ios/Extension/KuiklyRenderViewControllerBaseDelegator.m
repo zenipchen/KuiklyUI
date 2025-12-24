@@ -53,6 +53,10 @@ NSString *const KRPageDataSnapshotKey = @"kr_snapshotKey";
 
 /** 首屏快照过渡视图 */
 @property (nonatomic, strong) UIImageView *snapshotView;
+
+/// callKotlin 回调 block
+@property (nonatomic, copy, nullable) void (^callKotlinCallback)(int32_t methodId, NSArray *args);
+
 @end
 
 @implementation KuiklyRenderViewControllerBaseDelegator {
@@ -189,6 +193,11 @@ NSString *const KRPageDataSnapshotKey = @"kr_snapshotKey";
     }
 }
 
+- (void)setCallKotlinCallback:(void (^)(int32_t, NSArray *))callback {
+    _callKotlinCallback = [callback copy];
+    NSLog(@"[KuiklyDelegator] setCallKotlinCallback called, callback=%@", callback ? @"YES" : @"NO");
+}
+
 - (void)initRenderViewWithContextCode:(NSString *)contextCode {
     [self p_disptachDelegatorLifeCycleWithSel:@selector(willInitRenderView) object:nil];
     NSURL *resourceFolderUrl = nil;
@@ -199,6 +208,17 @@ NSString *const KRPageDataSnapshotKey = @"kr_snapshotKey";
                                                          resourceFolderUrl:resourceFolderUrl];
     contextParam.contextMode = self.contextMode;
     _performanceManager.modeId = self.contextMode.modeId;
+
+    // 🎯 关键：传入 callKotlinCallback
+    contextParam.callKotlinCallback = self.callKotlinCallback;
+    NSLog(@"[KuiklyDelegator] initRenderViewWithContextCode, callKotlinCallback=%@",
+            self.callKotlinCallback ? @"YES" : @"NO");
+
+    // 🎯 传入 instanceId（如果 delegate 提供了）
+    if ([self.delegate respondsToSelector:@selector(instanceId)]) {
+        contextParam.instanceId = [self.delegate instanceId];
+        NSLog(@"[KuiklyDelegator] initRenderViewWithContextCode, instanceId=%@", contextParam.instanceId);
+    }
 
     [self p_disptachDelegatorLifeCycleWithSel:@selector(willInitRenderCore) object:nil];
     _renderView = [[KuiklyRenderView alloc] initWithSize:self.view.bounds.size
@@ -324,8 +344,8 @@ NSString *const KRPageDataSnapshotKey = @"kr_snapshotKey";
 
     // 4. 发送事件到 Kotlin 侧 (异步)
     [_renderView sendWithEvent:@"onBackPressed" data:@{}];
-    
-    
+
+
 }
 
 #pragma mark - notifications

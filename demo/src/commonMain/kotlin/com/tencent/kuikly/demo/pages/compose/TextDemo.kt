@@ -16,10 +16,12 @@
 package com.tencent.kuikly.demo.pages.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import com.tencent.kuikly.compose.ComposeContainer
 import com.tencent.kuikly.compose.coil3.rememberAsyncImagePainter
 import com.tencent.kuikly.compose.foundation.Image
@@ -39,7 +41,6 @@ import com.tencent.kuikly.compose.foundation.layout.height
 import com.tencent.kuikly.compose.foundation.layout.padding
 import com.tencent.kuikly.compose.foundation.layout.size
 import com.tencent.kuikly.compose.foundation.layout.width
-import com.tencent.kuikly.compose.foundation.lazy.LazyColumn
 import com.tencent.kuikly.compose.foundation.text.InlineTextContent
 import com.tencent.kuikly.compose.foundation.text.appendInlineContent
 import com.tencent.kuikly.compose.material3.Text
@@ -72,45 +73,55 @@ import com.tencent.kuikly.compose.ui.unit.TextUnit
 import com.tencent.kuikly.compose.ui.unit.dp
 import com.tencent.kuikly.compose.ui.unit.sp
 import com.tencent.kuikly.core.annotations.Page
+import com.tencent.kuikly.ui.tooling.KPreview
+import invokeComposeFunc
 
 @Page("TextDemo")
 class TextDemo : ComposeContainer() {
     override fun willInit() {
         super.willInit()
         setContent {
-            ComposeNavigationBar {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().background(Color.White),
-                ) {
-                    item {
-                        composeTextDemo()
-                    }
-                    item {
-                        composeAnnotatedTextDemo()
-                    }
-                    item {
-                        composeOnLayoutChangeDemo()
-                    }
-                    item {
-                        composeTextShadowDemo()
-                    }
-                    item {
-                        LinkTextDemo()
-                    }
-                    item {
-                        InlineContentTests()
-                    }
-                    item {
-                        BrushTextDemo()
-                    }
-                    item {
-                        TextIndentDemo()
-                    }
-                }
-            }
+
+            invokeComposeFunc(
+                "com.tencent.kuikly.demo.pages.compose.TextDemo",
+                "LinkTextDemo",
+                this@TextDemo,
+                currentComposer)
+
+//            ComposeNavigationBar {
+//                LazyColumn(
+//                    modifier = Modifier.fillMaxSize().background(Color.White),
+//                ) {
+//                    item {
+//                        composeTextDemo()
+//                    }
+//                    item {
+//                        composeAnnotatedTextDemo()
+//                    }
+//                    item {
+//                        composeOnLayoutChangeDemo()
+//                    }
+//                    item {
+//                        composeTextShadowDemo()
+//                    }
+//                    item {
+//                        LinkTextDemo()
+//                    }
+//                    item {
+//                        InlineContentTests()
+//                    }
+//                    item {
+//                        BrushTextDemo()
+//                    }
+//                    item {
+//                        TextIndentDemo()
+//                    }
+//                }
+//            }
         }
     }
 
+    @KPreview(widthDp = 800, heightDp = 500, name = "sdfsdfdf")
     @Composable
     fun LinkTextDemo() {
         // 定义链接文本的样式
@@ -126,7 +137,7 @@ class TextDemo : ComposeContainer() {
         // 创建带注解的文本
         val annotatedString =
             buildAnnotatedString {
-                append("我已阅读并同意")
+                append("我阅sd23222")
 
                 // 用户协议链接
                 withLink(

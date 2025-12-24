@@ -68,6 +68,7 @@ import com.tencent.kuikly.compose.ui.unit.dp
 import com.tencent.kuikly.compose.ui.unit.sp
 import com.tencent.kuikly.core.annotations.Page
 import com.tencent.kuikly.core.base.attr.ImageUri
+import com.tencent.kuikly.ui.tooling.KPreview
 
 @Page("ComposeImageDemo")
 internal class ImageDemo : ComposeContainer() {
@@ -111,6 +112,7 @@ private val penguin by lazy(LazyThreadSafetyMode.NONE) {
     DrawableResource(ImageUri.commonAssets("penguin2.png").toUrl(""))
 }
 
+@KPreview(widthDp = 600, heightDp = 800, name = "sdffdf", density = 3f)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PainterSamples() {

@@ -1,0 +1,532 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		315D27CEE0328DB /* PortManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 315D27CEE0328DC /* PortManager.swift */; };
+		79E7C699E120D6B /* PreviewDiscoveryServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E7C699E120D6C /* PreviewDiscoveryServer.swift */; };
+		A1000001B1000001 /* KuiklyUITools.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000001F1000001 /* KuiklyUITools.swift */; };
+		A1000002B1000002 /* PreviewContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000002F1000002 /* PreviewContentView.swift */; };
+		A1000003B1000003 /* PreviewRenderViewPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000003F1000003 /* PreviewRenderViewPage.swift */; };
+		A1000004B1000004 /* PreviewHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000004F1000004 /* PreviewHttpServer.swift */; };
+		A1000005B1000005 /* PreviewRenderCoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000005F1000005 /* PreviewRenderCoreManager.swift */; };
+		A1000006B1000006 /* PreviewRenderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000006F1000006 /* PreviewRenderViewController.m */; };
+		A1000007B1000007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000007F1000007 /* Assets.xcassets */; };
+		A1000008B1000008 /* KuiklyRenderComponentExpandHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000008F1000010 /* KuiklyRenderComponentExpandHandler.m */; };
+		A100000BB100000B /* PreviewKotlinCoreEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000BF100000C /* PreviewKotlinCoreEntry.m */; };
+		A100000CF100000D /* PreviewTcpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000CF100000C /* PreviewTcpServer.swift */; };
+		A100000DB100000D /* KuiklyContainerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000DF100000D /* KuiklyContainerManager.m */; };
+		E61604030A64735AEB099CD7 /* libPods-KuiklyUITools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A37DA12BE2AC0FBF770DE592 /* libPods-KuiklyUITools.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		315D27CEE0328DC /* PortManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortManager.swift; sourceTree = "<group>"; };
+		79E7C699E120D6C /* PreviewDiscoveryServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewDiscoveryServer.swift; sourceTree = "<group>"; };
+		A1000000F1000000 /* KuiklyUITools.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KuiklyUITools.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1000001F1000001 /* KuiklyUITools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KuiklyUITools.swift; sourceTree = "<group>"; };
+		A1000002F1000002 /* PreviewContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewContentView.swift; sourceTree = "<group>"; };
+		A1000003F1000003 /* PreviewRenderViewPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewRenderViewPage.swift; sourceTree = "<group>"; };
+		A1000004F1000004 /* PreviewHttpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHttpServer.swift; sourceTree = "<group>"; };
+		A1000005F1000005 /* PreviewRenderCoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewRenderCoreManager.swift; sourceTree = "<group>"; };
+		A1000006F1000006 /* PreviewRenderViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PreviewRenderViewController.m; sourceTree = "<group>"; };
+		A1000006F1000007 /* PreviewRenderViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PreviewRenderViewController.h; sourceTree = "<group>"; };
+		A1000007F1000007 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1000008F1000008 /* KuiklyUITools.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KuiklyUITools.entitlements; sourceTree = "<group>"; };
+		A1000008F1000009 /* KuiklyRenderComponentExpandHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KuiklyRenderComponentExpandHandler.h; sourceTree = "<group>"; };
+		A1000008F1000010 /* KuiklyRenderComponentExpandHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KuiklyRenderComponentExpandHandler.m; sourceTree = "<group>"; };
+		A1000009F1000009 /* KuiklyUITools-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KuiklyUITools-Bridging-Header.h"; sourceTree = "<group>"; };
+		A100000BF100000B /* PreviewKotlinCoreEntry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PreviewKotlinCoreEntry.h; sourceTree = "<group>"; };
+		A100000BF100000C /* PreviewKotlinCoreEntry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PreviewKotlinCoreEntry.m; sourceTree = "<group>"; };
+		A100000CF100000C /* PreviewTcpServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewTcpServer.swift; sourceTree = "<group>"; };
+		A100000DF100000D /* KuiklyContainerManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KuiklyContainerManager.m; sourceTree = "<group>"; };
+		A100000DF100000E /* KuiklyContainerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KuiklyContainerManager.h; sourceTree = "<group>"; };
+		A37DA12BE2AC0FBF770DE592 /* libPods-KuiklyUITools.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-KuiklyUITools.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B53A47310F7A50EBE1EEBE55 /* Pods-KuiklyUITools.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KuiklyUITools.debug.xcconfig"; path = "Target Support Files/Pods-KuiklyUITools/Pods-KuiklyUITools.debug.xcconfig"; sourceTree = "<group>"; };
+		F89503DF300BE586670DF5D5 /* Pods-KuiklyUITools.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KuiklyUITools.release.xcconfig"; path = "Target Support Files/Pods-KuiklyUITools/Pods-KuiklyUITools.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000001000000F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E61604030A64735AEB099CD7 /* libPods-KuiklyUITools.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4FED2753C94A527A0FE55584 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A37DA12BE2AC0FBF770DE592 /* libPods-KuiklyUITools.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A1000000G1000000 = {
+			isa = PBXGroup;
+			children = (
+				A1000000G1000001 /* PreviewMacApp */,
+				A1000000G1000002 /* Products */,
+				BAE45C5A63A23F09001BBE3C /* Pods */,
+				4FED2753C94A527A0FE55584 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A1000000G1000001 /* PreviewMacApp */ = {
+			isa = PBXGroup;
+			children = (
+				A1000001F1000001 /* KuiklyUITools.swift */,
+				A1000002F1000002 /* PreviewContentView.swift */,
+				A1000003F1000003 /* PreviewRenderViewPage.swift */,
+				A1000000G1000003 /* Server */,
+				A1000000G1000004 /* KuiklyRenderAddons */,
+				A1000007F1000007 /* Assets.xcassets */,
+				A1000008F1000008 /* KuiklyUITools.entitlements */,
+				A1000009F1000009 /* KuiklyUITools-Bridging-Header.h */,
+			);
+			path = PreviewMacApp;
+			sourceTree = "<group>";
+		};
+		A1000000G1000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000F1000000 /* KuiklyUITools.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1000000G1000003 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				A1000004F1000004 /* PreviewHttpServer.swift */,
+				A1000005F1000005 /* PreviewRenderCoreManager.swift */,
+				A100000CF100000C /* PreviewTcpServer.swift */,
+				315D27CEE0328DC /* PortManager.swift */,
+				79E7C699E120D6C /* PreviewDiscoveryServer.swift */,
+			);
+			path = Server;
+			sourceTree = "<group>";
+		};
+		A1000000G1000004 /* KuiklyRenderAddons */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000G1000005 /* Controllers */,
+				A1000000G1000007 /* Context */,
+				A1000000G1000006 /* Handlers */,
+			);
+			path = KuiklyRenderAddons;
+			sourceTree = "<group>";
+		};
+		A1000000G1000005 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				A1000006F1000007 /* PreviewRenderViewController.h */,
+				A1000006F1000006 /* PreviewRenderViewController.m */,
+				A100000DF100000E /* KuiklyContainerManager.h */,
+				A100000DF100000D /* KuiklyContainerManager.m */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		A1000000G1000006 /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				A1000008F1000009 /* KuiklyRenderComponentExpandHandler.h */,
+				A1000008F1000010 /* KuiklyRenderComponentExpandHandler.m */,
+			);
+			path = Handlers;
+			sourceTree = "<group>";
+		};
+		A1000000G1000007 /* Context */ = {
+			isa = PBXGroup;
+			children = (
+				A100000BF100000B /* PreviewKotlinCoreEntry.h */,
+				A100000BF100000C /* PreviewKotlinCoreEntry.m */,
+			);
+			path = Context;
+			sourceTree = "<group>";
+		};
+		BAE45C5A63A23F09001BBE3C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				B53A47310F7A50EBE1EEBE55 /* Pods-KuiklyUITools.debug.xcconfig */,
+				F89503DF300BE586670DF5D5 /* Pods-KuiklyUITools.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1000000T1000000 /* KuiklyUITools */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1000000C1000002 /* Build configuration list for PBXNativeTarget "KuiklyUITools" */;
+			buildPhases = (
+				C938D80BFAAEE81C587900DD /* [CP] Check Pods Manifest.lock */,
+				A1000000S1000000 /* Sources */,
+				A10000001000000F /* Frameworks */,
+				A1000000R1000000 /* Resources */,
+				9ABBEB3BFC3FEB38A1FA5540 /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KuiklyUITools;
+			productName = KuiklyUITools;
+			productReference = A1000000F1000000 /* KuiklyUITools.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A1000000P1000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A1000000T1000000 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A1000000C1000001 /* Build configuration list for PBXProject "PreviewMacApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1000000G1000000;
+			productRefGroup = A1000000G1000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1000000T1000000 /* KuiklyUITools */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1000000R1000000 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000007B1000007 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9ABBEB3BFC3FEB38A1FA5540 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-KuiklyUITools/Pods-KuiklyUITools-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-KuiklyUITools/Pods-KuiklyUITools-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-KuiklyUITools/Pods-KuiklyUITools-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C938D80BFAAEE81C587900DD /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-KuiklyUITools-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A1000000S1000000 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001B1000001 /* KuiklyUITools.swift in Sources */,
+				A1000002B1000002 /* PreviewContentView.swift in Sources */,
+				A1000003B1000003 /* PreviewRenderViewPage.swift in Sources */,
+				A1000004B1000004 /* PreviewHttpServer.swift in Sources */,
+				A1000005B1000005 /* PreviewRenderCoreManager.swift in Sources */,
+				A100000CF100000D /* PreviewTcpServer.swift in Sources */,
+				315D27CEE0328DB /* PortManager.swift in Sources */,
+				79E7C699E120D6B /* PreviewDiscoveryServer.swift in Sources */,
+				A1000006B1000006 /* PreviewRenderViewController.m in Sources */,
+				A100000DB100000D /* KuiklyContainerManager.m in Sources */,
+				A1000008B1000008 /* KuiklyRenderComponentExpandHandler.m in Sources */,
+				A100000BB100000B /* PreviewKotlinCoreEntry.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A1000000BC100001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A1000000BC100002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		A1000000BC200001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B53A47310F7A50EBE1EEBE55 /* Pods-KuiklyUITools.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = AppIconXX;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
+				CODE_SIGN_ENTITLEMENTS = PreviewMacApp/KuiklyUITools.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tencent.kuikly.kuikly-ui-tools";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = YES;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = YES;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "PreviewMacApp/KuiklyUITools-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A1000000BC200002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F89503DF300BE586670DF5D5 /* Pods-KuiklyUITools.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = AppIconXX;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
+				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
+				CODE_SIGN_ENTITLEMENTS = PreviewMacApp/KuiklyUITools.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tencent.kuikly.kuikly-ui-tools";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = YES;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = YES;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "PreviewMacApp/KuiklyUITools-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1000000C1000001 /* Build configuration list for PBXProject "PreviewMacApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000000BC100001 /* Debug */,
+				A1000000BC100002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1000000C1000002 /* Build configuration list for PBXNativeTarget "KuiklyUITools" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000000BC200001 /* Debug */,
+				A1000000BC200002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A1000000P1000000 /* Project object */;
+}

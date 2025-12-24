@@ -37,6 +37,12 @@ publishing {
 
 kotlin {
 
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "17"
+        }
+    }
+
     androidTarget {
         publishLibraryVariantsGroupedByFlavor = true
         publishLibraryVariants("release")

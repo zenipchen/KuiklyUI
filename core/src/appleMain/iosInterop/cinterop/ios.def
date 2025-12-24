@@ -7,3 +7,4 @@ extern void com_tencent_kuikly_ScheduleContextTask(const char* pagerId, void (*o
 
 /// Return true if the current thread is the context thread.
 extern bool com_tencent_kuikly_IsCurrentOnContextThread(const char* pagerId);
+\

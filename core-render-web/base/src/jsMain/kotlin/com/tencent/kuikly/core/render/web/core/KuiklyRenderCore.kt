@@ -35,7 +35,7 @@ import org.w3c.dom.Element
  */
 class KuiklyRenderCore : IKuiklyRenderCore {
     // Unique identifier id for kuikly page
-    private val instanceId: String = instanceIdProducer++.toString()
+    private val instanceId: String
 
     // Kuikly page rendering layer protocol handler
     private var renderLayerHandler: IKuiklyRenderLayerHandler? = null
@@ -48,6 +48,14 @@ class KuiklyRenderCore : IKuiklyRenderCore {
 
     // Context execution environment instance
     private val contextHandler = KuiklyRenderContextHandler()
+
+    /**
+     * Constructor for KuiklyRenderCore
+     * @param customInstanceId Optional custom instance ID from URL parameters
+     */
+    constructor(customInstanceId: String? = null) {
+        instanceId = customInstanceId ?: instanceIdProducer++.toString()
+    }
 
     /**
      * Initialize rendering core
@@ -321,9 +329,38 @@ class KuiklyRenderCore : IKuiklyRenderCore {
             args.secondArg().unsafeCast<Int>(),
             SizeF(args.thirdArg().unsafeCast<Float>(), args.fourthArg().unsafeCast<Float>()),
         )
+        
         // Data compatibility processing, exception takes 0
-        val width = size?.width?.asDynamic().toFixed(2) ?: "0.00"
-        val height = size?.height?.asDynamic().toFixed(2) ?: "0.00"
+        val width: String = if (size != null) {
+            // 正确处理 SizeF 对象
+            try {
+                size.width.toString().toFloat().toString().let { 
+                    if (it.contains(".")) it else "$it.00"
+                }
+            } catch (e: Exception) {
+                // 如果转换失败，使用默认值
+                "0.00"
+            }
+        } else {
+            // 如果 size 为 null，使用默认值
+            "0.00"
+        }
+        
+        val height: String = if (size != null) {
+            // 正确处理 SizeF 对象
+            try {
+                size.height.toString().toFloat().toString().let { 
+                    if (it.contains(".")) it else "$it.00"
+                }
+            } catch (e: Exception) {
+                // 如果转换失败，使用默认值
+                "0.00"
+            }
+        } else {
+            // 如果 size 为 null，使用默认值
+            "0.00"
+        }
+        
         // Return size information
         return "$width|$height"
     }

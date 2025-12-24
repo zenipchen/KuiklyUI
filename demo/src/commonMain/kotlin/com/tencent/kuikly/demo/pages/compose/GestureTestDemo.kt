@@ -60,6 +60,7 @@ import com.tencent.kuikly.compose.ui.input.pointer.pointerInput
 import com.tencent.kuikly.compose.ui.unit.IntOffset
 import com.tencent.kuikly.compose.ui.unit.dp
 import com.tencent.kuikly.core.annotations.Page
+import com.tencent.kuikly.ui.tooling.KPreview
 
 @Page("GestureTestDemo")
 class GestureTestDemo : ComposeContainer() {
@@ -289,10 +290,11 @@ class GestureTestDemo : ComposeContainer() {
     }
 
     @OptIn(ExperimentalFoundationApi::class)
+    @KPreview(widthDp = 300, heightDp = 500, name = "sdfsdfdf")
     @Composable
     private fun DraggableTests() {
         Column {
-            Text("2. 拖动测试")
+            Text("2. 拖动测2试")
             Spacer(Modifier.height(8.dp))
 
             // 2.1 水平拖动

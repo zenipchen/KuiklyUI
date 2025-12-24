@@ -28,6 +28,7 @@ import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.MutationObserver
 import org.w3c.dom.MutationObserverInit
+import org.w3c.dom.url.URLSearchParams
 
 /**
  * Kuikly rendering logic entry point, called by actual business APP
@@ -263,8 +264,11 @@ class KuiklyRenderView(
         size: SizeI,
     ) {
         dispatchLifecycleStateChanged(STATE_INIT_CORE_START)
+
+        val instanceId = URLSearchParams(kuiklyWindow.location.search).get("instanceId")
+
         // Create and initialize renderCore
-        renderCore = createRenderCore().apply {
+        renderCore = createRenderCore(instanceId).apply {
             init(
                 this@KuiklyRenderView,
                 pageName,
@@ -295,7 +299,7 @@ class KuiklyRenderView(
     /**
      * Create renderCore instance
      */
-    private fun createRenderCore(): IKuiklyRenderCore = KuiklyRenderCore()
+    private fun createRenderCore(instanceId: String?): IKuiklyRenderCore = KuiklyRenderCore(instanceId)
 
     /**
      * Initialize performance data manager and return corresponding instance

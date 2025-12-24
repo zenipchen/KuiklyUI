@@ -50,6 +50,12 @@ extern const KuiklyContextMode KuiklyContextMode_Framework;
 /// 资源文件目录URL, 用于资源文件放置于非MainBundle根目录下时指定自定义路径
 @property (nonatomic, strong, readonly, nullable) NSURL *resourceFolderUrl;
 
+/// callKotlin 回调 block（用于从 Kotlin 调用 Native 方法，参数为 methodId 和 args 数组）
+@property (nonatomic, copy, nullable) void (^callKotlinCallback)(int32_t methodId, NSArray *args);
+
+/// 实例 ID（可选，用于跨进程通信，标识渲染实例）
+@property (nonatomic, copy, nullable) NSString *instanceId;
+
 /// Initialize context-related parameters
 /// - Parameters:
 ///   - pageName: Page name (corresponds to the value in the Kotlin-side page annotation @Page("xxxx"), case-sensitive)

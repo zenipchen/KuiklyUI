@@ -121,6 +121,14 @@ FOUNDATION_EXTERN NSString *const KRPageDataSnapshotKey;
  */
 - (void)onBackPressedWithCompletion:(nullable KuiklyBackPressCompletion)completion;
 
+/*
+ * @brief 设置 callKotlin 回调（用于从 Kotlin 调用 Native 方法）
+ * @param callback 回调 block，参数为 (methodId, args)
+ * 注：必须在 renderView 创建前调用，否则可能导致回调设置失败
+ */
+- (void)setCallKotlinCallback:(void (^_Nullable)(int32_t methodId, NSArray *args))callback;
+
+
 @end
 
 @protocol KuiklyRenderViewControllerBaseDelegatorDelegate<NSObject>
@@ -196,6 +204,12 @@ FOUNDATION_EXTERN NSString *const KRPageDataSnapshotKey;
  * @return 是否同步渲染首屏
  */
 - (BOOL)syncRenderingWhenPageAppear;
+
+/*
+ * @brief 获取实例 ID（可选，用于跨进程通信，标识渲染实例）
+ * @return 实例 ID，如果不需要可以返回 nil
+ */
+- (NSString * _Nullable)instanceId;
 
 /*
  * @brief 打开TurboDisplay渲染模式技术，实现超原生首屏性能

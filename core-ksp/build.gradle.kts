@@ -45,6 +45,7 @@ kotlin {
                 implementation(Dependencies.kotlinpoet)
                 implementation(Dependencies.kspApi)
                 implementation(project(":core-annotations"))
+                implementation(project(":ui-tooling"))
             }
             kotlin.srcDir("src/main/kotlin")
             kotlin.srcDir("src/main/kotlin/impl")

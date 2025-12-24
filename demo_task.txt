@@ -1,0 +1,269 @@
+> Task :buildSrc:compileKotlin UP-TO-DATE
+> Task :buildSrc:compileJava NO-SOURCE
+> Task :buildSrc:compileGroovy NO-SOURCE
+> Task :buildSrc:pluginDescriptors UP-TO-DATE
+> Task :buildSrc:processResources NO-SOURCE
+> Task :buildSrc:classes UP-TO-DATE
+> Task :buildSrc:inspectClassesForKotlinIC UP-TO-DATE
+> Task :buildSrc:jar UP-TO-DATE
+> Task :buildSrc:assemble UP-TO-DATE
+> Task :buildSrc:compileTestKotlin NO-SOURCE
+> Task :buildSrc:compileTestJava NO-SOURCE
+> Task :buildSrc:compileTestGroovy NO-SOURCE
+> Task :buildSrc:pluginUnderTestMetadata UP-TO-DATE
+> Task :buildSrc:processTestResources NO-SOURCE
+> Task :buildSrc:testClasses UP-TO-DATE
+> Task :buildSrc:test NO-SOURCE
+> Task :buildSrc:validatePlugins UP-TO-DATE
+> Task :buildSrc:check UP-TO-DATE
+> Task :buildSrc:build UP-TO-DATE
+
+> Configure project :compose
+kuikly username is 
+
+> Configure project :core
+kuikly username is 
+w: ⚠️ Default Kotlin Hierarchy Template Not Applied Correctly
+The Default Kotlin Hierarchy Template was not applied to 'project ':core'':
+Explicit .dependsOn() edges were configured for the following source sets:
+[iosArm64Main, iosMain, iosSimulatorArm64Main, iosX64Main]
+
+Consider removing dependsOn-calls or disabling the default template by adding
+    'kotlin.mpp.applyDefaultHierarchyTemplate=false'
+to your gradle.properties
+Please remove the dependsOn-calls or disable the default template.
+Learn more about hierarchy templates: https://kotl.in/hierarchy-template
+
+
+
+> Configure project :core-annotations
+kuikly username is 
+
+> Configure project :core-ksp
+kuikly username is 
+
+> Configure project :core-render-android
+kuikly username is 
+
+> Configure project :demo
+[KuiklyGradle][KuiklyPlugin] apply
+[KuiklyGradle][KuiklyPlugin] Using KSP dependency: com.tencent.kuikly-open:core-ksp:2.4.0-2.0.21
+The 'ksp' configuration is deprecated in Kotlin Multiplatform projects. Please use target-specific configurations like 'kspJvm' instead.
+[KuiklyGradle][JSProcessor] > createPackAssetsTask packJsLocalAssetsDebug with assetsPath: null
+[KuiklyGradle][JSProcessor] > createPackAssetsTask packJsSplitAssetsDebug with assetsPath: null
+[KuiklyGradle][JSProcessor] > createPackAssetsTask packJsLocalAssetsRelease with assetsPath: null
+[KuiklyGradle][JSProcessor] > createPackAssetsTask packJsSplitAssetsRelease with assetsPath: null
+w: ⚠️ Default Kotlin Hierarchy Template Not Applied Correctly
+The Default Kotlin Hierarchy Template was not applied to 'project ':demo'':
+Explicit .dependsOn() edges were configured for the following source sets:
+[androidMain, iosArm64Main, iosMain, iosSimulatorArm64Main, iosX64Main, jsMain]
+
+Consider removing dependsOn-calls or disabling the default template by adding
+    'kotlin.mpp.applyDefaultHierarchyTemplate=false'
+to your gradle.properties
+Please remove the dependsOn-calls or disable the default template.
+Learn more about hierarchy templates: https://kotl.in/hierarchy-template
+
+
+
+> Configure project :core-render-web:base
+kuikly username is 
+
+> Configure project :core-render-web:h5
+kuikly username is 
+
+> Configure project :core-render-web:miniapp
+kuikly username is 
+
+> Task :demo:tasks
+
+------------------------------------------------------------
+Tasks runnable from project ':demo'
+------------------------------------------------------------
+
+Android tasks
+-------------
+androidDependencies - Displays the Android dependencies of the project.
+signingReport - Displays the signing info for the base and test modules
+sourceSets - Prints out all the source sets defined in this project.
+
+Build tasks
+-----------
+allMetadataJar - Assembles a jar archive containing the metadata for all Kotlin source sets.
+androidDebugSourcesJar - Assembles a jar archive containing the sources of target 'androidDebug'.
+androidReleaseSourcesJar - Assembles a jar archive containing the sources of target 'androidRelease'.
+assemble - Assemble main outputs for all the variants.
+assembleAndroidTest - Assembles all the Test applications.
+build - Assembles and tests this project.
+buildDependents - Assembles and tests this project and all projects that depend on it.
+buildKotlinToolingMetadata - Build metadata json file containing information about the used Kotlin tooling
+buildNeeded - Assembles and tests this project and all projects it depends on.
+clean - Deletes the build directory.
+cleanAllTests - Deletes all the test results.
+compileDebugAndroidTestSources
+compileDebugSources
+compileDebugUnitTestSources
+compileIosMainKotlinMetadata - Compiles a klibrary from the 'iosMain' compilation in target 'metadata'.
+compileKotlinIosArm64 - Compiles a klibrary from the 'main' compilation in target 'iosArm64'.
+compileKotlinIosSimulatorArm64 - Compiles a klibrary from the 'main' compilation in target 'iosSimulatorArm64'.
+compileKotlinIosX64 - Compiles a klibrary from the 'main' compilation in target 'iosX64'.
+compileReleaseSources
+compileReleaseUnitTestSources
+compileTestKotlinIosArm64 - Compiles a klibrary from the 'test' compilation in target 'iosArm64'.
+compileTestKotlinIosSimulatorArm64 - Compiles a klibrary from the 'test' compilation in target 'iosSimulatorArm64'.
+compileTestKotlinIosX64 - Compiles a klibrary from the 'test' compilation in target 'iosX64'.
+embedAndSignPodAppleFrameworkForXcode - Embed and sign pod framework as requested by Xcode's environment variables
+extractDebugAnnotations - Extracts Android annotations for the debug variant into the archive file
+extractReleaseAnnotations - Extracts Android annotations for the release variant into the archive file
+iosArm64Binaries - Assembles outputs for target 'iosArm64'.
+iosArm64MainBinaries - Links all binaries for compilation 'main' of target 'iosArm64'.
+iosArm64MainKlibrary - Assembles outputs for compilation 'main' of target 'iosArm64'
+iosArm64MetadataElements - Assembles Kotlin metadata of target 'iosArm64'.
+iosArm64SourcesJar - Assembles a jar archive containing the sources of target 'iosArm64'.
+iosArm64TestBinaries - Links all binaries for compilation 'test' of target 'iosArm64'.
+iosArm64TestKlibrary - Assembles outputs for compilation 'test' of target 'iosArm64'
+iosSimulatorArm64Binaries - Assembles outputs for target 'iosSimulatorArm64'.
+iosSimulatorArm64MainBinaries - Links all binaries for compilation 'main' of target 'iosSimulatorArm64'.
+iosSimulatorArm64MainKlibrary - Assembles outputs for compilation 'main' of target 'iosSimulatorArm64'
+iosSimulatorArm64MetadataElements - Assembles Kotlin metadata of target 'iosSimulatorArm64'.
+iosSimulatorArm64SourcesJar - Assembles a jar archive containing the sources of target 'iosSimulatorArm64'.
+iosSimulatorArm64TestBinaries - Links all binaries for compilation 'test' of target 'iosSimulatorArm64'.
+iosSimulatorArm64TestKlibrary - Assembles outputs for compilation 'test' of target 'iosSimulatorArm64'
+iosX64Binaries - Assembles outputs for target 'iosX64'.
+iosX64MainBinaries - Links all binaries for compilation 'main' of target 'iosX64'.
+iosX64MainKlibrary - Assembles outputs for compilation 'main' of target 'iosX64'
+iosX64MetadataElements - Assembles Kotlin metadata of target 'iosX64'.
+iosX64SourcesJar - Assembles a jar archive containing the sources of target 'iosX64'.
+iosX64TestBinaries - Links all binaries for compilation 'test' of target 'iosX64'.
+iosX64TestKlibrary - Assembles outputs for compilation 'test' of target 'iosX64'
+jsJar - Assembles an archive containing the main classes.
+jsMainClasses - Assembles outputs for compilation 'main' of target 'js'
+jsSourcesJar - Assembles a jar archive containing the sources of target 'js'.
+jsTestClasses - Assembles outputs for compilation 'test' of target 'js'
+linkDebugTestIosArm64 - Links a test executable 'debugTest' for a target 'iosArm64'.
+linkDebugTestIosSimulatorArm64 - Links a test executable 'debugTest' for a target 'iosSimulatorArm64'.
+linkDebugTestIosX64 - Links a test executable 'debugTest' for a target 'iosX64'.
+linkIosArm64 - Links all binaries for target 'iosArm64'.
+linkIosSimulatorArm64 - Links all binaries for target 'iosSimulatorArm64'.
+linkIosX64 - Links all binaries for target 'iosX64'.
+linkPodDebugFrameworkIosArm64 - Links a framework 'podDebugFramework' for a target 'iosArm64'.
+linkPodDebugFrameworkIosSimulatorArm64 - Links a framework 'podDebugFramework' for a target 'iosSimulatorArm64'.
+linkPodDebugFrameworkIosX64 - Links a framework 'podDebugFramework' for a target 'iosX64'.
+linkPodIosArm64 - Links all binaries for target 'iosArm64'.
+linkPodIosSimulatorArm64 - Links all binaries for target 'iosSimulatorArm64'.
+linkPodIosX64 - Links all binaries for target 'iosX64'.
+linkPodReleaseFrameworkIosArm64 - Links a framework 'podReleaseFramework' for a target 'iosArm64'.
+linkPodReleaseFrameworkIosSimulatorArm64 - Links a framework 'podReleaseFramework' for a target 'iosSimulatorArm64'.
+linkPodReleaseFrameworkIosX64 - Links a framework 'podReleaseFramework' for a target 'iosX64'.
+metadataCommonMainClasses - Assembles outputs for compilation 'commonMain' of target 'metadata'
+metadataIosMainClasses - Assembles outputs for compilation 'iosMain' of target 'metadata'
+metadataMainClasses - Assembles outputs for compilation 'main' of target 'metadata'
+metadataSourcesJar - Assembles a jar archive containing the sources of target 'metadata'.
+sourcesJar - Assembles a jar archive containing the sources of target 'kotlin'.
+
+CocoaPods tasks
+---------------
+podImport - Called on Gradle sync, depends on Cinterop tasks for every used pod
+podInstall - Invokes `pod install` call within Podfile location directory
+podPublishDebugXCFramework - Produces Debug XCFramework for all requested targets
+podPublishReleaseXCFramework - Produces Release XCFramework for all requested targets
+podPublishXCFramework - Produces Release and Debug XCFrameworks with respective podspecs
+podspec - Generates a podspec file for CocoaPods import
+
+Help tasks
+----------
+buildEnvironment - Displays all buildscript dependencies declared in project ':demo'.
+dependencies - Displays all dependencies declared in project ':demo'.
+dependencyInsight - Displays the insight into a specific dependency in project ':demo'.
+help - Displays a help message.
+javaToolchains - Displays the detected java toolchains.
+kotlinDslAccessorsReport - Prints the Kotlin code for accessing the currently available project extensions and conventions.
+outgoingVariants - Displays the outgoing variants of project ':demo'.
+projects - Displays the sub-projects of project ':demo'.
+properties - Displays the properties of project ':demo'.
+resolvableConfigurations - Displays the configurations that can be resolved in project ':demo'.
+tasks - Displays the tasks runnable from project ':demo'.
+
+Ide tasks
+---------
+resolveIdeDependencies - Debugging/Diagnosing task that will resolve dependencies for the IDE
+
+Install tasks
+-------------
+installDebugAndroidTest - Installs the android (on device) tests for the Debug build.
+uninstallAll - Uninstall all applications.
+uninstallDebugAndroidTest - Uninstalls the android (on device) tests for the Debug build.
+
+Interop tasks
+-------------
+cleanNativeDistributionCommonization - Deletes all previously commonized klib's from the Kotlin/Native distribution
+commonize - Aggregator task for all c-interop & Native distribution commonizer tasks
+commonizeCInterop - Invokes the commonizer on c-interop bindings of the project
+commonizeNativeDistribution - Invokes the commonizer on platform libraries provided by the Kotlin/Native distribution
+runCommonizer - [Deprecated: Use 'commonize' instead]
+
+Kotlin browser tasks
+--------------------
+jsBrowserDevelopmentExecutableDistribution
+jsBrowserDevelopmentRun - start development webpack dev server
+jsBrowserDevelopmentWebpack - build webpack development bundle
+jsBrowserDistribution
+jsBrowserProductionRun - start production webpack dev server
+jsBrowserProductionWebpack - build webpack production bundle
+
+Kuikly tasks
+------------
+packLocalJSBundleDebug
+packLocalJSBundleRelease
+packSplitJSBundleDebug
+packSplitJSBundleRelease
+
+NodeJs tasks
+------------
+jsPackageJson - Create package.json file for compilation 'main' (target js (js))
+jsTestPackageJson - Create package.json file for compilation 'test' (target js (js))
+kotlinNodeJsSetup - Download and install a local node/npm version
+
+Verification tasks
+------------------
+allTests - Runs the tests for all targets and create aggregated report
+check - Runs all checks.
+checkJetifier - Checks whether Jetifier is needed for the current project
+checkKotlinGradlePluginConfigurationErrors - Checks that Kotlin Gradle Plugin hasn't reported project configuration errors, failing otherwise. This task always runs before compileKotlin* or similar tasks.
+connectedAndroidTest - Installs and runs instrumentation tests for all flavors on connected devices.
+connectedCheck - Runs all device checks on currently connected devices.
+connectedDebugAndroidTest - Installs and runs the tests for debug on connected devices.
+deviceAndroidTest - Installs and runs instrumentation tests using all Device Providers.
+deviceCheck - Runs all device checks using Device Providers and Test Servers.
+iosSimulatorArm64Test - Executes Kotlin/Native unit tests for target iosSimulatorArm64.
+iosX64Test - Executes Kotlin/Native unit tests for target iosX64.
+jsBrowserTest - Run all js tests inside browser using karma and webpack
+jsTest - Run JS tests for all platforms
+lint - Runs lint on the default variant.
+lintAnalyzeDebug - Run lint analysis on the debug variant
+lintAnalyzeRelease - Run lint analysis on the release variant
+lintDebug - Print text output from the corresponding lint report task
+lintFix - Runs lint on the default variant and applies any safe suggestions to the source code.
+lintFixDebug - Fix lint on the debug variant
+lintFixRelease - Fix lint on the release variant
+lintRelease - Print text output from the corresponding lint report task
+lintReportDebug - Run lint on the debug variant
+lintReportRelease - Run lint on the release variant
+test - Run unit tests for all variants.
+testDebugUnitTest - Run unit tests for the debug build.
+testReleaseUnitTest - Run unit tests for the release build.
+updateLintBaseline - Updates the lint baseline using the default variant.
+updateLintBaselineDebug - Update the lint baseline using the debug variant
+updateLintBaselineRelease - Update the lint baseline using the release variant
+
+Rules
+-----
+Pattern: clean<TaskName>: Cleans the output files of a task.
+Pattern: build<ConfigurationName>: Assembles the artifacts of a configuration.
+
+To see all tasks and more detail, run gradlew tasks --all
+
+To see more detail about a task, run gradlew help --task <task>
+
+BUILD SUCCESSFUL in 926ms
+7 actionable tasks: 1 executed, 6 up-to-date

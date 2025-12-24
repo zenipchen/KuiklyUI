@@ -1,0 +1,2298 @@
+Subject: [PATCH] feat: 支持reload刷新
+---
+Index: PreviewMacApp/PreviewMacApp.xcodeproj/project.pbxproj
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PreviewMacApp/PreviewMacApp.xcodeproj/project.pbxproj b/PreviewMacApp/PreviewMacApp.xcodeproj/project.pbxproj
+--- a/PreviewMacApp/PreviewMacApp.xcodeproj/project.pbxproj	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/PreviewMacApp/PreviewMacApp.xcodeproj/project.pbxproj	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -16,6 +16,7 @@
+ 		315D27CEE0328DB /* PortManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 315D27CEE0328DC /* PortManager.swift */; };
+ 		79E7C699E120D6B /* PreviewDiscoveryServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E7C699E120D6C /* PreviewDiscoveryServer.swift */; };
+ 		A1000006B1000006 /* PreviewRenderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000006F1000006 /* PreviewRenderViewController.m */; };
++		A100000DB100000D /* KuiklyContainerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000DF100000D /* KuiklyContainerManager.m */; };
+ 		A1000007B1000007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000007F1000007 /* Assets.xcassets */; };
+ 		A1000008B1000008 /* KuiklyRenderComponentExpandHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = A1000008F1000010 /* KuiklyRenderComponentExpandHandler.m */; };
+ 		A100000BB100000B /* PreviewKotlinCoreEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = A100000BF100000C /* PreviewKotlinCoreEntry.m */; };
+@@ -34,6 +35,8 @@
+ 		79E7C699E120D6C /* PreviewDiscoveryServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewDiscoveryServer.swift; sourceTree = "<group>"; };
+ 		A1000006F1000006 /* PreviewRenderViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PreviewRenderViewController.m; sourceTree = "<group>"; };
+ 		A1000006F1000007 /* PreviewRenderViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PreviewRenderViewController.h; sourceTree = "<group>"; };
++		A100000DF100000D /* KuiklyContainerManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KuiklyContainerManager.m; sourceTree = "<group>"; };
++		A100000DF100000E /* KuiklyContainerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KuiklyContainerManager.h; sourceTree = "<group>"; };
+ 		A1000007F1000007 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+ 		A1000008F1000008 /* KuiklyUITools.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KuiklyUITools.entitlements; sourceTree = "<group>"; };
+ 		A1000008F1000009 /* KuiklyRenderComponentExpandHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KuiklyRenderComponentExpandHandler.h; sourceTree = "<group>"; };
+@@ -135,6 +138,8 @@
+ 			children = (
+ 				A1000006F1000007 /* PreviewRenderViewController.h */,
+ 				A1000006F1000006 /* PreviewRenderViewController.m */,
++				A100000DF100000E /* KuiklyContainerManager.h */,
++				A100000DF100000D /* KuiklyContainerManager.m */,
+ 			);
+ 			path = Controllers;
+ 			sourceTree = "<group>";
+@@ -280,6 +285,7 @@
+ 				315D27CEE0328DB /* PortManager.swift in Sources */,
+ 				79E7C699E120D6B /* PreviewDiscoveryServer.swift in Sources */,
+ 				A1000006B1000006 /* PreviewRenderViewController.m in Sources */,
++				A100000DB100000D /* KuiklyContainerManager.m in Sources */,
+ 				A1000008B1000008 /* KuiklyRenderComponentExpandHandler.m in Sources */,
+ 				A100000BB100000B /* PreviewKotlinCoreEntry.m in Sources */,
+ 			);
+Index: PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/KuiklyContainerManager.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/KuiklyContainerManager.h b/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/KuiklyContainerManager.h
+new file mode 100644
+--- /dev/null	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
++++ b/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/KuiklyContainerManager.h	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -0,0 +1,102 @@
++/*
++ * Tencent is pleased to support the open source community by making KuiklyUI
++ * available.
++ * Copyright (C) 2025 Tencent. All rights reserved.
++ * Licensed under the License of KuiklyUI;
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ * https://github.com/Tencent-TDS/KuiklyUI/blob/main/LICENSE
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#import <Cocoa/Cocoa.h>
++#import <OpenKuiklyIOSRender/KuiklyRenderContextProtocol.h>
++
++NS_ASSUME_NONNULL_BEGIN
++
++@class KuiklyRenderViewControllerBaseDelegator;
++@class KuiklyRenderView;
++
++/// Kuikly 容器管理器 - 负责管理 Kuikly 渲染容器的生命周期
++@interface KuiklyContainerManager : NSObject
++
++/// 当前的渲染代理器
++@property (nonatomic, strong, readonly, nullable) KuiklyRenderViewControllerBaseDelegator *delegator;
++
++/// 当前的渲染视图
++@property (nonatomic, strong, readonly, nullable) KuiklyRenderView *renderView;
++
++/// 当前页面名称
++@property (nonatomic, copy, readonly) NSString *pageName;
++
++/// 当前页面数据
++@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *pageData;
++
++/// 实例 ID
++@property (nonatomic, copy) NSString *instanceId;
++
++/// callKotlin 回调
++@property (nonatomic, copy, nullable) void (^callKotlinCallback)(KuiklyRenderContextMethod method, NSArray *args);
++
++/// 初始化方法
++/// @param pageName 页面名称
++/// @param pageData 页面数据
++/// @param delegate 代理对象（用于回调 VC 的生命周期方法）
++- (instancetype)initWithPageName:(NSString *)pageName
++                        pageData:(nullable NSDictionary<NSString *, id> *)pageData
++                        delegate:(id)delegate;
++
++/// 创建 Kuikly 容器
++/// @param parentView 父视图
++- (void)createContainerInView:(NSView *)parentView;
++
++/// 切换到新的 Kuikly 容器
++/// @param pageName 新的页面名称
++/// @param pageData 新的页面数据
++/// @param parentView 父视图
++- (void)switchToPageName:(NSString *)pageName
++                pageData:(nullable NSDictionary<NSString *, id> *)pageData
++              parentView:(NSView *)parentView;
++
++/// 更新页面数据（不重新创建容器）
++/// @param pageData 新的页面数据
++- (void)updatePageData:(NSDictionary<NSString *, id> *)pageData;
++
++/// 应用配置
++/// @param config 配置字典
++- (void)applyConfig:(NSDictionary<NSString *, id> *)config;
++
++/// 发送事件
++/// @param event 事件名称
++/// @param data 事件数据
++- (void)sendEvent:(NSString *)event data:(NSDictionary<NSString *, id> *)data;
++
++/// 处理来自 JVM 的 callNative 调用
++/// @param methodId 方法 ID
++/// @param args 参数数组
++/// @return 返回值
++- (id _Nullable)handleCallNativeWithMethodId:(NSInteger)methodId args:(NSArray *)args;
++
++/// 清理容器资源
++- (void)cleanup;
++
++/// 通知容器视图已加载
++/// @param view 视图
++- (void)notifyViewDidLoad:(NSView *)view;
++
++/// 通知容器视图布局已更新
++- (void)notifyViewDidLayoutSubviews;
++
++/// 通知容器视图即将显示
++- (void)notifyViewWillAppear;
++
++/// 通知容器视图已显示
++- (void)notifyViewDidAppear;
++
++@end
++
++NS_ASSUME_NONNULL_END
+Index: PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/KuiklyContainerManager.m
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/KuiklyContainerManager.m b/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/KuiklyContainerManager.m
+new file mode 100644
+--- /dev/null	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
++++ b/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/KuiklyContainerManager.m	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -0,0 +1,651 @@
++/*
++ * Tencent is pleased to support the open source community by making KuiklyUI
++ * available.
++ * Copyright (C) 2025 Tencent. All rights reserved.
++ * Licensed under the License of KuiklyUI;
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ * https://github.com/Tencent-TDS/KuiklyUI/blob/main/LICENSE
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#import "KuiklyContainerManager.h"
++#import <OpenKuiklyIOSRender/KuiklyRenderViewControllerBaseDelegator.h>
++#import <OpenKuiklyIOSRender/KuiklyRenderView.h>
++#import <OpenKuiklyIOSRender/KRPerformanceManager.h>
++#import <objc/message.h>
++
++@interface KuiklyContainerManager () <KuiklyRenderViewControllerBaseDelegatorDelegate>
++
++/// 渲染代理器
++@property (nonatomic, strong, readwrite) KuiklyRenderViewControllerBaseDelegator *delegator;
++
++/// 页面名称
++@property (nonatomic, copy, readwrite) NSString *pageName;
++
++/// 页面数据
++@property (nonatomic, copy, readwrite) NSDictionary<NSString *, id> *pageData;
++
++/// 代理对象（弱引用 ViewController）
++@property (nonatomic, weak) id delegate;
++
++/// 缓存的 callKotlin 调用
++@property (nonatomic, strong) NSMutableArray<NSDictionary *> *pendingCallKotlinCalls;
++
++/// 页面开始加载时间
++@property (nonatomic, assign) CFTimeInterval beginTime;
++
++/// 父视图（容器附加到的视图）
++@property (nonatomic, weak, nullable) NSView *parentView;
++
++@end
++
++@implementation KuiklyContainerManager
++
++#pragma mark - Lifecycle
++
++- (instancetype)initWithPageName:(NSString *)pageName
++                        pageData:(nullable NSDictionary<NSString *, id> *)pageData
++                        delegate:(id)delegate {
++    NSParameterAssert(pageName.length > 0);
++    
++    self = [super init];
++    if (self) {
++        _pageName = [pageName copy];
++        _pageData = [self mergeExtendedParametersWithOriginalParameters:pageData];
++        _delegate = delegate;
++        _pendingCallKotlinCalls = [NSMutableArray array];
++        _instanceId = [[NSUUID UUID] UUIDString];
++        
++        NSLog(@"[KuiklyContainerManager] ✅ 初始化: pageName=%@, instanceId=%@", pageName, _instanceId);
++    }
++    return self;
++}
++
++- (void)dealloc {
++    [self cleanup];
++    NSLog(@"[KuiklyContainerManager] 🧹 dealloc - page: %@", self.pageName);
++}
++
++#pragma mark - Public Methods
++
++- (void)createContainerInView:(NSView *)parentView {
++    NSParameterAssert(parentView != nil);
++    
++    NSLog(@"[KuiklyContainerManager] 🏗️ 创建 Kuikly 容器: pageName=%@", self.pageName);
++    
++    // 保存父视图引用
++    self.parentView = parentView;
++    
++    // 创建 delegator
++    [self setupDelegatorWithPageName:self.pageName data:self.pageData];
++    
++    // 通知视图已加载
++    [self.delegator viewDidLoadWithView:(id)parentView];
++}
++
++- (void)switchToPageName:(NSString *)pageName
++                pageData:(nullable NSDictionary<NSString *, id> *)pageData
++              parentView:(NSView *)parentView {
++    NSParameterAssert(pageName.length > 0);
++    NSParameterAssert(parentView != nil);
++    
++    NSLog(@"[KuiklyContainerManager] 🔄 切换 Kuikly 容器: %@ -> %@", self.pageName, pageName);
++    
++    // 保存父视图引用
++    self.parentView = parentView;
++    
++    // 保存旧的 callKotlin 回调
++    void (^oldCallKotlinCallback)(KuiklyRenderContextMethod, NSArray *) = self.callKotlinCallback;
++    NSLog(@"[KuiklyContainerManager] 🔄 已保存旧的 callKotlinCallback: %p", oldCallKotlinCallback);
++    
++    // 更新 pageName 和 pageData
++    _pageName = [pageName copy];
++    _pageData = [self mergeExtendedParametersWithOriginalParameters:pageData];
++    
++    // 清理旧容器
++    NSLog(@"[KuiklyContainerManager] 🔄 清理前 parentView.subviews.count=%lu", (unsigned long)parentView.subviews.count);
++    [self cleanup];
++    _delegator = nil;
++    NSLog(@"[KuiklyContainerManager] 🔄 清理后 parentView.subviews.count=%lu", (unsigned long)parentView.subviews.count);
++    
++    // 创建新容器
++    [self setupDelegatorWithPageName:pageName data:_pageData];
++    NSLog(@"[KuiklyContainerManager] 🔄 创建新 delegator 完成");
++    
++    // 恢复 callKotlin 回调
++    if (oldCallKotlinCallback) {
++        self.callKotlinCallback = oldCallKotlinCallback;
++    }
++    
++    // 设置 parentView（确保 renderViewDidCreated 回调中能访问到）
++    self.parentView = parentView;
++    
++    
++    // 重新初始化视图
++    NSLog(@"[KuiklyContainerManager] 🔄 ========== 初始化新视图 ==========");
++    NSLog(@"[KuiklyContainerManager] 🔄 parentView=%p, bounds=%@", parentView, NSStringFromRect(parentView.bounds));
++    NSLog(@"[KuiklyContainerManager] 🔄 parentView.subviews (调用前)=%@", parentView.subviews);
++    NSLog(@"[KuiklyContainerManager] 🔄 开始调用 viewDidLoadWithView...");
++    [self.delegator viewDidLoadWithView:(id)parentView];
++    NSLog(@"[KuiklyContainerManager] 🔄 viewDidLoadWithView 调用完成");
++    NSLog(@"[KuiklyContainerManager] 🔄 parentView.subviews (调用后)=%@", parentView.subviews);
++    NSLog(@"[KuiklyContainerManager] 🔄 开始调用 viewDidLayoutSubviews...");
++    [self.delegator viewDidLayoutSubviews];
++    NSLog(@"[KuiklyContainerManager] 🔄 viewDidLayoutSubviews 完成，parentView.subviews.count=%lu", (unsigned long)parentView.subviews.count);
++//    
++//    // 等待 renderView 创建（异步创建，需要延迟检查）
++//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++//        NSLog(@"[KuiklyContainerManager] 🔄 ========== 延迟检查 RenderView 状态 ==========");
++//        NSLog(@"[KuiklyContainerManager] 🔄 self.delegator=%p", self.delegator);
++//        NSLog(@"[KuiklyContainerManager] 🔄 self.delegator.renderView=%p", self.delegator.renderView);
++//        
++//        if (self.renderView) {
++//            NSLog(@"[KuiklyContainerManager] ✅ renderView 存在！");
++//            NSLog(@"[KuiklyContainerManager] 🔄   - 地址: %p", self.renderView);
++//            NSLog(@"[KuiklyContainerManager] 🔄   - frame: %@", NSStringFromRect(self.renderView.frame));
++//            NSLog(@"[KuiklyContainerManager] 🔄   - superview: %p", self.renderView.superview);
++//            NSLog(@"[KuiklyContainerManager] 🔄   - hidden: %d", self.renderView.hidden);
++//            NSLog(@"[KuiklyContainerManager] 🔄   - subviews.count: %lu", (unsigned long)self.renderView.subviews.count);
++//            
++//            // 确保 renderView 可见并在最前面
++//            self.renderView.hidden = NO;
++//            if (self.renderView.superview != parentView) {
++//                NSLog(@"[KuiklyContainerManager] 🔄 重新添加 renderView 到 parentView...");
++//                [self.renderView removeFromSuperview];
++//                [parentView addSubview:self.renderView];
++//            }
++//            self.renderView.frame = parentView.bounds;
++//            self.renderView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
++//            
++//            // 强制刷新
++//            [self.renderView setNeedsDisplay:YES];
++//            [self.renderView setNeedsLayout:YES];
++//            [parentView setNeedsDisplay:YES];
++//            [parentView setNeedsLayout:YES];
++//            
++//            // 再次通知大小改变
++//            [self.delegator viewDidLayoutSubviews];
++//            NSDictionary *sizeData = @{
++//                @"width": @(parentView.frame.size.width),
++//                @"height": @(parentView.frame.size.height)
++//            };
++//            [self.renderView sendWithEvent:@"KRRootViewSizeDidChangedEventKey" data:sizeData];
++//            
++//            NSLog(@"[KuiklyContainerManager] 🔄 renderView 已重新添加并刷新, 新的 superview=%p", self.renderView.superview);
++//        } else {
++//            NSLog(@"[KuiklyContainerManager] ⚠️ renderView 仍为 nil，可能需要更多时间创建");
++//        }
++//        
++//        NSLog(@"[KuiklyContainerManager] 🔄 最终 parentView.subviews=%@", parentView.subviews);
++//    });
++//    
++//    // 立即强制刷新父视图显示
++//    [parentView setNeedsDisplay:YES];
++    [parentView setNeedsLayout:YES];
++    
++    NSLog(@"[KuiklyContainerManager] ✅ ========== 容器切换完成 ==========");
++}
++
++- (void)updatePageData:(NSDictionary<NSString *, id> *)pageData {
++    _pageData = [self mergeExtendedParametersWithOriginalParameters:pageData];
++    NSLog(@"[KuiklyContainerManager] 🔄 更新页面数据: %@", pageData);
++}
++
++- (void)applyConfig:(NSDictionary<NSString *, id> *)config {
++    if (!config || config.count == 0) {
++        return;
++    }
++    
++    NSLog(@"[KuiklyContainerManager] 📋 应用配置: %@", config);
++    
++    // 将配置参数合并到 pageData 中
++    NSMutableDictionary<NSString *, id> *updatedPageData = [self.pageData mutableCopy];
++    
++    // 应用 density
++    if (config[@"density"]) {
++        NSNumber *densityValue = config[@"density"];
++        if ([densityValue isKindOfClass:[NSNumber class]]) {
++            CGFloat density = [densityValue floatValue];
++            updatedPageData[@"_preview_density"] = @(density);
++            NSLog(@"[KuiklyContainerManager] 📋 设置 density: %.2f", density);
++        }
++    }
++    
++    // 应用 orientation
++    if (config[@"orientation"]) {
++        NSString *orientation = config[@"orientation"];
++        updatedPageData[@"_preview_orientation"] = orientation;
++        NSLog(@"[KuiklyContainerManager] 📋 设置 orientation: %@", orientation);
++    }
++    
++    // 应用其他配置参数
++    NSArray<NSString *> *configKeys = @[@"device", @"apiLevel", @"locale", @"fontScale", 
++                                        @"showSystemUi", @"showBackground", @"backgroundColor",
++                                        @"uiMode", @"wallpaper", @"isRound", @"chinSize",
++                                        @"cutout", @"navigation"];
++    for (NSString *key in configKeys) {
++        if (config[key]) {
++            updatedPageData[[NSString stringWithFormat:@"_preview_%@", key]] = config[key];
++        }
++    }
++    
++    _pageData = [updatedPageData copy];
++    
++    // 发送配置更新事件
++    KuiklyRenderView *renderView = self.delegator.renderView;
++    if (renderView) {
++        NSDictionary *configData = @{
++            @"density": config[@"density"] ?: @(2.0),
++            @"orientation": config[@"orientation"] ?: @"portrait"
++        };
++        [renderView sendWithEvent:@"KRConfigurationUpdateEventKey" data:configData];
++        NSLog(@"[KuiklyContainerManager] ✅ 配置已应用");
++    }
++}
++
++- (void)sendEvent:(NSString *)event data:(NSDictionary<NSString *, id> *)data {
++    NSLog(@"[KuiklyContainerManager] 📨 发送事件: event=%@", event);
++    
++    if (self.delegator) {
++        [self.delegator sendWithEvent:event data:data ?: @{}];
++        NSLog(@"[KuiklyContainerManager] ✅ 事件已发送");
++    } else {
++        NSLog(@"[KuiklyContainerManager] ⚠️ delegator 为 nil，无法发送事件");
++    }
++}
++
++- (id _Nullable)handleCallNativeWithMethodId:(NSInteger)methodId args:(NSArray *)args {
++    NSLog(@"[KuiklyContainerManager] 📥 handleCallNative: methodId=%ld", (long)methodId);
++    
++    KuiklyRenderView *renderView = self.delegator.renderView;
++    if (!renderView) {
++        NSLog(@"[KuiklyContainerManager] ⚠️ renderView 为 nil");
++        return nil;
++    }
++    
++    // 通过 KVC 获取 renderCore
++    id renderCore = [renderView valueForKey:@"renderCore"];
++    if (!renderCore) {
++        NSLog(@"[KuiklyContainerManager] ⚠️ renderCore 为 nil");
++        return nil;
++    }
++    
++    // 通过 KVC 获取 contextHandler
++    id contextHandler = [renderCore valueForKey:@"contextHandler"];
++    if (!contextHandler) {
++        NSLog(@"[KuiklyContainerManager] ⚠️ contextHandler 为 nil");
++        return nil;
++    }
++    
++    // 调用 callNative 方法
++    SEL callNativeSelector = NSSelectorFromString(@"callNativeMethodId:arg0:arg1:arg2:arg3:arg4:arg5:");
++    if ([contextHandler respondsToSelector:callNativeSelector]) {
++        id arg0 = args.count > 0 ? args[0] : nil;
++        id arg1 = args.count > 1 ? args[1] : nil;
++        id arg2 = args.count > 2 ? args[2] : nil;
++        id arg3 = args.count > 3 ? args[3] : nil;
++        id arg4 = args.count > 4 ? args[4] : nil;
++        id arg5 = args.count > 5 ? args[5] : nil;
++        
++        NSMethodSignature *signature = [contextHandler methodSignatureForSelector:callNativeSelector];
++        if (signature) {
++            NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
++            invocation.target = contextHandler;
++            invocation.selector = callNativeSelector;
++            
++            int32_t methodIdInt32 = (int32_t)methodId;
++            [invocation setArgument:&methodIdInt32 atIndex:2];
++            [invocation setArgument:&arg0 atIndex:3];
++            [invocation setArgument:&arg1 atIndex:4];
++            [invocation setArgument:&arg2 atIndex:5];
++            [invocation setArgument:&arg3 atIndex:6];
++            [invocation setArgument:&arg4 atIndex:7];
++            [invocation setArgument:&arg5 atIndex:8];
++            
++            [invocation invoke];
++            
++            if (signature.methodReturnLength > 0) {
++                __unsafe_unretained id returnValue = nil;
++                [invocation getReturnValue:&returnValue];
++                NSLog(@"[KuiklyContainerManager] ✅ callNative 成功，返回值: %@", returnValue);
++                return returnValue;
++            } else {
++                NSLog(@"[KuiklyContainerManager] ✅ callNative 成功（无返回值）");
++                return nil;
++            }
++        }
++    }
++    
++    NSLog(@"[KuiklyContainerManager] ⚠️ callNative 调用失败");
++    return nil;
++}
++
++- (void)cleanup {
++    NSLog(@"[KuiklyContainerManager] 🧹 ========== CLEANUP 开始 ==========");
++    NSLog(@"[KuiklyContainerManager] 🧹 当前 delegator=%p, renderView=%p", self.delegator, self.delegator.renderView);
++    
++    KuiklyRenderView *renderView = self.delegator.renderView;
++    if (renderView) {
++        NSLog(@"[KuiklyContainerManager] 🧹 renderView 存在: frame=%@, superview=%p, subviews.count=%lu", 
++              NSStringFromRect(renderView.frame), renderView.superview, (unsigned long)renderView.subviews.count);
++        
++        // 🔧 修复：先从父视图移除 renderView
++        if (renderView.superview) {
++            NSLog(@"[KuiklyContainerManager] 🧹 从父视图移除 renderView (superview=%p)", renderView.superview);
++            [renderView removeFromSuperview];
++            NSLog(@"[KuiklyContainerManager] 🧹 renderView 已从父视图移除, superview=%p", renderView.superview);
++        } else {
++            NSLog(@"[KuiklyContainerManager] ⚠️ renderView.superview 为 nil，无需移除");
++        }
++        
++        id renderCore = [renderView valueForKey:@"renderCore"];
++        if (renderCore) {
++            // 使用 performSelector 避免编译器警告
++            SEL willDeallocSelector = NSSelectorFromString(@"willDealloc");
++            if ([renderCore respondsToSelector:willDeallocSelector]) {
++                NSLog(@"[KuiklyContainerManager] 🧹 调用 renderCore.willDealloc");
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
++                [renderCore performSelector:willDeallocSelector];
++#pragma clang diagnostic pop
++            }
++            
++            id renderLayerHandler = [renderCore valueForKey:@"renderLayerHandler"];
++            if (renderLayerHandler && [renderLayerHandler respondsToSelector:willDeallocSelector]) {
++                NSLog(@"[KuiklyContainerManager] 🧹 调用 renderLayerHandler.willDealloc");
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
++                [renderLayerHandler performSelector:willDeallocSelector];
++#pragma clang diagnostic pop
++            }
++        }
++    }
++    
++    NSLog(@"[KuiklyContainerManager] 🧹 ========== CLEANUP 完成 ==========");
++}
++
++- (void)notifyViewDidLoad:(NSView *)view {
++    [self.delegator viewDidLoadWithView:(id)view];
++}
++
++- (void)notifyViewDidLayoutSubviews {
++    [self.delegator viewDidLayoutSubviews];
++}
++
++- (void)notifyViewWillAppear {
++    [self.delegator viewWillAppear];
++}
++
++- (void)notifyViewDidAppear {
++    [self.delegator viewDidAppear];
++}
++
++#pragma mark - Getter
++
++- (KuiklyRenderView *)renderView {
++    return self.delegator.renderView;
++}
++
++#pragma mark - Setter
++
++- (void)setCallKotlinCallback:(void (^)(KuiklyRenderContextMethod, NSArray *))callKotlinCallback {
++    _callKotlinCallback = [callKotlinCallback copy];
++    NSLog(@"[KuiklyContainerManager] 📝 已设置 callKotlin 回调");
++    
++    // 执行缓存的调用
++    if (callKotlinCallback && self.pendingCallKotlinCalls.count > 0) {
++        NSLog(@"[KuiklyContainerManager] 🔄 执行 %lu 个缓存的调用", (unsigned long)self.pendingCallKotlinCalls.count);
++        NSArray *calls = [self.pendingCallKotlinCalls copy];
++        [self.pendingCallKotlinCalls removeAllObjects];
++        
++        for (NSDictionary *call in calls) {
++            int32_t methodId = [call[@"methodId"] intValue];
++            NSArray *args = call[@"args"];
++            callKotlinCallback((KuiklyRenderContextMethod)methodId, args);
++        }
++    }
++}
++
++#pragma mark - Private Methods
++
++- (void)setupDelegatorWithPageName:(NSString *)pageName 
++                              data:(NSDictionary<NSString *, id> *)data {
++    NSLog(@"[KuiklyContainerManager] 🔧 ========== 创建新 Delegator ==========");
++    NSLog(@"[KuiklyContainerManager] 🔧 pageName=%@, data=%@", pageName, data);
++    
++    _delegator = [[KuiklyRenderViewControllerBaseDelegator alloc] 
++                  initWithPageName:pageName pageData:data];
++    
++    NSLog(@"[KuiklyContainerManager] 🔧 delegator 创建完成: %p", _delegator);
++    
++    [self.delegator.performanceManager setMonitorType:KRMonitorType_ALL];
++    self.delegator.delegate = self;
++    
++    // 🎯 关键：立即设置 callKotlinCallback（在 viewDidLoadWithView 之前）
++    if (self.callKotlinCallback) {
++        __weak typeof(self) weakSelf = self;
++        [self.delegator setCallKotlinCallback:^(int32_t methodId, NSArray *args) {
++            __strong typeof(weakSelf) strongSelf = weakSelf;
++            if (!strongSelf) {
++                NSLog(@"[KuiklyContainerManager] ⚠️ callKotlinCallback: self 已释放");
++                return;
++            }
++            
++            NSLog(@"[KuiklyContainerManager] 📞 callKotlinCallback 被调用: methodId=%d, args.count=%lu", 
++                  methodId, (unsigned long)args.count);
++            
++            // 调用原始的 callKotlinCallback
++            if (strongSelf.callKotlinCallback) {
++                strongSelf.callKotlinCallback((KuiklyRenderContextMethod)methodId, args);
++            } else {
++                NSLog(@"[KuiklyContainerManager] ⚠️ callKotlinCallback 为 nil");
++            }
++        }];
++        NSLog(@"[KuiklyContainerManager] ✅ callKotlinCallback 已传入 delegator");
++    } else {
++        NSLog(@"[KuiklyContainerManager] ⚠️ callKotlinCallback 为 nil，未设置到 delegator");
++    }
++    
++    NSLog(@"[KuiklyContainerManager] ✅ delegator 已完全初始化");
++}
++
++- (NSDictionary<NSString *, id> *)mergeExtendedParametersWithOriginalParameters:(nullable NSDictionary<NSString *, id> *)parameters {
++    NSMutableDictionary<NSString *, id> *mergedParameters = [parameters ?: @{} mutableCopy];
++    mergedParameters[@"_preview_mode"] = @YES;
++    return [mergedParameters copy];
++}
++
++#pragma mark - KuiklyRenderViewControllerBaseDelegatorDelegate
++
++- (NSView *)createLoadingView {
++    // 转发给 delegate (ViewController)
++    if ([self.delegate respondsToSelector:@selector(createLoadingView)]) {
++        return [self.delegate createLoadingView];
++    }
++    
++    // 默认实现
++    NSView *loadingView = [[NSView alloc] initWithFrame:NSZeroRect];
++    loadingView.wantsLayer = YES;
++    loadingView.layer.backgroundColor = NSColor.windowBackgroundColor.CGColor;
++    
++    NSProgressIndicator *indicator = [[NSProgressIndicator alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
++    indicator.style = NSProgressIndicatorStyleSpinning;
++    indicator.translatesAutoresizingMaskIntoConstraints = NO;
++    [indicator startAnimation:nil];
++    [loadingView addSubview:indicator];
++    
++    [NSLayoutConstraint activateConstraints:@[
++        [indicator.centerXAnchor constraintEqualToAnchor:loadingView.centerXAnchor],
++        [indicator.centerYAnchor constraintEqualToAnchor:loadingView.centerYAnchor]
++    ]];
++    
++    return loadingView;
++}
++
++- (NSView *)createErrorView {
++    // 转发给 delegate (ViewController)
++    if ([self.delegate respondsToSelector:@selector(createErrorView)]) {
++        return [self.delegate createErrorView];
++    }
++    
++    // 默认实现
++    NSView *errorView = [[NSView alloc] initWithFrame:NSZeroRect];
++    errorView.wantsLayer = YES;
++    errorView.layer.backgroundColor = NSColor.windowBackgroundColor.CGColor;
++    
++    NSTextField *errorLabel = [NSTextField labelWithString:@"加载失败"];
++    errorLabel.translatesAutoresizingMaskIntoConstraints = NO;
++    errorLabel.textColor = NSColor.redColor;
++    errorLabel.font = [NSFont systemFontOfSize:16.0];
++    errorLabel.alignment = NSTextAlignmentCenter;
++    [errorView addSubview:errorLabel];
++    
++    [NSLayoutConstraint activateConstraints:@[
++        [errorLabel.centerXAnchor constraintEqualToAnchor:errorView.centerXAnchor],
++        [errorLabel.centerYAnchor constraintEqualToAnchor:errorView.centerYAnchor]
++    ]];
++    
++    return errorView;
++}
++
++- (void)fetchContextCodeWithPageName:(NSString *)pageName 
++                      resultCallback:(KuiklyContextCodeCallback)callback {
++    NSLog(@"[KuiklyContainerManager] 🔍 fetchContextCode: pageName=%@", pageName);
++    
++    // 转发给 delegate (ViewController)
++    if ([self.delegate respondsToSelector:@selector(fetchContextCodeWithPageName:resultCallback:)]) {
++        [self.delegate fetchContextCodeWithPageName:pageName resultCallback:callback];
++        return;
++    }
++    
++    // 默认实现：返回 "shared"
++    if (callback != nil) {
++        callback(@"shared", nil);
++    }
++}
++
++- (void)contentViewDidLoad {
++    CFTimeInterval loadDuration = (CFAbsoluteTimeGetCurrent() - self.beginTime) * 1000.0;
++    NSLog(@"[KuiklyContainerManager] ✅ 页面加载完成，耗时: %.2f ms", loadDuration);
++    
++    // 转发给 delegate
++    if ([self.delegate respondsToSelector:@selector(contentViewDidLoad)]) {
++        [self.delegate contentViewDidLoad];
++    }
++}
++
++- (void)renderViewDidCreated {
++    self.beginTime = CFAbsoluteTimeGetCurrent();
++    NSLog(@"[KuiklyContainerManager] 🎬 renderViewDidCreated");
++    
++    // 确保 renderView 被添加到视图层级
++    KuiklyRenderView *renderView = self.delegator.renderView;
++    if (!renderView) {
++        NSLog(@"[KuiklyContainerManager] ⚠️ renderView 为 nil");
++        return;
++    }
++    
++    if (!self.parentView) {
++        NSLog(@"[KuiklyContainerManager] ⚠️ parentView 为 nil，无法添加到视图层级");
++        return;
++    }
++    
++    // 如果 renderView 不在视图层级中，手动添加
++    if (!renderView.superview) {
++        NSLog(@"[KuiklyContainerManager] ➕ 将 renderView 添加到视图层级 (parentView=%p)", self.parentView);
++        [self.parentView addSubview:renderView];
++        renderView.frame = self.parentView.bounds;
++        renderView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
++        NSLog(@"[KuiklyContainerManager] ✅ renderView 已添加到视图层级 (superview: %p)", (__bridge void *)renderView.superview);
++    } else {
++        NSLog(@"[KuiklyContainerManager] ✅ renderView 已在视图层级中 (superview: %p)", (__bridge void *)renderView.superview);
++        // 确保在最前面并更新 frame
++        if (renderView.superview != self.parentView) {
++            [renderView removeFromSuperview];
++            [self.parentView addSubview:renderView];
++        }
++        renderView.frame = self.parentView.bounds;
++        renderView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
++    }
++    
++    // 确保可见
++    renderView.hidden = NO;
++    self.parentView.hidden = NO;
++    NSLog(@"[KuiklyContainerManager] ✅ renderView 和容器视图已设置为可见");
++    
++    // 强制刷新视图
++    [renderView setNeedsDisplay:YES];
++    [renderView setNeedsLayout:YES];
++    [self.parentView setNeedsDisplay:YES];
++    [self.parentView setNeedsLayout:YES];
++    
++    // 重要：renderView 创建后，需要通知 delegator 当前视图大小
++    [self.delegator viewDidLayoutSubviews];
++    
++    // 发送大小改变事件到 Kuikly 渲染核心（确保新创建的 renderView 知道当前大小）
++    NSDictionary *sizeData = @{
++        @"width": @(self.parentView.frame.size.width),
++        @"height": @(self.parentView.frame.size.height)
++    };
++    [renderView sendWithEvent:@"KRRootViewSizeDidChangedEventKey" data:sizeData];
++    NSLog(@"[KuiklyContainerManager] 📐 已通知 renderView 当前视图大小: %.0fx%.0f", 
++          self.parentView.frame.size.width, self.parentView.frame.size.height);
++    
++    // 转发给 delegate
++    if ([self.delegate respondsToSelector:@selector(renderViewDidCreated)]) {
++        [self.delegate renderViewDidCreated];
++    }
++}
++
++
++- (void)onUnhandledException:(NSString *)exReason 
++                       stack:(NSString *)callstackStr 
++                        mode:(KuiklyContextMode)mode {
++    NSLog(@"[KuiklyContainerManager] ❌ 未处理异常: %@", exReason);
++    
++    // 转发给 delegate
++    if ([self.delegate respondsToSelector:@selector(onUnhandledException:stack:mode:)]) {
++        [self.delegate onUnhandledException:exReason stack:callstackStr mode:mode];
++    }
++}
++
++- (void)onPageLoadComplete:(BOOL)isSucceed 
++                     error:(nullable NSError *)error 
++                      mode:(KuiklyContextMode)mode {
++    if (error != nil) {
++        NSLog(@"[KuiklyContainerManager] ❌ 页面加载失败: %@", error.localizedDescription);
++    } else {
++        NSLog(@"[KuiklyContainerManager] ✅ 页面加载成功");
++    }
++    
++    // 转发给 delegate
++    if ([self.delegate respondsToSelector:@selector(onPageLoadComplete:error:mode:)]) {
++        [self.delegate onPageLoadComplete:isSucceed error:error mode:mode];
++    }
++}
++
++- (NSDictionary<NSString *, NSObject *> *)contextPageData {
++    // 转发给 delegate
++    if ([self.delegate respondsToSelector:@selector(contextPageData)]) {
++        return [self.delegate contextPageData];
++    }
++    
++    // 默认实现
++    return @{
++        @"appId": @"preview",
++        @"sysLang": NSLocale.preferredLanguages.firstObject ?: @"en",
++        @"platform": @"macOS-Preview",
++        @"previewMode": @YES
++    };
++}
++
++- (NSString *)turboDisplayKey {
++    return nil; // 预览模式禁用 TurboDisplay
++}
++
++@end
+Index: PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.h b/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.h
+--- a/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.h	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.h	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -31,6 +31,9 @@
+  */
+ @interface PreviewRenderViewController : NSViewController
+ 
++/// 当前页面名称（只读）
++@property (nonatomic, copy, readonly) NSString *pageName;
++
+ /// 实例 ID（用于跨进程通信，标识渲染实例）
+ @property (nonatomic, copy, readonly) NSString *instanceId;
+ 
+@@ -61,11 +64,24 @@
+ /**
+  * @brief 动态更新页面内容
+  *
++ * 仅更新 pageName 和 pageData，不重新创建 Kuikly 容器。
++ *
+  * @param pageName 新的页面名称，不能为nil
+  * @param pageData 新的页面参数，可以为nil
+  */
+ - (void)updateWithPageName:(NSString *)pageName 
+                   pageData:(nullable NSDictionary<NSString *, id> *)pageData;
++
++/**
++ * @brief 重新创建 Kuikly 容器
++ *
++ * 清理旧的 Kuikly 容器并重新创建，用于在相同 instanceId 的情况下替换界面。
++ *
++ * @param pageName 新的页面名称，不能为nil
++ * @param pageData 新的页面参数，可以为nil
++ */
++- (void)recreateKuiklyContainerWithPageName:(NSString *)pageName 
++                                    pageData:(nullable NSDictionary<NSString *, id> *)pageData;
+ 
+ /**
+  * @brief 处理来自 SDK 的 callKotlinMethod 调用
+Index: PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.m
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.m b/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.m
+--- a/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.m	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/PreviewMacApp/PreviewMacApp/KuiklyRenderAddons/Controllers/PreviewRenderViewController.m	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -15,6 +15,7 @@
+ 
+ #import "PreviewRenderViewController.h"
+ #import "PreviewKotlinCoreEntry.h"
++#import "KuiklyContainerManager.h"
+ #import <OpenKuiklyIOSRender/KuiklyRenderViewControllerBaseDelegator.h>
+ #import <OpenKuiklyIOSRender/KuiklyRenderContextProtocol.h>
+ #import <OpenKuiklyIOSRender/KuiklyRenderCore.h>
+@@ -66,14 +67,8 @@
+ /// 隐藏窗口（用于支持真实的事件传递）
+ @property (nonatomic, strong) NSWindow *offscreenWindow;
+ 
+-/// Kuikly渲染代理器
+-@property (nonatomic, strong, readonly) KuiklyRenderViewControllerBaseDelegator *delegator;
+-
+-/// 当前页面名称
+-@property (nonatomic, copy, readonly) NSString *pageName;
+-
+-/// 当前页面数据
+-@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *pageData;
++/// Kuikly 容器管理器
++@property (nonatomic, strong) KuiklyContainerManager *containerManager;
+ 
+ /// 视图宽度
+ @property (nonatomic, assign, readonly) CGFloat viewWidth;
+@@ -81,21 +76,9 @@
+ /// 视图高度
+ @property (nonatomic, assign, readonly) CGFloat viewHeight;
+ 
+-/// 页面开始加载时间
+-@property (nonatomic, assign) CFTimeInterval beginTime;
+-
+ /// 视图是否可见
+ @property (nonatomic, assign, getter=isViewVisible) BOOL viewVisible;
+ 
+-/// 实例 ID（用于跨进程通信）
+-@property (nonatomic, copy) NSString *instanceId;
+-
+-/// callKotlin 回调（由外部设置，用于发送到 JVM 端）
+-@property (nonatomic, copy) void (^callKotlinCallback)(KuiklyRenderContextMethod method, NSArray *args);
+-
+-/// 缓存的调用（在 callKotlinCallback 未设置时）
+-@property (nonatomic, strong) NSMutableArray<NSDictionary *> *pendingCallKotlinCalls;
+-
+ @end
+ 
+ @implementation PreviewRenderViewController
+@@ -110,31 +93,45 @@
+     
+     self = [super initWithNibName:nil bundle:nil];
+     if (self) {
+-        _pageName = [pageName copy];
+-        _pageData = [self mergeExtendedParametersWithOriginalParameters:data];
+         _viewWidth = width > 0 ? width : 400;
+         _viewHeight = height > 0 ? height : 800;
+         _viewVisible = NO;
+-        _pendingCallKotlinCalls = [NSMutableArray array];
+         
+-        // 生成唯一实例 ID
+-        _instanceId = [[NSUUID UUID] UUIDString];
++        // 创建容器管理器
++        _containerManager = [[KuiklyContainerManager alloc] initWithPageName:pageName 
++                                                                     pageData:data 
++                                                                     delegate:self];
+         
+-        [self setupDelegatorWithPageName:pageName data:_pageData];
+         [self registerNotifications];
+         
+         NSLog(@"[PreviewRenderVC] ✅ 初始化完成: pageName=%@, instanceId=%@, size=%.0fx%.0f", 
+-              pageName, _instanceId, _viewWidth, _viewHeight);
++              pageName, _containerManager.instanceId, _viewWidth, _viewHeight);
+     }
+     return self;
+ }
+ 
+ /// 设置实例 ID（用于外部指定实例 ID，与 JVM 端保持一致）
+ - (void)setInstanceId:(NSString *)instanceId {
+-    _instanceId = [instanceId copy];
++    self.containerManager.instanceId = [instanceId copy];
+     NSLog(@"[PreviewRenderVC] 🔧 设置实例 ID: %@", instanceId);
+ }
+ 
++- (NSString *)instanceId {
++    return self.containerManager.instanceId;
++}
++
++- (NSString *)pageName {
++    return self.containerManager.pageName;
++}
++
++- (NSDictionary<NSString *, id> *)pageData {
++    return self.containerManager.pageData;
++}
++
++- (KuiklyRenderViewControllerBaseDelegator *)delegator {
++    return self.containerManager.delegator;
++}
++
+ /// 便捷初始化方法（使用默认尺寸 400x800）
+ - (instancetype)initWithPageName:(NSString *)pageName 
+                         pageData:(nullable NSDictionary<NSString *, id> *)data {
+@@ -185,24 +182,27 @@
+     });
+     
+     [self setupView];
+-    [self.delegator viewDidLoadWithView:(id)self.view];
++    
++    // 创建 Kuikly 容器
++    [self.containerManager createContainerInView:self.view];
++    
+     NSLog(@"[PreviewRenderVC] 📱 viewDidLoad");
+ }
+ 
+ - (void)viewDidLayout {
+     [super viewDidLayout];
+-    [self.delegator viewDidLayoutSubviews];
++    [self.containerManager notifyViewDidLayoutSubviews];
+ }
+ 
+ - (void)viewWillAppear {
+     [super viewWillAppear];
+     self.viewVisible = YES;
+-    [self.delegator viewWillAppear];
++    [self.containerManager notifyViewWillAppear];
+ }
+ 
+ - (void)viewDidAppear {
+     [super viewDidAppear];
+-    [self.delegator viewDidAppear];
++    [self.containerManager notifyViewDidAppear];
+ }
+ 
+ - (void)viewWillDisappear {
+@@ -223,47 +223,36 @@
+     NSParameterAssert(pageName.length > 0);
+     
+     if ([self shouldUpdateWithPageName:pageName data:data]) {
+-        _pageName = [pageName copy];
+-        _pageData = [self mergeExtendedParametersWithOriginalParameters:data];
+-        
++        [self.containerManager updatePageData:data];
+         NSLog(@"[PreviewRenderVC] 🔄 更新页面: %@ with data: %@", pageName, data);
+     }
+ }
+ 
++/// 切换到新的 Kuikly 容器
++- (void)switchToPageName:(NSString *)pageName 
++                pageData:(nullable NSDictionary<NSString *, id> *)data {
++    NSParameterAssert(pageName.length > 0);
++    
++    NSLog(@"[PreviewRenderVC] 🔄 切换页面: %@", pageName);
++    [self.containerManager switchToPageName:pageName pageData:data parentView:self.view];
++}
++
++- (void)recreateKuiklyContainerWithPageName:(NSString *)pageName 
++                                    pageData:(nullable NSDictionary<NSString *, id> *)data {
++    NSParameterAssert(pageName.length > 0);
++    
++    NSLog(@"[PreviewRenderVC] 🔄 重新创建容器（使用新方法 switchToPageName）: %@", pageName);
++    [self switchToPageName:pageName pageData:data];
++}
++
+ - (void)handleCallKotlinMethodWithMethodId:(NSInteger)methodId args:(NSArray *)args {
+     NSLog(@"[PreviewRenderVC] 📞 handleCallKotlinMethod: methodId=%ld", (long)methodId);
+-    
+-    // 在这里调用 Kuikly 渲染核心的方法
+-    // 这个方法会通过 KuiklyRenderCore 传递到 Kotlin 层
+-    // 由于预览模式下，逻辑层运行在 JVM 中，这里只负责渲染
+-    
+-    // TODO: 实现与渲染核心的交互
++    // 由容器管理器处理
+ }
+ 
+ - (void)cleanup {
+-    NSLog(@"[PreviewRenderVC] 🧹 cleanup 开始清理渲染资源");
+-    
+-    // 获取 renderView 和 renderCore，调用 willDealloc 清理资源
+-    KuiklyRenderView *renderView = self.delegator.renderView;
+-    if (renderView) {
+-        // 通过 KVC 获取 renderCore（私有属性）
+-        id renderCore = [renderView valueForKey:@"renderCore"];
+-        if (renderCore && [renderCore respondsToSelector:@selector(willDealloc)]) {
+-            NSLog(@"[PreviewRenderVC] 🧹 调用 renderCore.willDealloc");
+-            [renderCore willDealloc];
+-        }
+-        
+-        // 通过 KVC 获取 renderLayerHandler（私有属性，在 renderCore 上）
+-        id renderLayerHandler = [renderCore valueForKey:@"renderLayerHandler"];
+-        if (renderLayerHandler && [renderLayerHandler respondsToSelector:@selector(willDealloc)]) {
+-            NSLog(@"[PreviewRenderVC] 🧹 调用 renderLayerHandler.willDealloc");
+-            [renderLayerHandler willDealloc];
+-        }
+-    }
+-    
+-    // delegator 是 readonly，不能直接设置为 nil
+-    // 它会在 ViewController dealloc 时自动清理
+-    NSLog(@"[PreviewRenderVC] 🧹 cleanup 完成");
++    NSLog(@"[PreviewRenderVC] 🧹 cleanup");
++    [self.containerManager cleanup];
+ }
+ 
+ - (void)handleTouchEventWithType:(NSString *)type x:(CGFloat)x y:(CGFloat)y {
+@@ -312,33 +301,16 @@
+ }
+ 
+ - (void)sendEvent:(NSString *)event data:(NSDictionary<NSString *, id> *)data {
+-    NSLog(@"[PreviewRenderVC] 📨 发送页面事件: event=%@, data=%@", event, data);
+-    
+-    // 通过 delegator 发送事件到 Kuikly 渲染核心
+-    if (self.delegator) {
+-        [self.delegator sendWithEvent:event data:data ?: @{}];
+-        NSLog(@"[PreviewRenderVC] ✅ 事件已发送到 Kuikly 渲染核心: event=%@", event);
+-    } else {
+-        NSLog(@"[PreviewRenderVC] ⚠️ delegator 为 nil，无法发送事件: event=%@", event);
+-    }
++    NSLog(@"[PreviewRenderVC] 📨 发送页面事件: event=%@", event);
++    [self.containerManager sendEvent:event data:data];
+ }
+ 
+ - (void)updateSize:(CGFloat)width height:(CGFloat)height {
+     NSLog(@"[PreviewRenderVC] 📐 更新预览大小: %.0fx%.0f", width, height);
+     
+-    // 确保在主线程执行
+-    if (![NSThread isMainThread]) {
+-        dispatch_async(dispatch_get_main_queue(), ^{
+-            [self updateSize:width height:height];
+-        });
+-        return;
+-    }
+-    
+-    // 更新视图大小（保持视图可见）
++    // 更新视图大小
+     NSRect newFrame = NSMakeRect(0, 0, width, height);
+     self.view.frame = newFrame;
+-    
+-    // 确保视图可见
+     self.view.hidden = NO;
+     
+     // 更新隐藏窗口大小
+@@ -347,21 +319,19 @@
+         [self.offscreenWindow setFrame:windowFrame display:YES];
+     }
+     
+-    // 通知 delegator 视图大小已改变
+-    if (self.delegator) {
+-        [self.delegator viewDidLayoutSubviews];
+-    }
++    // 通知容器管理器
++    [self.containerManager notifyViewDidLayoutSubviews];
+     
+-    // 发送大小改变事件到 Kuikly 渲染核心
+-    if (self.delegator && self.delegator.renderView) {
++    // 发送大小改变事件
++    if (self.containerManager.renderView) {
+         NSDictionary *sizeData = @{
+             @"width": @(width),
+             @"height": @(height)
+         };
+-        [self.delegator.renderView sendWithEvent:@"KRRootViewSizeDidChangedEventKey" data:sizeData];
++        [self.containerManager.renderView sendWithEvent:@"KRRootViewSizeDidChangedEventKey" data:sizeData];
+     }
+     
+-    NSLog(@"[PreviewRenderVC] ✅ 预览大小已更新: %.0fx%.0f, view.hidden=%@", width, height, self.view.hidden ? @"YES" : @"NO");
++    NSLog(@"[PreviewRenderVC] ✅ 预览大小已更新: %.0fx%.0f", width, height);
+ }
+ 
+ - (void)applyConfig:(NSDictionary<NSString *, id> *)config {
+@@ -370,179 +340,33 @@
+     }
+     
+     NSLog(@"[PreviewRenderVC] 📋 应用预览配置: %@", config);
+-    
+-    // 将配置参数合并到 pageData 中
+-    NSMutableDictionary<NSString *, id> *updatedPageData = [self.pageData mutableCopy];
+-    
+-    // 应用 density（转换为 Kuikly 需要的格式）
+-    if (config[@"density"]) {
+-        NSNumber *densityValue = config[@"density"];
+-        if ([densityValue isKindOfClass:[NSNumber class]]) {
+-            CGFloat density = [densityValue floatValue];
+-            // Kuikly 使用 density 值（如 2.0, 2.75, 3.0 等）
+-            updatedPageData[@"_preview_density"] = @(density);
+-            NSLog(@"[PreviewRenderVC] 📋 设置 density: %.2f", density);
+-        }
+-    }
+-    
+-    // 应用 orientation
+-    if (config[@"orientation"]) {
+-        NSString *orientation = config[@"orientation"];
+-        updatedPageData[@"_preview_orientation"] = orientation;
+-        NSLog(@"[PreviewRenderVC] 📋 设置 orientation: %@", orientation);
+-    }
+-    
+-    // 应用其他配置参数
+-    NSArray<NSString *> *configKeys = @[@"device", @"apiLevel", @"locale", @"fontScale", 
+-                                        @"showSystemUi", @"showBackground", @"backgroundColor",
+-                                        @"uiMode", @"wallpaper", @"isRound", @"chinSize",
+-                                        @"cutout", @"navigation"];
+-    for (NSString *key in configKeys) {
+-        if (config[key]) {
+-            updatedPageData[[NSString stringWithFormat:@"_preview_%@", key]] = config[key];
+-        }
+-    }
+-    
+-    // 更新 pageData
+-    _pageData = [updatedPageData copy];
+-    
+-    // 如果 delegator 已创建，需要重新设置 pageData
+-    if (self.delegator) {
+-        // 通过 KVC 更新 renderView 的 pageData
+-        KuiklyRenderView *renderView = self.delegator.renderView;
+-        if (renderView) {
+-            // 发送配置更新事件
+-            NSDictionary *configData = @{
+-                @"density": config[@"density"] ?: @(2.0),
+-                @"orientation": config[@"orientation"] ?: @"portrait"
+-            };
+-            [renderView sendWithEvent:@"KRConfigurationUpdateEventKey" data:configData];
+-            NSLog(@"[PreviewRenderVC] ✅ 配置已应用到渲染核心");
+-        }
+-    }
+-    
+-    NSLog(@"[PreviewRenderVC] ✅ 预览配置已应用");
++    [self.containerManager applyConfig:config];
+ }
+ 
+ 
+ #pragma mark - Private Setup Methods
+ 
+-- (void)setupDelegatorWithPageName:(NSString *)pageName 
+-                              data:(NSDictionary<NSString *, id> *)data {
+-    _delegator = [[KuiklyRenderViewControllerBaseDelegator alloc] 
+-                  initWithPageName:pageName pageData:data];
+-    
+-    [self.delegator.performanceManager setMonitorType:KRMonitorType_ALL];
+-    self.delegator.delegate = self;
++- (void)setupView {
++    self.view.wantsLayer = YES;
++    self.view.layer.backgroundColor = NSColor.windowBackgroundColor.CGColor;
+ }
+ 
+ #pragma mark - Public Methods for Cross-Process Communication
+ 
+ /// 设置 callKotlin 回调（由外部设置，用于发送到 JVM 端）
+ - (void)setCallKotlinCallback:(void (^)(KuiklyRenderContextMethod, NSArray *))callback {
+-    _callKotlinCallback = [callback copy];
++    self.containerManager.callKotlinCallback = callback;
+     NSLog(@"[PreviewRenderVC] 📝 已设置 callKotlin 回调");
+-    
+-    // 执行缓存的调用
+-    if (callback && self.pendingCallKotlinCalls.count > 0) {
+-        NSLog(@"[PreviewRenderVC] 🔄 执行 %lu 个缓存的 callKotlin 调用", (unsigned long)self.pendingCallKotlinCalls.count);
+-        NSArray *calls = [self.pendingCallKotlinCalls copy];
+-        [self.pendingCallKotlinCalls removeAllObjects];
+-        
+-        for (NSDictionary *call in calls) {
+-            int32_t methodId = [call[@"methodId"] intValue];
+-            NSArray *args = call[@"args"];
+-            NSLog(@"[PreviewRenderVC] 🔄 执行缓存的调用: methodId=%d, args.count=%lu", 
+-                  methodId, (unsigned long)args.count);
+-            callback((KuiklyRenderContextMethod)methodId, args);
+-        }
+-        NSLog(@"[PreviewRenderVC] ✅ 所有缓存的 callKotlin 调用已执行");
+-    }
++}
++
++- (void (^)(KuiklyRenderContextMethod, NSArray *))callKotlinCallback {
++    return self.containerManager.callKotlinCallback;
+ }
+ 
+ /// 处理来自 JVM 端的 callNative 调用
+-/// @param methodId 方法 ID
+-/// @param args 参数数组
+-/// @return 返回值（如果有）
+ - (id _Nullable)handleCallNativeWithMethodId:(NSInteger)methodId args:(NSArray *)args {
+-    NSLog(@"[PreviewRenderVC] 📥 handleCallNative: methodId=%ld, args=%@", (long)methodId, args);
+-    
+-    // 通过 KuiklyRenderFrameworkContextHandler 处理 callNative
+-    // 获取 renderView
+-    KuiklyRenderView *renderView = self.delegator.renderView;
+-    if (!renderView) {
+-        NSLog(@"[PreviewRenderVC] ⚠️ renderView 为 nil，无法处理 callNative");
+-        return nil;
+-    }
+-    
+-    // 通过 KVC 获取 renderCore（私有属性）
+-    id renderCore = [renderView valueForKey:@"renderCore"];
+-    if (!renderCore) {
+-        NSLog(@"[PreviewRenderVC] ⚠️ renderCore 为 nil，无法处理 callNative");
+-        return nil;
+-    }
+-    
+-    // 通过 KVC 获取 contextHandler（私有属性，在 renderCore 上）
+-    id contextHandler = [renderCore valueForKey:@"contextHandler"];
+-    if (!contextHandler) {
+-        NSLog(@"[PreviewRenderVC] ⚠️ contextHandler 为 nil，无法处理 callNative");
+-        return nil;
+-    }
+-    
+-    // 通过 contextHandler 的 callNativeMethodId:arg0:arg1:arg2:arg3:arg4:arg5: 方法调用
+-    // 注意：该方法需要 6 个参数（arg0-arg5），而 args 数组中的元素会被映射到这些参数
+-    // 根据 KuiklyRenderFrameworkContextHandler 的实现，arg0 通常不使用，从 arg1 开始
+-    SEL callNativeSelector = NSSelectorFromString(@"callNativeMethodId:arg0:arg1:arg2:arg3:arg4:arg5:");
+-    if ([contextHandler respondsToSelector:callNativeSelector]) {
+-        // 准备参数：arg0 通常为 nil，arg1-arg5 从 args 数组中获取
+-        id arg0 = args.count > 0 ? args[0] : nil;
+-        id arg1 = args.count > 1 ? args[1] : nil;
+-        id arg2 = args.count > 2 ? args[2] : nil;
+-        id arg3 = args.count > 3 ? args[3] : nil;
+-        id arg4 = args.count > 4 ? args[4] : nil;
+-        id arg5 = args.count > 5 ? args[5] : nil;
+-        
+-        // 使用 NSInvocation 调用方法（因为参数较多）
+-        NSMethodSignature *signature = [contextHandler methodSignatureForSelector:callNativeSelector];
+-        if (signature) {
+-            NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+-            invocation.target = contextHandler;
+-            invocation.selector = callNativeSelector;
+-            
+-            int32_t methodIdInt32 = (int32_t)methodId;
+-            [invocation setArgument:&methodIdInt32 atIndex:2]; // 0=self, 1=_cmd, 2=methodId
+-            [invocation setArgument:&arg0 atIndex:3];
+-            [invocation setArgument:&arg1 atIndex:4];
+-            [invocation setArgument:&arg2 atIndex:5];
+-            [invocation setArgument:&arg3 atIndex:6];
+-            [invocation setArgument:&arg4 atIndex:7];
+-            [invocation setArgument:&arg5 atIndex:8];
+-            
+-            [invocation invoke];
+-            
+-            // 获取返回值
+-            if (signature.methodReturnLength > 0) {
+-                __unsafe_unretained id returnValue = nil;
+-                [invocation getReturnValue:&returnValue];
+-                NSLog(@"[PreviewRenderVC] ✅ callNative 调用成功，返回值: %@", returnValue);
+-                return returnValue;
+-            } else {
+-                NSLog(@"[PreviewRenderVC] ✅ callNative 调用成功（无返回值）");
+-                return nil;
+-            }
+-        } else {
+-            NSLog(@"[PreviewRenderVC] ⚠️ 无法获取方法签名");
+-            return nil;
+-        }
+-    } else {
+-        NSLog(@"[PreviewRenderVC] ⚠️ contextHandler 不支持 callNativeMethodId:arg0:arg1:arg2:arg3:arg4:arg5: 方法");
+-        return nil;
+-    }
+-}
+-
+-- (void)setupView {
+-    self.view.wantsLayer = YES;
+-    self.view.layer.backgroundColor = NSColor.windowBackgroundColor.CGColor;
++    NSLog(@"[PreviewRenderVC] 📥 handleCallNative: methodId=%ld", (long)methodId);
++    return [self.containerManager handleCallNativeWithMethodId:methodId args:args];
+ }
+ 
+ - (void)registerNotifications {
+@@ -566,13 +390,6 @@
+     return pageNameChanged || dataChanged;
+ }
+ 
+-- (NSDictionary<NSString *, id> *)mergeExtendedParametersWithOriginalParameters:(nullable NSDictionary<NSString *, id> *)parameters {
+-    NSMutableDictionary<NSString *, id> *mergedParameters = [parameters ?: @{} mutableCopy];
+-    // 添加预览模式标识
+-    mergedParameters[@"_preview_mode"] = @YES;
+-    return [mergedParameters copy];
+-}
+-
+ #pragma mark - Exception Handling
+ 
+ - (void)handleKuiklyException:(NSNotification *)notification {
+@@ -622,49 +439,7 @@
+ 
+ - (void)fetchContextCodeWithPageName:(NSString *)pageName 
+                       resultCallback:(KuiklyContextCodeCallback)callback {
+-    NSLog(@"[PreviewRenderVC] 🔍 fetchContextCode: pageName=%@, 返回 frameworkName=%@", pageName, kDefaultFrameworkName);
+-    
+-    // 验证 SharedKuiklyCoreEntry 类是否存在
+-    Class sharedKuiklyCoreEntryClass = NSClassFromString(@"SharedKuiklyCoreEntry");
+-    if (sharedKuiklyCoreEntryClass) {
+-        NSLog(@"[PreviewRenderVC] ✅ SharedKuiklyCoreEntry 类已找到: %@", sharedKuiklyCoreEntryClass);
+-    } else {
+-        NSLog(@"[PreviewRenderVC] ❌ SharedKuiklyCoreEntry 类未找到！");
+-        NSLog(@"[PreviewRenderVC] 💡 提示: 检查类名是否正确，应该是 SharedKuiklyCoreEntry");
+-    }
+-    
+-    // 验证 entryClassWithFrameworkName: 是否能找到（使用 runtime）
+-    Class handlerClass = NSClassFromString(@"KuiklyRenderFrameworkContextHandler");
+-    Class foundClass = nil;
+-    if (handlerClass) {
+-        SEL selector = NSSelectorFromString(@"entryClassWithFrameworkName:");
+-        if ([handlerClass respondsToSelector:selector]) {
+-            // 模拟 entryClassWithFrameworkName: 的逻辑
+-            NSString *frameworkName = kDefaultFrameworkName;
+-            NSString *firstChar = [[frameworkName uppercaseString] substringWithRange:NSMakeRange(0, 1)];
+-            frameworkName = [NSString stringWithFormat:@"%@%@", firstChar, [frameworkName substringFromIndex:1]];
+-            NSString *entryClassName = [NSString stringWithFormat:@"%@KuiklyCoreEntry", frameworkName];
+-            NSLog(@"[PreviewRenderVC] 🔍 查找类名: %@ (frameworkName=%@)", entryClassName, kDefaultFrameworkName);
+-            
+-            foundClass = ((Class (*)(id, SEL, NSString *))objc_msgSend)(handlerClass, selector, kDefaultFrameworkName);
+-        } else {
+-            NSLog(@"[PreviewRenderVC] ❌ KuiklyRenderFrameworkContextHandler 不响应 entryClassWithFrameworkName: 选择器");
+-        }
+-    } else {
+-        NSLog(@"[PreviewRenderVC] ❌ KuiklyRenderFrameworkContextHandler 类未找到");
+-    }
+-    
+-    if (foundClass) {
+-        NSLog(@"[PreviewRenderVC] ✅ entryClassWithFrameworkName 找到类: %@", foundClass);
+-        if ([foundClass isEqual:sharedKuiklyCoreEntryClass]) {
+-            NSLog(@"[PreviewRenderVC] ✅ 确认是 SharedKuiklyCoreEntry 类");
+-        } else {
+-            NSLog(@"[PreviewRenderVC] ⚠️ 找到的类不是 SharedKuiklyCoreEntry: %@ (期望: %@)", foundClass, sharedKuiklyCoreEntryClass);
+-        }
+-    } else {
+-        NSLog(@"[PreviewRenderVC] ❌ entryClassWithFrameworkName 未找到类");
+-        NSLog(@"[PreviewRenderVC] 💡 提示: 检查 frameworkName 是否为 'shared'，类名是否为 'SharedKuiklyCoreEntry'");
+-    }
++    NSLog(@"[PreviewRenderVC] 🔍 fetchContextCode: pageName=%@", pageName);
+     
+     if (callback != nil) {
+         callback(kDefaultFrameworkName, nil);
+@@ -672,132 +447,11 @@
+ }
+ 
+ - (void)contentViewDidLoad {
+-    CFTimeInterval loadDuration = (CFAbsoluteTimeGetCurrent() - self.beginTime) * 1000.0;
+-    NSLog(@"[PreviewRenderVC] ✅ 页面加载完成，耗时: %.2f ms", loadDuration);
++    NSLog(@"[PreviewRenderVC] ✅ 页面加载完成");
+ }
+ 
+ - (void)renderViewDidCreated {
+-    self.beginTime = CFAbsoluteTimeGetCurrent();
+-    NSLog(@"[PreviewRenderVC] 🎬 renderViewDidCreated 被调用");
+-    
+-    // 立即尝试设置回调（可能在主线程）
+-    // 注意：callWithMethod:CreateInstance 可能在 context 队列上异步执行，
+-    // 所以我们需要尽快设置回调，避免错过 CreateInstance 调用
+-    [self setupSharedKuiklyCoreEntryCallback];
+-    
+-    // 如果失败，延迟重试（多次重试确保回调被设置）
+-    for (int i = 0; i < 5; i++) {
+-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((0.01 * (i + 1)) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+-            NSLog(@"[PreviewRenderVC] 🔄 延迟重试设置回调 (第 %d 次)", i + 1);
+-            [self setupSharedKuiklyCoreEntryCallback];
+-        });
+-    }
+-}
+-
+-/// 设置 SharedKuiklyCoreEntry 的 callKotlin 回调
+-- (void)setupSharedKuiklyCoreEntryCallback {
+-    // 检查是否已经设置过回调（避免重复设置）
+-    static NSMutableSet *setupInstances = nil;
+-    static dispatch_once_t onceToken;
+-    dispatch_once(&onceToken, ^{
+-        setupInstances = [NSMutableSet set];
+-    });
+-    
+-    NSString *instanceKey = [NSString stringWithFormat:@"%@_%@", self.instanceId, NSStringFromClass([self class])];
+-    if ([setupInstances containsObject:instanceKey]) {
+-        NSLog(@"[PreviewRenderVC] ℹ️ 回调已设置，跳过");
+-        return;
+-    }
+-    
+-    NSLog(@"[PreviewRenderVC] 🔧 开始设置 SharedKuiklyCoreEntry 回调...");
+-    NSLog(@"[PreviewRenderVC] 📍 当前线程: %@ (主线程: %@)", [NSThread currentThread], [NSThread isMainThread] ? @"是" : @"否");
+-    
+-    // 获取 renderView
+-    KuiklyRenderView *renderView = self.delegator.renderView;
+-    if (!renderView) {
+-        NSLog(@"[PreviewRenderVC] ⚠️ renderView 为 nil，无法设置 SharedKuiklyCoreEntry 回调");
+-        return;
+-    }
+-    
+-    NSLog(@"[PreviewRenderVC] ✅ renderView 已存在: %@", renderView);
+-    
+-    // 通过 KVC 获取 renderCore（私有属性）
+-    id renderCore = [renderView valueForKey:@"renderCore"];
+-    if (!renderCore) {
+-        NSLog(@"[PreviewRenderVC] ⚠️ renderCore 为 nil");
+-        return;
+-    }
+-    
+-    NSLog(@"[PreviewRenderVC] ✅ renderCore 已存在: %@", renderCore);
+-    
+-    // 通过 KVC 获取 contextHandler（私有属性，在 renderCore 上）
+-    id contextHandler = [renderCore valueForKey:@"contextHandler"];
+-    if (!contextHandler) {
+-        NSLog(@"[PreviewRenderVC] ⚠️ contextHandler 为 nil");
+-        return;
+-    }
+-    
+-    NSLog(@"[PreviewRenderVC] ✅ contextHandler 已存在: %@", contextHandler);
+-    
+-    // 通过 KVC 获取 coreEntryInstance（私有属性）
+-    id coreEntryInstance = [contextHandler valueForKey:@"coreEntryInstance"];
+-    if (!coreEntryInstance) {
+-        NSLog(@"[PreviewRenderVC] ⚠️ coreEntryInstance 为 nil");
+-        return;
+-    }
+-    
+-    NSLog(@"[PreviewRenderVC] ✅ coreEntryInstance 已存在: %@ (类型: %@)", coreEntryInstance, [coreEntryInstance class]);
+-    
+-    // 检查是否是 SharedKuiklyCoreEntry
+-    Class sharedKuiklyCoreEntryClass = NSClassFromString(@"SharedKuiklyCoreEntry");
+-    NSLog(@"[PreviewRenderVC] 🔍 查找 SharedKuiklyCoreEntry 类: %@", sharedKuiklyCoreEntryClass);
+-    
+-    if (sharedKuiklyCoreEntryClass && [coreEntryInstance isKindOfClass:sharedKuiklyCoreEntryClass]) {
+-        NSLog(@"[PreviewRenderVC] ✅ 找到 SharedKuiklyCoreEntry，设置 callKotlin 回调");
+-        
+-        // 设置 instanceId
+-        if ([coreEntryInstance respondsToSelector:@selector(setInstanceId:)]) {
+-            [coreEntryInstance setInstanceId:self.instanceId];
+-            NSLog(@"[PreviewRenderVC] ✅ 已设置 instanceId: %@", self.instanceId);
+-        }
+-        
+-        // 设置 callKotlin 回调
+-        if ([coreEntryInstance respondsToSelector:@selector(setCallKotlinCallback:)]) {
+-            __weak typeof(self) weakSelf = self;
+-            void (^callback)(int32_t, NSArray *) = ^(int32_t methodId, NSArray *args) {
+-                __strong typeof(weakSelf) strongSelf = weakSelf;
+-                if (strongSelf) {
+-                    NSLog(@"[PreviewRenderVC] 📤 收到 SharedKuiklyCoreEntry 的 callKotlin 回调: methodId=%d, args.count=%lu", 
+-                          methodId, (unsigned long)args.count);
+-                    // 通过 callKotlinCallback 发送到 PreviewRenderCoreManager
+-                    if (strongSelf.callKotlinCallback) {
+-                        strongSelf.callKotlinCallback((KuiklyRenderContextMethod)methodId, args);
+-                        NSLog(@"[PreviewRenderVC] ✅ 已转发 callKotlin 到 PreviewRenderCoreManager");
+-                    } else {
+-                        // 如果 callKotlinCallback 未设置，缓存这次调用
+-                        NSLog(@"[PreviewRenderVC] ⚠️ callKotlinCallback 未设置，缓存调用: methodId=%d", methodId);
+-                        if (!strongSelf.pendingCallKotlinCalls) {
+-                            strongSelf.pendingCallKotlinCalls = [NSMutableArray array];
+-                        }
+-                        [strongSelf.pendingCallKotlinCalls addObject:@{
+-                            @"methodId": @(methodId),
+-                            @"args": args
+-                        }];
+-                        NSLog(@"[PreviewRenderVC] 💾 已缓存调用，当前缓存数量: %lu", (unsigned long)strongSelf.pendingCallKotlinCalls.count);
+-                    }
+-                }
+-            };
+-            [coreEntryInstance setCallKotlinCallback:callback];
+-            NSLog(@"[PreviewRenderVC] ✅ 已设置 SharedKuiklyCoreEntry 的 callKotlin 回调");
+-            [setupInstances addObject:instanceKey]; // 标记为已设置
+-        } else {
+-            NSLog(@"[PreviewRenderVC] ⚠️ coreEntryInstance 不支持 setCallKotlinCallback: 方法");
+-        }
+-    } else {
+-        NSLog(@"[PreviewRenderVC] ⚠️ coreEntryInstance 不是 SharedKuiklyCoreEntry: %@ (期望: %@)", 
+-              [coreEntryInstance class], sharedKuiklyCoreEntryClass);
+-        NSLog(@"[PreviewRenderVC] 💡 提示: 检查 entryClassWithFrameworkName: 是否找到了 SharedKuiklyCoreEntry");
+-    }
++    NSLog(@"[PreviewRenderVC] 🎬 renderViewDidCreated");
+ }
+ 
+ - (void)onUnhandledException:(NSString *)exReason 
+Index: PreviewMacApp/PreviewMacApp/Server/PreviewHttpServer.swift
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PreviewMacApp/PreviewMacApp/Server/PreviewHttpServer.swift b/PreviewMacApp/PreviewMacApp/Server/PreviewHttpServer.swift
+--- a/PreviewMacApp/PreviewMacApp/Server/PreviewHttpServer.swift	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/PreviewMacApp/PreviewMacApp/Server/PreviewHttpServer.swift	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -427,55 +427,55 @@
+         sendJsonResponse(connection: connection, json: ["status": "ok", "message": "Render started", "instanceId": instanceId])
+         
+         DispatchQueue.main.async {
+-            NSLog("[PreviewServer] 🔧 在主线程创建 ViewController (instanceId=%@)...", instanceId)
++            NSLog("[PreviewServer] 🔧 在主线程处理渲染请求 (instanceId=%@)...", instanceId)
+             
+             let request = RenderRequest(pageName: pageName, pageData: pageData, width: CGFloat(width), height: CGFloat(height), config: config)
+             
+             // 存储渲染请求（支持多实例）
+             self.renderRequests[instanceId] = request
+             
+-            // 先销毁旧的实例（如果存在），并等待清理完成
+-            if let oldVC = self.renderCoreManager?.getViewController(forInstanceId: instanceId) {
+-                NSLog("[PreviewServer] 🧹 发现旧实例，先清理 (instanceId=%@)", instanceId)
+-                oldVC.cleanup()
+-                // 等待一个 runloop，确保清理完成
+-                DispatchQueue.main.async {
+-                    // 从管理器中移除
+-                    self.renderCoreManager?.destroyInstance(instanceId: instanceId)
+-                    
+-                    // 再等待一个 runloop，确保所有清理任务完成
+-                    DispatchQueue.main.async {
+-                        // 创建新的 ViewController
+-                        let viewController = PreviewRenderViewController(pageName: pageName, pageData: pageData, width: CGFloat(width), height: CGFloat(height))
+-                        
+-                        // 确保视图被加载
+-                        _ = viewController.view
+-                        
+-                        // 应用配置参数
+-                        if let configDict = self.configToDictionary(config) {
+-                            viewController.applyConfig(configDict)
+-                        }
+-                        
+-                        // 存储到管理器
+-                        self.renderCoreManager?.setViewController(viewController, forInstanceId: instanceId)
+-                        NSLog("[PreviewServer] ✅ 已创建并设置 ViewController (instanceId=%@, 尺寸: %dx%d)", instanceId, width, height)
+-                    }
+-                }
++            // 检查是否已存在相同 instanceId 的 ViewController
++            if let existingVC = self.renderCoreManager?.getViewController(forInstanceId: instanceId) {
++                NSLog("[PreviewServer] 🔄 发现相同 instanceId 的 ViewController，复用 VC 并更换 Kuikly 容器")
++                NSLog("[PreviewServer] 📍 instanceId=%@, 旧页面=%@, 新页面=%@", instanceId, existingVC.pageName ?? "unknown", pageName)
++                
++                // 更新视图大小（如果需要）
++                let currentWidth = existingVC.view.frame.size.width
++                let currentHeight = existingVC.view.frame.size.height
++                if CGFloat(width) != currentWidth || CGFloat(height) != currentHeight {
++                    NSLog("[PreviewServer] 📐 更新视图大小: %.0fx%.0f -> %dx%d", currentWidth, currentHeight, width, height)
++                    existingVC.updateSize(CGFloat(width), height: CGFloat(height))
++                }
++                
++                // 重新创建 Kuikly 容器（不替换 ViewController）
++                NSLog("[PreviewServer] 🔄 开始更换 Kuikly 容器...")
++                existingVC.recreateKuiklyContainer(withPageName: pageName, pageData: pageData)
++                
++                // 应用配置参数
++                if let configDict = self.configToDictionary(config) {
++                    NSLog("[PreviewServer] 📋 应用配置: %@", configDict)
++                    existingVC.applyConfig(configDict)
++                }
++                
++                NSLog("[PreviewServer] ✅ 已完成容器更换 (instanceId=%@, 页面=%@, 尺寸=%dx%d)", instanceId, pageName, width, height)
+             } else {
+-                // 没有旧实例，直接创建
++                // 没有旧实例，创建新的 ViewController
++                NSLog("[PreviewServer] 🆕 创建新的 ViewController (instanceId=%@)", instanceId)
+                 let viewController = PreviewRenderViewController(pageName: pageName, pageData: pageData, width: CGFloat(width), height: CGFloat(height))
+                 
++                // ⚠️ 重要：先设置到管理器并配置回调，再加载视图
++                // 这样可以确保在 renderViewDidCreated 回调时 callKotlinCallback 已经设置
++                self.renderCoreManager?.setViewController(viewController, forInstanceId: instanceId)
++                NSLog("[PreviewServer] ✅ 已设置 ViewController 到管理器 (instanceId=%@)", instanceId)
++                
+                 // 应用配置参数
+                 if let configDict = self.configToDictionary(config) {
+                     viewController.applyConfig(configDict)
+                 }
+                 
+-                // 确保视图被加载
++                // 最后加载视图（触发 renderViewDidCreated）
+                 _ = viewController.view
+-                
+-                // 存储到管理器
+-                self.renderCoreManager?.setViewController(viewController, forInstanceId: instanceId)
+-                NSLog("[PreviewServer] ✅ 已创建并设置 ViewController (instanceId=%@, 尺寸: %dx%d)", instanceId, width, height)
++                NSLog("[PreviewServer] ✅ ViewController 视图已加载 (instanceId=%@, 尺寸: %dx%d)", instanceId, width, height)
+             }
+         }
+     }
+Index: PreviewMacApp/PreviewMacApp/Server/PreviewTcpServer.swift
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/PreviewMacApp/PreviewMacApp/Server/PreviewTcpServer.swift b/PreviewMacApp/PreviewMacApp/Server/PreviewTcpServer.swift
+--- a/PreviewMacApp/PreviewMacApp/Server/PreviewTcpServer.swift	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/PreviewMacApp/PreviewMacApp/Server/PreviewTcpServer.swift	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -592,27 +592,39 @@
+         // 先发送响应
+         sendResponse(connection: connection, requestId: requestId, json: ["status": "ok", "message": "Render started", "instanceId": instanceId])
+         
+-        // 在主线程创建 ViewController（复用 HTTP 服务器的逻辑）
++        // 在主线程处理渲染请求（复用 HTTP 服务器的逻辑）
+         DispatchQueue.main.async {
+             let httpServer = PreviewHttpServer.shared
+             let request = RenderRequest(pageName: pageName, pageData: pageData, width: CGFloat(width), height: CGFloat(height))
+             httpServer.renderRequests[instanceId] = request
+             
+-            // 先销毁旧的实例
+-            if let oldVC = self.renderCoreManager?.getViewController(forInstanceId: instanceId) {
+-                oldVC.cleanup()
+-                DispatchQueue.main.async {
+-                    self.renderCoreManager?.destroyInstance(instanceId: instanceId)
+-                    DispatchQueue.main.async {
+-                        let viewController = PreviewRenderViewController(pageName: pageName, pageData: pageData, width: CGFloat(width), height: CGFloat(height))
+-                        _ = viewController.view
+-                        self.renderCoreManager?.setViewController(viewController, forInstanceId: instanceId)
+-                    }
+-                }
+-            } else {
+-                let viewController = PreviewRenderViewController(pageName: pageName, pageData: pageData, width: CGFloat(width), height: CGFloat(height))
++            // 检查是否已存在相同 instanceId 的 ViewController
++            if let existingVC = self.renderCoreManager?.getViewController(forInstanceId: instanceId) {
++                NSLog("[TcpServer] 🔄 发现相同 instanceId 的 ViewController，重新创建 Kuikly 容器 (instanceId=%@)", instanceId)
++                
++//                // 更新视图大小（如果需要）
++//                let currentWidth = existingVC.view.frame.size.width
++//                let currentHeight = existingVC.view.frame.size.height
++//                if CGFloat(width) != currentWidth || CGFloat(height) != currentHeight {
++//                    existingVC.updateSize(CGFloat(width), height: CGFloat(height))
++//                }
++                
++                // 重新创建 Kuikly 容器（不替换 ViewController）
++                existingVC.recreateKuiklyContainer(withPageName: pageName, pageData: pageData)
++                
++                NSLog("[TcpServer] ✅ 已重新创建 Kuikly 容器 (instanceId=%@, 尺寸: %dx%d)", instanceId, width, height)
++            } else {
++                // 没有旧实例，创建新的 ViewController
++                NSLog("[TcpServer] 🆕 创建新的 ViewController (instanceId=%@)", instanceId)
++                let viewController = PreviewRenderViewController(pageName: pageName, pageData: pageData, width: CGFloat(width), height: CGFloat(height))
++                
++                // ⚠️ 重要：先设置到管理器并配置回调，再加载视图
++                self.renderCoreManager?.setViewController(viewController, forInstanceId: instanceId)
++                NSLog("[TcpServer] ✅ 已设置 ViewController 到管理器 (instanceId=%@)", instanceId)
++                
++                // 最后加载视图（触发 renderViewDidCreated）
+                 _ = viewController.view
+-                self.renderCoreManager?.setViewController(viewController, forInstanceId: instanceId)
++                NSLog("[TcpServer] ✅ ViewController 视图已加载 (instanceId=%@, 尺寸: %dx%d)", instanceId, width, height)
+             }
+         }
+     }
+Index: core-render-ios/Core/KuiklyContextParam.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core-render-ios/Core/KuiklyContextParam.h b/core-render-ios/Core/KuiklyContextParam.h
+--- a/core-render-ios/Core/KuiklyContextParam.h	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/core-render-ios/Core/KuiklyContextParam.h	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -50,6 +50,12 @@
+ /// 资源文件目录URL, 用于资源文件放置于非MainBundle根目录下时指定自定义路径
+ @property (nonatomic, strong, readonly, nullable) NSURL *resourceFolderUrl;
+ 
++/// callKotlin 回调 block（用于从 Kotlin 调用 Native 方法，参数为 methodId 和 args 数组）
++@property (nonatomic, copy, nullable) void (^callKotlinCallback)(int32_t methodId, NSArray *args);
++
++/// 实例 ID（可选，用于跨进程通信，标识渲染实例）
++@property (nonatomic, copy, nullable) NSString *instanceId;
++
+ /// Initialize context-related parameters
+ /// - Parameters:
+ ///   - pageName: Page name (corresponds to the value in the Kotlin-side page annotation @Page("xxxx"), case-sensitive)
+Index: core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.h b/core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.h
+--- a/core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.h	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.h	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -113,6 +113,13 @@
+  */
+ - (void)initRenderViewWithContextCode:(NSString *)contextCode;
+ 
++/*
++ * @brief 设置 callKotlin 回调（用于从 Kotlin 调用 Native 方法）
++ * @param callback 回调 block，参数为 (methodId, args)
++ * 注：必须在 renderView 创建前调用，否则可能导致回调设置失败
++ */
++- (void)setCallKotlinCallback:(void (^_Nullable)(int32_t methodId, NSArray *args))callback;
++
+ @end
+ 
+ @protocol KuiklyRenderViewControllerBaseDelegatorDelegate<NSObject>
+@@ -184,6 +191,12 @@
+  */
+ - (BOOL)syncRenderingWhenPageAppear;
+ 
++/*
++ * @brief 获取实例 ID（可选，用于跨进程通信，标识渲染实例）
++ * @return 实例 ID，如果不需要可以返回 nil
++ */
++- (NSString * _Nullable)instanceId;
++
+ /*
+  * @brief 打开TurboDisplay渲染模式技术，实现超原生首屏性能
+         （通过直接执行dai二进制产物渲染生成首屏，避免业务代码执行后再生成的首屏等待耗时）
+Index: core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.m
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.m b/core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.m
+--- a/core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.m	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/core-render-ios/Extension/KuiklyRenderViewControllerBaseDelegator.m	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -52,6 +52,10 @@
+ 
+ /** 首屏快照过渡视图 */
+ @property (nonatomic, strong) UIImageView *snapshotView;
++
++/// callKotlin 回调 block
++@property (nonatomic, copy, nullable) void (^callKotlinCallback)(int32_t methodId, NSArray *args);
++
+ @end
+ 
+ @implementation KuiklyRenderViewControllerBaseDelegator {
+@@ -185,6 +189,11 @@
+     }
+ }
+ 
++- (void)setCallKotlinCallback:(void (^)(int32_t, NSArray *))callback {
++    _callKotlinCallback = [callback copy];
++    NSLog(@"[KuiklyDelegator] setCallKotlinCallback called, callback=%@", callback ? @"YES" : @"NO");
++}
++
+ - (void)initRenderViewWithContextCode:(NSString *)contextCode {
+     [self p_disptachDelegatorLifeCycleWithSel:@selector(willInitRenderView) object:nil];
+     NSURL *resourceFolderUrl = nil;
+@@ -194,6 +203,17 @@
+     KuiklyContextParam *contextParam = [KuiklyContextParam newWithPageName:self.pageName
+                                                          resourceFolderUrl:resourceFolderUrl];
+     contextParam.contextMode = self.contextMode;
++    
++    // 🎯 关键：传入 callKotlinCallback
++    contextParam.callKotlinCallback = self.callKotlinCallback;
++    NSLog(@"[KuiklyDelegator] initRenderViewWithContextCode, callKotlinCallback=%@", 
++          self.callKotlinCallback ? @"YES" : @"NO");
++    
++    // 🎯 传入 instanceId（如果 delegate 提供了）
++    if ([self.delegate respondsToSelector:@selector(instanceId)]) {
++        contextParam.instanceId = [self.delegate instanceId];
++        NSLog(@"[KuiklyDelegator] initRenderViewWithContextCode, instanceId=%@", contextParam.instanceId);
++    }
+ 
+     _renderView = [[KuiklyRenderView alloc] initWithSize:self.view.bounds.size
+                                              contextCode:contextCode
+Index: core-render-ios/Handler/KuiklyRenderFrameworkContextHandler.m
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core-render-ios/Handler/KuiklyRenderFrameworkContextHandler.m b/core-render-ios/Handler/KuiklyRenderFrameworkContextHandler.m
+--- a/core-render-ios/Handler/KuiklyRenderFrameworkContextHandler.m	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/core-render-ios/Handler/KuiklyRenderFrameworkContextHandler.m	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -81,6 +81,38 @@
+         NSAssert([_coreEntryInstance respondsToSelector:@selector(callKotlinMethodMethodId:arg0:arg1:arg2:arg3:arg4:arg5:)], @"entry未实现该方法，请check下entry文件");
+         _coreEntryInstance.hrCoreDelegate = (id<KRKuiklyKotlinCoreEntryDelegate>)self;
+         _contextParam = contextParam;
++        
++        // 🎯 关键：如果 contextParam 中有 callKotlinCallback，设置到 coreEntryInstance
++        if (contextParam.callKotlinCallback) {
++            SEL setCallbackSelector = @selector(setCallKotlinCallback:);
++            if ([_coreEntryInstance respondsToSelector:setCallbackSelector]) {
++                void (^callback)(int32_t, NSArray *) = contextParam.callKotlinCallback;
++                // 使用 performSelector 安全调用，避免类型检查问题
++                #pragma clang diagnostic push
++                #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
++                [_coreEntryInstance performSelector:setCallbackSelector withObject:callback];
++                #pragma clang diagnostic pop
++                NSLog(@"[KuiklyContextHandler] ✅ 已通过 contextParam 设置 callKotlinCallback 到 coreEntryInstance");
++            } else {
++                NSLog(@"[KuiklyContextHandler] ⚠️ coreEntryInstance 不响应 setCallKotlinCallback: selector");
++            }
++        } else {
++            NSLog(@"[KuiklyContextHandler] ⚠️ contextParam.callKotlinCallback 为 nil");
++        }
++        
++        // 🎯 设置 instanceId（如果存在）
++        if (contextParam.instanceId) {
++            SEL setInstanceIdSelector = @selector(setInstanceId:);
++            if ([_coreEntryInstance respondsToSelector:setInstanceIdSelector]) {
++                #pragma clang diagnostic push
++                #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
++                [_coreEntryInstance performSelector:setInstanceIdSelector withObject:contextParam.instanceId];
++                #pragma clang diagnostic pop
++                NSLog(@"[KuiklyContextHandler] ✅ 已设置 instanceId: %@", contextParam.instanceId);
++            } else {
++                NSLog(@"[KuiklyContextHandler] ⚠️ coreEntryInstance 不响应 setInstanceId: selector");
++            }
++        }
+     }
+     return self;
+ }
+Index: core-render-ios/Handler/KuiklyRenderLayerHandler.mm
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/core-render-ios/Handler/KuiklyRenderLayerHandler.mm b/core-render-ios/Handler/KuiklyRenderLayerHandler.mm
+--- a/core-render-ios/Handler/KuiklyRenderLayerHandler.mm	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/core-render-ios/Handler/KuiklyRenderLayerHandler.mm	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -310,6 +310,9 @@
+ 
+ - (void)p_removeViewWithTag:(NSNumber *)tag {
+     id<KuiklyRenderViewExportProtocol> renderViewHandler = [self p_renderViewHandlerWithTag:tag];
++    if (!renderViewHandler) {
++        return;
++    }
+ #if DEBUG
+     assert(renderViewHandler);  // renderViewHandler不存在
+ #endif
+Index: desktopAppWithMacRender/src/jvmMain/kotlin/com/tencent/kuikly/desktop/mac/PreviewWindow.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/desktopAppWithMacRender/src/jvmMain/kotlin/com/tencent/kuikly/desktop/mac/PreviewWindow.kt b/desktopAppWithMacRender/src/jvmMain/kotlin/com/tencent/kuikly/desktop/mac/PreviewWindow.kt
+--- a/desktopAppWithMacRender/src/jvmMain/kotlin/com/tencent/kuikly/desktop/mac/PreviewWindow.kt	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/desktopAppWithMacRender/src/jvmMain/kotlin/com/tencent/kuikly/desktop/mac/PreviewWindow.kt	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -1,5 +1,6 @@
+ package com.tencent.kuikly.desktop.mac
+ 
++import com.tencent.kuikly.core.manager.PagerManager
+ import com.tencent.kuikly.mac.sdk.KuiklyMacPreviewRunner
+ import com.tencent.kuikly.mac.sdk.PreviewConfig
+ import java.awt.*
+@@ -149,6 +150,14 @@
+         statusLabel.font = Font("Dialog", Font.PLAIN, 11)
+         leftPanel.add(statusLabel)
+         
++        // 添加重新加载按钮
++        val reloadBtn = JButton("🔄 重新加载")
++        reloadBtn.font = Font("Dialog", Font.PLAIN, 11)
++        reloadBtn.addActionListener {
++            handleReload()
++        }
++        leftPanel.add(reloadBtn)
++        
+         // 添加配置按钮（滚动到配置面板）
+         val configBtn = JButton("⚙️ 配置")
+         configBtn.font = Font("Dialog", Font.PLAIN, 11)
+@@ -174,15 +183,16 @@
+         Thread {
+             while (isRunning) {
+                 try {
++
++                    Thread.sleep(2000) // ~30 FPS
+                     captureAndDisplayScreenshot()
+-                    Thread.sleep(33) // ~30 FPS
+                 } catch (e: InterruptedException) {
+                     break
+                 } catch (e: Exception) {
+                     SwingUtilities.invokeLater {
+                         statusLabel.text = "截图失败: ${e.message}"
+                     }
+-                    Thread.sleep(1000)
++                    Thread.sleep(2000)
+                 }
+             }
+         }.apply {
+@@ -234,6 +244,36 @@
+         isRunning = false
+     }
+     
++    /**
++     * 处理重新加载
++     */
++    private fun handleReload() {
++        println("[PreviewWindow] 🔄 用户点击重新加载按钮")
++        Thread {
++            try {
++                SwingUtilities.invokeLater {
++                    statusLabel.text = "🔄 正在重新加载..."
++                }
++                runner.getInstanceId()?.apply {
++
++                    PagerManager.destroyPager(this)
++                }
++
++                runner.reload()
++                SwingUtilities.invokeLater {
++                    statusLabel.text = "✅ 重新加载请求已发送"
++                }
++                println("[PreviewWindow] ✅ 重新加载请求已发送")
++            } catch (e: Exception) {
++                println("[PreviewWindow] ❌ 重新加载失败: ${e.message}")
++                e.printStackTrace()
++                SwingUtilities.invokeLater {
++                    statusLabel.text = "❌ 重新加载失败: ${e.message}"
++                }
++            }
++        }.start()
++    }
++    
+     /**
+      * 应用预览配置
+      */
+Index: kuikly-idea-plugin/src/main/kotlin/com/tencent/kuikly/plugin/KuiklyPluginService.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/kuikly-idea-plugin/src/main/kotlin/com/tencent/kuikly/plugin/KuiklyPluginService.kt b/kuikly-idea-plugin/src/main/kotlin/com/tencent/kuikly/plugin/KuiklyPluginService.kt
+--- a/kuikly-idea-plugin/src/main/kotlin/com/tencent/kuikly/plugin/KuiklyPluginService.kt	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/kuikly-idea-plugin/src/main/kotlin/com/tencent/kuikly/plugin/KuiklyPluginService.kt	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -3,6 +3,7 @@
+ import com.intellij.openapi.components.Service
+ import com.intellij.openapi.project.Project
+ import com.tencent.kuikly.plugin.server.KuiklyDevServer
++import com.tencent.kuikly.plugin.service.MacRenderErrorHandler
+ import com.tencent.kuikly.plugin.watcher.KuiklyFileWatcher
+ 
+ /**
+@@ -18,6 +19,9 @@
+     var fileWatcher: KuiklyFileWatcher? = null
+         private set
+     
++    var macRenderErrorHandler: MacRenderErrorHandler? = null
++        private set
++    
+     private var isInitialized = false
+     
+     /**
+@@ -39,6 +43,9 @@
+                 start()
+             }
+             
++            // 创建 Mac Render 错误处理器
++            macRenderErrorHandler = MacRenderErrorHandler(project)
++            
+             isInitialized = true
+             println("✅ Kuikly Plugin Service initialized")
+             
+@@ -60,9 +67,11 @@
+         try {
+             fileWatcher?.stop()
+             devServer?.stop()
++            macRenderErrorHandler?.dispose()
+             
+             fileWatcher = null
+             devServer = null
++            macRenderErrorHandler = null
+             isInitialized = false
+             
+             println("✅ Kuikly Plugin Service shutdown")
+Index: mac-render-sdk/README.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mac-render-sdk/README.md b/mac-render-sdk/README.md
+--- a/mac-render-sdk/README.md	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/mac-render-sdk/README.md	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -130,6 +130,12 @@
+         println("❌ 连接错误: ${error.message}")
+     }
+     
++    runner.onCallKotlinMethodError = { throwable ->
++        println("❌ callKotlinMethod 执行异常: ${throwable.message}")
++        throwable.printStackTrace()
++        // 可以在这里进行异常上报、日志记录等操作
++    }
++    
+     runner.onFirstFramePaint = {
+         println("🎨 首帧渲染完成")
+     }
+@@ -181,6 +187,9 @@
+     },
+     onError = { error ->
+         println("❌ 错误: ${error.message}")
++    },
++    onCallKotlinMethodError = { throwable ->
++        println("❌ callKotlinMethod 异常: ${throwable.message}")
+     }
+ )
+ ```
+@@ -247,11 +256,34 @@
+ 
+ ##### reload()
+ 
+-重新加载页面。
++重新加载页面，使用构造函数中指定的 `pageData`、`width`、`height` 和 `config` 参数重新初始化渲染。
++
++**功能说明**:
++- 重新发送渲染请求到 Mac 端
++- 使用创建 `KuiklyMacPreviewRunner` 时指定的页面数据、尺寸和配置
++- 适用于页面数据更新后需要重新渲染的场景
++
++**注意**:
++- 该方法会使用构造函数中的 `pageData`、`width`、`height` 和 `config` 参数
++- 如果需要更新这些参数，应该创建新的 `KuiklyMacPreviewRunner` 实例
++- 确保在连接成功后调用（建议在 `onConnected` 回调中调用）
+ 
+ **示例**:
+ ```kotlin
++// 基本用法：重新加载当前页面
+ runner.reload()
++
++// 在连接成功后重新加载
++runner.onConnected = {
++    println("已连接，重新加载页面")
++    runner.reload()
++}
++
++// 在首帧渲染完成后重新加载（用于测试）
++runner.onFirstFramePaint = {
++    println("首帧渲染完成，重新加载页面")
++    runner.reload()
++}
+ ```
+ 
+ ##### captureScreenshot(): ByteArray?
+@@ -402,6 +434,31 @@
+ }
+ ```
+ 
++##### onCallKotlinMethodError: ((Throwable) -> Unit)?
++
++`callKotlinMethod` 执行异常回调。
++
++当从 Mac 端调用 Kotlin 方法（`callKotlinMethod`）时，如果方法执行过程中抛出异常，会触发此回调。
++
++**注意**：
++- 此回调用于捕获业务代码执行时的异常，不会影响 SDK 的正常运行
++- 建议在此回调中进行异常上报、日志记录等操作
++- 异常类型为 `Throwable`，可以捕获所有类型的异常（包括 `Exception` 和 `Error`）
++
++**示例**:
++```kotlin
++runner.onCallKotlinMethodError = { throwable ->
++    println("callKotlinMethod 执行异常: ${throwable.message}")
++    throwable.printStackTrace()
++    
++    // 可以进行异常上报
++    // reportException(throwable)
++    
++    // 或者记录日志
++    // logger.error("callKotlinMethod 异常", throwable)
++}
++```
++
+ #### 状态属性
+ 
+ ##### isConnected: Boolean
+@@ -832,7 +889,29 @@
+ 
+ **无需任何额外配置**，refresh 功能已自动集成到 TCP 连接中。
+ 
+-## 最佳实践
++### Q7: 如何处理 callKotlinMethod 执行时的异常？
++
++**答案**: SDK 提供了 `onCallKotlinMethodError` 回调来捕获 `callKotlinMethod` 执行时的异常。
++
++**使用方式**:
++```kotlin
++runner.onCallKotlinMethodError = { throwable ->
++    println("callKotlinMethod 执行异常: ${throwable.message}")
++    throwable.printStackTrace()
++    
++    // 可以进行异常上报
++    // reportException(throwable)
++    
++    // 或者记录日志
++    // logger.error("callKotlinMethod 异常", throwable)
++}
++```
++
++**注意事项**:
++- 此回调用于捕获业务代码执行时的异常，不会影响 SDK 的正常运行
++- 异常类型为 `Throwable`，可以捕获所有类型的异常（包括 `Exception` 和 `Error`）
++- 建议在此回调中进行异常上报、日志记录等操作，便于问题排查
++- 即使不设置此回调，SDK 也会在控制台打印异常日志，但不会中断执行流程
+ 
+ ### 1. 资源管理
+ 
+@@ -855,6 +934,13 @@
+     error.printStackTrace()
+     // 处理错误，如重试或通知用户
+ }
++
++// 设置 callKotlinMethod 异常回调
++runner.onCallKotlinMethodError = { throwable ->
++    println("callKotlinMethod 执行异常: ${throwable.message}")
++    throwable.printStackTrace()
++    // 可以进行异常上报、日志记录等操作
++}
+ ```
+ 
+ ### 3. 连接状态检查
+Index: mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacPreviewRunner.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacPreviewRunner.kt b/mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacPreviewRunner.kt
+--- a/mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacPreviewRunner.kt	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacPreviewRunner.kt	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -45,6 +45,7 @@
+     var onError: ((Exception) -> Unit)? = null
+     var onFirstFramePaint: (() -> Unit)? = null
+     var onDisconnected: (() -> Unit)? = null
++    var onCallKotlinMethodError: ((Throwable) -> Unit)? = null
+     
+     // 状态
+     var isConnected: Boolean = false
+@@ -110,6 +111,11 @@
+                 onError?.invoke(error)
+             }
+             
++            sdk?.onCallKotlinMethodErrorCallback = { throwable ->
++                println("[MacPreviewRunner] ❌ callKotlinMethod 异常: ${throwable.message}")
++                onCallKotlinMethodError?.invoke(throwable)
++            }
++            
+             // 检查连接（如果 server 不存在，会自动重试）
+             println("[MacPreviewRunner] 🔗 正在检查连接...")
+             val pingResult = sdk!!.ping()
+@@ -189,11 +195,6 @@
+      */
+     fun reload() {
+         println("[MacPreviewRunner] 🔄 正在重新加载...")
+-        
+-        sdk?.destroy()
+-        
+-        Thread.sleep(100) // 等待销毁完成
+-        
+         sdk?.initRender(pageData, width, height, config)
+     }
+     
+@@ -319,7 +320,8 @@
+     height: Int = 800,
+     config: PreviewConfig? = null,
+     onConnected: (() -> Unit)? = null,
+-    onError: ((Exception) -> Unit)? = null
++    onError: ((Exception) -> Unit)? = null,
++    onCallKotlinMethodError: ((Throwable) -> Unit)? = null
+ ): KuiklyMacPreviewRunner {
+     val runner = KuiklyMacPreviewRunner(
+         pageName = pageName,
+@@ -334,6 +336,7 @@
+     
+     runner.onConnected = onConnected
+     runner.onError = onError
++    runner.onCallKotlinMethodError = onCallKotlinMethodError
+     
+     // start() 现在是异步的，不需要等待
+     runner.start()
+Index: mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacRenderSdk.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacRenderSdk.kt b/mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacRenderSdk.kt
+--- a/mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacRenderSdk.kt	(revision e51288da0f13f8bae66f314729bd40128c05d2cd)
++++ b/mac-render-sdk/src/jvmMain/kotlin/com/tencent/kuikly/mac/sdk/KuiklyMacRenderSdk.kt	(revision 33f985c999e6e714ea29d6d1cbb63d125dd688eb)
+@@ -40,7 +40,7 @@
+     var isRunning: Boolean = true
+     
+     private val gson = Gson()
+-    private val kuiklyCoreEntry = newKuiklyCoreEntryInstance(classLoader)
++    private var kuiklyCoreEntry: IKuiklyCoreEntry? = null
+     private val instanceId: String = instanceIdProducer++.toString()
+     
+     // NativeBridge 用于 Pager 调用 callNative
+@@ -60,6 +60,7 @@
+     var onFirstFramePaintCallback: Runnable? = null
+     var onConnectionErrorCallback: ((Exception) -> Unit)? = null
+     var onConnectedCallback: (() -> Unit)? = null
++    var onCallKotlinMethodErrorCallback: ((Throwable) -> Unit)? = null
+     
+     // 记录是否已经尝试过初始化渲染（用于连接成功后自动重试）
+     @Volatile
+@@ -68,8 +69,7 @@
+     private var pendingInitRenderConfig: PreviewConfig? = null
+     
+     init {
+-        kuiklyCoreEntry.delegate = this
+-        kuiklyCoreEntry.triggerRegisterPages()
++
+         
+         // 初始化 TCP 传输层（建立长连接，如果 server 不存在会自动重试）
+         transportImpl.init(instanceId)
+@@ -80,8 +80,14 @@
+                 // 在单线程执行器中按顺序处理
+                 kotlinMethodExecutor.submit {
+                     try {
+-//                        println("[Mac SDK][$pageName] 📨 收到 callKotlinMethod 通知: requestId=$requestId, sequence=$sequence, methodId=$methodId")
+-                        kuiklyCoreEntry.callKotlinMethod(
++
++                        if (methodId == 1) {
++                            kuiklyCoreEntry = reInitCoreEntry()
++                        }
++
++                        var pageId = args.getOrNull(0)
++                        println("[Mac SDK][$pageName] 📨 收到 callKotlinMethod 通知: requestId=$requestId, sequence=$sequence, methodId=$methodId pageId=${pageId}")
++                        kuiklyCoreEntry!!.callKotlinMethod(
+                             methodId,
+                             args.getOrNull(0),
+                             args.getOrNull(1),
+@@ -93,6 +99,8 @@
+                     } catch (t: Throwable) {
+                         println("[Mac SDK][$pageName] ❌ callKotlinMethod 异常: ${t.message}")
+                         t.printStackTrace()
++                        // 通知 SDK 异常回调
++                        onCallKotlinMethodErrorCallback?.invoke(t)
+                     }
+                 }
+             }
+@@ -192,6 +200,7 @@
+         height: Int = 800,
+         config: PreviewConfig? = null
+     ): Boolean {
++        kuiklyCoreEntry = reInitCoreEntry()
+         println("[Mac SDK] 📱 初始化渲染: pageName=$pageName, size=${width}x${height}")
+         
+         // 记录参数，用于连接成功后重试
+@@ -237,6 +246,13 @@
+             false
+         }
+     }
++
++    fun reInitCoreEntry(): IKuiklyCoreEntry {
++        var kuiklyCoreEntry = newKuiklyCoreEntryInstance(classLoader)
++        kuiklyCoreEntry.delegate = this
++        kuiklyCoreEntry.triggerRegisterPages()
++        return kuiklyCoreEntry
++    }
+     
+     /**
+      * 处理来自外部的 callKotlinMethod 调用
+@@ -254,10 +270,12 @@
+     ) {
+         kotlinMethodExecutor.submit {
+             try {
+-                kuiklyCoreEntry.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
++                kuiklyCoreEntry!!.callKotlinMethod(methodId, arg0, arg1, arg2, arg3, arg4, arg5)
+             } catch (t: Throwable) {
+                 println("[Mac SDK][$pageName] ❌ callKotlinMethod 异常: ${t.message}")
+                 t.printStackTrace()
++                // 通知 SDK 异常回调
++                onCallKotlinMethodErrorCallback?.invoke(t)
+             }
+         }
+     }
+@@ -300,7 +318,6 @@
+ 
+         // 通过 TCP 长连接发送请求并直接获取结果（同步请求）
+         try {
+-//            println("[Mac SDK][$pageName] callNative methodId=$methodId requestId=${requestId} 发送请求")
+             val response = transportImpl.post("/callNative", requestBody, Transport.RequestType.CALL_NATIVE)
+             
+             if (response != null) {

@@ -81,6 +81,38 @@
         NSAssert([_coreEntryInstance respondsToSelector:@selector(callKotlinMethodMethodId:arg0:arg1:arg2:arg3:arg4:arg5:)], @"entry未实现该方法，请check下entry文件");
         _coreEntryInstance.hrCoreDelegate = (id<KRKuiklyKotlinCoreEntryDelegate>)self;
         _contextParam = contextParam;
+        
+        // 🎯 关键：如果 contextParam 中有 callKotlinCallback，设置到 coreEntryInstance
+        if (contextParam.callKotlinCallback) {
+            SEL setCallbackSelector = @selector(setCallKotlinCallback:);
+            if ([_coreEntryInstance respondsToSelector:setCallbackSelector]) {
+                void (^callback)(int32_t, NSArray *) = contextParam.callKotlinCallback;
+                // 使用 performSelector 安全调用，避免类型检查问题
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                [_coreEntryInstance performSelector:setCallbackSelector withObject:callback];
+                #pragma clang diagnostic pop
+                NSLog(@"[KuiklyContextHandler] ✅ 已通过 contextParam 设置 callKotlinCallback 到 coreEntryInstance");
+            } else {
+                NSLog(@"[KuiklyContextHandler] ⚠️ coreEntryInstance 不响应 setCallKotlinCallback: selector");
+            }
+        } else {
+            NSLog(@"[KuiklyContextHandler] ⚠️ contextParam.callKotlinCallback 为 nil");
+        }
+        
+        // 🎯 设置 instanceId（如果存在）
+        if (contextParam.instanceId) {
+            SEL setInstanceIdSelector = @selector(setInstanceId:);
+            if ([_coreEntryInstance respondsToSelector:setInstanceIdSelector]) {
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                [_coreEntryInstance performSelector:setInstanceIdSelector withObject:contextParam.instanceId];
+                #pragma clang diagnostic pop
+                NSLog(@"[KuiklyContextHandler] ✅ 已设置 instanceId: %@", contextParam.instanceId);
+            } else {
+                NSLog(@"[KuiklyContextHandler] ⚠️ coreEntryInstance 不响应 setInstanceId: selector");
+            }
+        }
     }
     return self;
 }

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuikly Desktop - Web Render</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            /* 隐藏滚动条 */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 和 Edge */
+        }
+        
+        /* 隐藏 WebKit 浏览器的滚动条 */
+        *::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        #kuikly-render-container {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            box-sizing: border-box;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            flex-direction: column;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="kuikly-render-container">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <div>正在加载 Kuikly Web 渲染层...</div>
+        </div>
+    </div>
+    
+
+    <script>
+        console.log('[Kuikly Desktop] 🚀 开始加载 Web 渲染层...');
+        
+        function updateStatus(message) {
+            console.log('[Kuikly Desktop] ' + message);
+        }
+        
+        function checkDependencies() {
+            updateStatus('检查依赖...');
+            
+            console.log('[Debug] 检查函数可用性:');
+            console.log('  - window.initDesktopRenderLayer:', typeof window.initDesktopRenderLayer);
+            console.log('  - window.createRenderViewDelegator:', typeof window.createRenderViewDelegator);
+            console.log('  - window.DesktopRenderLayer:', typeof window.DesktopRenderLayer);
+            console.log('  - window.callKotlinMethod:', typeof window.callKotlinMethod);
+            
+            if (typeof window.createRenderViewDelegator === 'function') {
+                updateStatus('✅ Web 渲染层已加载');
+                return true;
+            } else {
+                updateStatus('❌ Web 渲染层未加载');
+                return false;
+            }
+        }
+        
+        function parseUrlParams(url) {
+            const params = {};
+            if (url.includes('?')) {
+                const query = url.substring(url.indexOf('?') + 1);
+                if (query) {
+                    query.split('&').forEach(param => {
+                        const [name, value] = param.split('=');
+                        if (name && value) {
+                            params[name] = decodeURIComponent(value);
+                        }
+                    });
+                }
+            }
+            return params;
+        }
+        
+        function initRenderLayer() {
+            updateStatus('初始化渲染层...');
+            
+            try {
+                console.log('[Debug] 开始创建渲染视图委托器...');
+                
+                const renderView = window.createRenderViewDelegator();
+                if (!renderView) {
+                    throw new Error('无法创建渲染视图委托器');
+                }
+                
+                window.renderView = renderView;
+                
+                console.log('[Debug] 渲染视图委托器创建成功:', renderView);
+                updateStatus('✅ 渲染视图委托器创建成功');
+                
+                const container = document.getElementById('kuikly-render-container');
+                if (!container) {
+                    throw new Error('找不到渲染容器');
+                }
+                
+                container.innerHTML = '';
+                container.id = 'kuikly-render-container';
+                
+                const urlParams = parseUrlParams(window.location.href);
+                const pageName = urlParams['page_name'] || urlParams['pageName'] || 'router';
+                
+                console.log('[Debug] URL 参数:', urlParams);
+                console.log('[Debug] 页面名称:', pageName);
+                
+                const pageData = {
+                    platform: 'desktop',
+                    deviceWidth: window.innerWidth,
+                    deviceHeight: window.innerHeight,
+                    statusBarHeight: 0,
+                    osVersion: 'MacOS',
+                    activityWidth: 0,
+                    activityHeight: 0,
+                    safeAreaInsets: '0 0 0 0',
+                    appVersion: '1.0.0',
+                    param: urlParams,
+                    density: 1
+                };
+                
+                updateStatus(`开始渲染 ${pageName} 页面...`);
+                
+                if (typeof renderView.init === 'function') {
+                    renderView.init(
+                        'kuikly-render-container',
+                        pageName,
+                        pageData,
+                        [window.innerWidth, window.innerHeight]
+                    );
+                    
+                    updateStatus(`✅ ${pageName} 页面渲染初始化完成`);
+                    
+                    setTimeout(() => {
+                        if (typeof renderView.resume === 'function') {
+                            renderView.resume();
+                            updateStatus('✅ 页面显示事件已触发');
+                        } else {
+                            updateStatus('⚠️ resume 方法不可用');
+                        }
+                    }, 100);
+                    
+                } else {
+                    throw new Error('renderView.init 方法不存在');
+                }
+                
+            } catch (error) {
+                updateStatus('❌ 初始化失败: ' + error.message);
+                console.error('[Kuikly Desktop] 初始化失败:', error);
+            }
+        }
+        
+        window.addEventListener('load', function() {
+            updateStatus('页面加载完成，检查依赖...');
+            
+            const checkInterval = setInterval(() => {
+                if (checkDependencies()) {
+                    clearInterval(checkInterval);
+                    
+                    setTimeout(() => {
+                        initRenderLayer();
+                    }, 10);
+                }
+            }, 10);
+            
+            setTimeout(() => {
+                if (!checkDependencies()) {
+                    clearInterval(checkInterval);
+                    updateStatus('❌ 加载超时，请检查 desktop-render-layer');
+                }
+            }, 10000);
+        });
+        
+        console.log('[Kuikly Desktop] ⏳ 等待页面加载完成...');
+    </script>
+    
+    <!-- desktopRenderLayer.js 将通过 DesktopRenderViewSdk 动态注入 -->
+    <script>
+        console.log('[Kuikly Desktop] 检查可用的函数...');
+        console.log('initDesktopRenderLayer:', typeof initDesktopRenderLayer);
+        console.log('createRenderViewDelegator:', typeof createRenderViewDelegator);
+        console.log('window.DesktopRenderLayer:', typeof window.DesktopRenderLayer);
+        console.log('window.createRenderViewDelegator:', typeof window.createRenderViewDelegator);
+        
+        if (typeof initDesktopRenderLayer === 'function') {
+            console.log('[Kuikly Desktop] 手动调用初始化函数...');
+            initDesktopRenderLayer();
+        } else {
+            console.warn('[Kuikly Desktop] initDesktopRenderLayer 函数未找到');
+        }
+        
+        setTimeout(() => {
+            console.log('[Kuikly Desktop] 初始化后检查...');
+            console.log('window.createRenderViewDelegator:', typeof window.createRenderViewDelegator);
+            console.log('window.DesktopRenderLayer:', typeof window.DesktopRenderLayer);
+        }, 1000);
+    </script>
+    <script>
+        console.log('[Kuikly Desktop] 🔗 注入 JS Bridge...');
+        // 提供 callKotlinMethod 函数，供 JS 渲染层调用 JVM 逻辑层
+        window.callKotlinMethod = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
+            // 通过 cefQuery 调用 JVM 逻辑层
+            var result = null;
+            var request = JSON.stringify({
+                type: 'callKotlinMethod',
+                methodId: methodId,
+                args: [arg0, arg1, arg2, arg3, arg4, arg5]
+            });
+
+            if (window.cefQuery) {
+                window.cefQuery({
+                    request: request,
+                    onSuccess: function(response) {
+                        result = response;
+                    },
+                    onFailure: function(error_code, error_message) {
+                        console.error('[Kuikly Desktop] ❌ callKotlinMethod 调用失败:', error_message);
+                        result = null;
+                    }
+                });
+            } else {
+                console.warn('[Kuikly Desktop] ⚠️ cefQuery 未找到');
+            }
+
+            return result;
+        };
+
+        // 存储所有页面的 callNative 回调
+        window.callNativeRegistry = window.callNativeRegistry || {};
+
+        // 提供 callNative 函数，供 core 的 jsMain 使用
+        window.callNative = function(methodId, arg0, arg1, arg2, arg3, arg4, arg5) {
+            var pageId = arg0;
+
+            var callback = window.callNativeRegistry[pageId];
+            try {
+                var result = callback(methodId, arg0, arg1, arg2, arg3, arg4, arg5);
+                // console.log('[Kuikly Desktop] ✅ callNative 回调执行成功，结果:', result);
+
+                if (result === null || result === undefined) {
+                    // console.log('[Kuikly Desktop] 🔧 回调返回 null/undefined，转换为空字符串');
+                    return "";
+                } else if (typeof result === 'string') {
+                    return result;
+                } else {
+                    // console.log('[Kuikly Desktop] 🔧 回调返回非字符串类型，转换为字符串:', result);
+                    return String(result);
+                }
+            } catch (e) {
+                console.error('[Kuikly Desktop] ❌ callNative 回调执行失败:', e);
+                console.error('[Kuikly Desktop] ❌ 错误堆栈:', e.stack);
+                return "";
+            }
+        };
+
+        // 注册 registerCallNative 函数，供 core-render-web 的 KuiklyRenderContextHandler 注册回调
+        window.com = window.com || {};
+        window.com.tencent = window.com.tencent || {};
+        window.com.tencent.kuikly = window.com.tencent.kuikly || {};
+        window.com.tencent.kuikly.core = window.com.tencent.kuikly.core || {};
+        window.com.tencent.kuikly.core.nvi = window.com.tencent.kuikly.core.nvi || {};
+
+        window.com.tencent.kuikly.core.nvi.registerCallNative = function(pagerId, callback) {
+            console.log('[Kuikly Desktop] 📝 注册 callNative 回调: pagerId=' + pagerId);
+            console.log('[Kuikly Desktop] 📝 回调函数类型:', typeof callback);
+
+            window.callNativeRegistry[pagerId] = callback;
+        };
+
+        console.log('[Kuikly Desktop] ✅ JS Bridge 注入完成');
+        console.log('[Kuikly Desktop] ✅ callNative 函数已导出到 window');
+        console.log('[Kuikly Desktop] ✅ registerCallNative 函数已导出到 window.com.tencent.kuikly.core.nvi');
+    </script>
+
+    <script>
+        window.cefQuerySendResult = function(requestId, result) {
+            // 确保返回值是字符串类型
+            var finalResult = "";
+            if (result === null || result === undefined) {
+                finalResult = "";
+            } else if (typeof result === 'string') {
+                finalResult = result;
+            } else {
+                finalResult = String(result);
+            }
+
+            // 通过 cefQuery 返回结果
+            if (window.cefQuery) {
+                window.cefQuery({
+                    request: JSON.stringify({
+                        type: 'callNativeResult',
+                        requestId: requestId,
+                        result: finalResult
+                    }),
+                    onSuccess: function(response) {
+                        //console.log('[Kuikly Desktop] ✅ callNative 结果已返回: requestId=$requestId, result=' + finalResult);
+                    },
+                    onFailure: function(error_code, error_message) {
+                        console.error('[Kuikly Desktop] ❌ callNative 结果返回失败:', error_message);
+                    }
+                });
+            } else {
+                console.warn('[Kuikly Desktop] ⚠️ cefQuery 未找到，无法返回结果');
+            }
+        }
+
+        // 尽早监听（<head> 里就放上）
+        window.addEventListener('onFirstFramePaint', function (e) {
+             window.cefQuery({
+                    request: JSON.stringify({
+                        type: 'onFirstFramePaint',
+                    }),
+                    onSuccess: function(response) {
+                    },
+                    onFailure: function(error_code, error_message) {
+                    }
+                });
+        }, false);
+
+        window.addEventListener('unload', () => {
+            console.log("unload");
+            window.renderView.detach();
+        });
+
+        window.stopKuikly = function() {
+            window.renderView.pause();
+        }
+
+        window.scaleIt = function(ratio){
+          const el = document.getElementById('kuikly-render-container');
+          el.style.transform = 'scale(' + ratio + ')';
+          el.style.transformOrigin = 'top left';   // 固定左上角为原点
+        }
+    </script>
+</body>
+</html>

@@ -42,8 +42,8 @@ import com.tencent.kuikly.compose.foundation.lazy.items
 import com.tencent.kuikly.compose.material3.Button
 import com.tencent.kuikly.compose.material3.Card
 import com.tencent.kuikly.compose.material3.Tab
-import com.tencent.kuikly.compose.material3.Text
 import com.tencent.kuikly.compose.material3.TabRow
+import com.tencent.kuikly.compose.material3.Text
 import com.tencent.kuikly.compose.setContent
 import com.tencent.kuikly.compose.ui.Alignment
 import com.tencent.kuikly.compose.ui.Modifier
@@ -61,6 +61,7 @@ import com.tencent.kuikly.compose.ui.semantics.stateDescription
 import com.tencent.kuikly.compose.ui.unit.LayoutDirection
 import com.tencent.kuikly.compose.ui.unit.dp
 import com.tencent.kuikly.core.annotations.Page
+import com.tencent.kuikly.ui.tooling.KPreview
 import kotlinx.coroutines.delay
 
 /**
@@ -80,6 +81,7 @@ internal class AccessibilityDemoPager : ComposeContainer() {
     }
 }
 
+@KPreview(widthDp = 600, heightDp = 900, name = "sdfdfdf", density = 3f)
 @Composable
 fun AccessibilityDemo() {
     LazyColumn(
@@ -88,49 +90,49 @@ fun AccessibilityDemo() {
     ) {
         item {
             Text(
-                "无障碍功能演示",
+                "22222",
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
         // 1. 基础语义标签示例
         item {
-            DemoCard(title = "基础语义标签") {
+            DemoCard(title = "122222") {
                 BasicSemanticsDemo()
             }
         }
 
         // 2. 无障碍描述示例
         item {
-            DemoCard(title = "无障碍描述") {
+            DemoCard(title = "33") {
                 AccessibilityDescriptionDemo()
             }
         }
 
         // 5. 无障碍组示例
         item {
-            DemoCard(title = "无障碍组 进来首个聚焦位置") {
+            DemoCard(title = "焦135") {
                 AccessibilityGroupDemo()
             }
         }
 
         // 3. 无障碍动作示例
         item {
-            DemoCard(title = "无障碍动作") {
+            DemoCard(title = "无2") {
                 AccessibilityActionDemo()
             }
         }
 
         // 4. 无障碍状态示例
         item {
-            DemoCard(title = "无障碍状态") {
+            DemoCard(title = "无") {
                 AccessibilityStateDemo()
             }
         }
 
         // 6. 无障碍标题示例
         item {
-            DemoCard(title = "无障碍标题") {
+            DemoCard(title = "无障碍标题33") {
                 AccessibilityHeadingDemo()
             }
         }
@@ -159,7 +161,7 @@ fun AccessibilityDemo() {
 }
 
 @Composable
-private fun BasicSemanticsDemo() {
+fun BasicSemanticsDemo() {
     Column {
         // 使用 semantics 修饰符添加语义标签
         // 声明clickable时，mergeDescendants = true
@@ -181,15 +183,16 @@ private fun BasicSemanticsDemo() {
     }
 }
 
+@KPreview(widthDp = 800, heightDp = 1800, density = 3f, backgroundColor = 0xFF913636)
 @Composable
-private fun AccessibilityDescriptionDemo() {
+fun AccessibilityDescriptionDemo() {
     Column {
         // 为图片添加无障碍描述
         Box(
             modifier = Modifier
                 .size(100.dp)
                 .semantics {
-                    contentDescription = "这是一张示例图片，展示了一个红色的圆形"
+                    contentDescription = "这是一示例图片，展示了一个红色的圆形"
                 }
 //                .background(MaterialTheme.colors.primary)
         )
@@ -198,20 +201,21 @@ private fun AccessibilityDescriptionDemo() {
 
         // 为文本添加无障碍描述
         Text(
-            "重要通知",
+            "重要2112",
             modifier = Modifier.semantics {
-                contentDescription = "这是一条重要通知，请仔细阅读"
+                contentDescription = "这是一条重要通知，请仔"
             }
         )
     }
 }
 
+//@KPreview(widthDp = 600, heightDp = 480)
 @Composable
 private fun AccessibilityActionDemo() {
     var count by remember { mutableStateOf(0) }
 
     Column {
-        Text("当前计数: $count")
+        Text("当前计213232: $count")
 
         // 添加无障碍动作
         Button(
@@ -227,7 +231,7 @@ private fun AccessibilityActionDemo() {
                 )
             }
         ) {
-            Text("增加")
+            Text("增加11")
         }
     }
 }
@@ -285,7 +289,7 @@ private fun AccessibilityGroupDemo() {
                     contentDescription = "你好 我的名字叫张三"
                 })
                 Text("年龄: 25")
-                Text("职业: 工程师")
+                Text("职业: 工程师232")
             }
         }
     }

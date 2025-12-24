@@ -9,6 +9,16 @@ plugins {
 }
 
 kotlin {
+    // JVM target for Desktop
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+                freeCompilerArgs += "-Xjvm-default=all"
+            }
+        }
+    }
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -76,7 +86,7 @@ kotlin {
             api("androidx.annotation:annotation:1.9.1")
             api("org.jetbrains.kotlinx:atomicfu:0.25.0")
             api("org.jetbrains.compose.collection-internal:collection:1.7.3")
-            implementation("com.tencent.kuiklyx-open:coroutines:1.5.0-2.0.21") {
+            implementation("com.tencent.kuiklyx-open:coroutines:1.5.1-2.0.21") {
                 exclude(group = "com.tencent.kuikly-open", module = "core")
                 exclude(group = "com.tencent.kuikly-open", module = "core-annotations")
             }

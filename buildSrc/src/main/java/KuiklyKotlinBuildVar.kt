@@ -80,6 +80,7 @@ object Output {
 
 object MavenConfig {
     const val GROUP = "com.tencent.kuikly-open"
+    const val GROUP_NO_OPEN = "com.tencent.kuikly"
     const val GROUP_WEB = "com.tencent.kuikly-open.core-render-web"
     const val REPO_URL = ""
     const val SNAPSHOT_REPO_URL = "https://central.sonatype.com/repository/maven-snapshots/"
@@ -143,8 +144,8 @@ object Version {
     const val MATERIAL_VERSION = "1.4.0"
     const val SNAPSHOT_SUFFIX = "-SNAPSHOT"
 
-    private const val DEFAULT_KUIKLY_VERSION = "2.0.0"
-    private const val DEFAULT_KOTLIN_VERSION = "2.1.21"
+    private const val DEFAULT_KUIKLY_VERSION = "2.0.1"
+    private const val DEFAULT_KOTLIN_VERSION = "2.0.21"
     private const val DEFAULT_AGP_VERSION = "7.4.2"
 
     private const val KEY_KUIKLY_VERSION = "KUIKLY_VERSION"
