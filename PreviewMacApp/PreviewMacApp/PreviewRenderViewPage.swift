@@ -17,8 +17,9 @@ import Foundation
 import SwiftUI
 
 /// SwiftUI 包装器，用于在 SwiftUI 视图中嵌入 PreviewRenderViewController
-struct PreviewRenderViewPage: NSViewControllerRepresentable {
-    typealias NSViewControllerType = PreviewRenderViewController
+/// 🎯 优化：使用 NSViewRepresentable + Coordinator 缓存 NSView，避免 group 变化时重建
+struct PreviewRenderViewPage: NSViewRepresentable {
+    typealias NSViewType = NSView
     
     var instanceId: String
     var pageName: String
@@ -36,66 +37,114 @@ struct PreviewRenderViewPage: NSViewControllerRepresentable {
         self.renderCoreManager = renderCoreManager
     }
     
-    func makeNSViewController(context: Context) -> PreviewRenderViewController {
-        print("[PreviewRenderViewPage] 🔨 makeNSViewController: instanceId=\(instanceId), pageName=\(pageName), size=\(width)x\(height)")
-        
-        // 优先从 RenderCoreManager 获取已存在的 ViewController
-        if let existingVC = renderCoreManager?.getViewController(forInstanceId: instanceId) {
-            print("[PreviewRenderViewPage] ✅ 使用已存在的 ViewController (instanceId=\(instanceId))")
-            return existingVC
-        }
-        
-        // 如果不存在，创建一个新的（这种情况不应该发生，因为 HTTP Server 已经创建了）
-        print("[PreviewRenderViewPage] ⚠️ ViewController 不存在，创建新的 (instanceId=\(instanceId))")
-        let viewController = PreviewRenderViewController(pageName: pageName, pageData: data, width: width, height: height)
-        viewController.setInstanceId(instanceId)
-        return viewController
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
     }
     
-    func updateNSViewController(_ nsViewController: PreviewRenderViewController, context: Context) {
-        print("[PreviewRenderViewPage] 🔄 updateNSViewController: instanceId=\(instanceId), pageName=\(pageName), size=\(width)x\(height)")
+    func makeNSView(context: Context) -> NSView {
+        print("[PreviewRenderViewPage] 🔨 makeNSView: instanceId=\(instanceId), pageName=\(pageName), size=\(width)x\(height)")
+        
+        // 🎯 关键：创建一个容器视图，用于持有 ViewController 的 view
+        let containerView = NSView()
+        containerView.wantsLayer = true
+        
+        // 获取或创建 ViewController
+        let viewController: PreviewRenderViewController
+        if let existingVC = renderCoreManager?.getViewController(forInstanceId: instanceId) {
+            print("[PreviewRenderViewPage] ✅ 复用已存在的 ViewController (instanceId=\(instanceId))")
+            viewController = existingVC
+        } else {
+            print("[PreviewRenderViewPage] ⚠️ ViewController 不存在，创建新的 (instanceId=\(instanceId))")
+            viewController = PreviewRenderViewController(pageName: pageName, pageData: data, width: width, height: height)
+            viewController.setInstanceId(instanceId)
+        }
+        
+        // 🎯 关键：将 ViewController 的 view 添加到容器中
+        // 如果 view 已经有父视图，先移除
+        viewController.view.removeFromSuperview()
+        containerView.addSubview(viewController.view)
+        
+        // 设置约束，让 ViewController 的 view 填满容器
+        viewController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            viewController.view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            viewController.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            viewController.view.topAnchor.constraint(equalTo: containerView.topAnchor),
+            viewController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+        
+        // 保存 ViewController 引用到 Coordinator
+        context.coordinator.viewController = viewController
+        context.coordinator.instanceId = instanceId
+        
+        return containerView
+    }
+    
+    func updateNSView(_ containerView: NSView, context: Context) {
+        print("[PreviewRenderViewPage] 🔄 updateNSView: instanceId=\(instanceId), pageName=\(pageName), size=\(width)x\(height)")
+        
+        // 🎯 检查 instanceId 是否变化（理论上不应该变化）
+        if context.coordinator.instanceId != instanceId {
+            print("[PreviewRenderViewPage] ⚠️ instanceId 变化: \(context.coordinator.instanceId ?? "nil") -> \(instanceId)")
+            
+            // 获取新的 ViewController
+            if let newVC = renderCoreManager?.getViewController(forInstanceId: instanceId) {
+                // 移除旧的 view
+                context.coordinator.viewController?.view.removeFromSuperview()
+                
+                // 添加新的 view
+                newVC.view.removeFromSuperview()
+                containerView.addSubview(newVC.view)
+                
+                newVC.view.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    newVC.view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                    newVC.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                    newVC.view.topAnchor.constraint(equalTo: containerView.topAnchor),
+                    newVC.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+                ])
+                
+                context.coordinator.viewController = newVC
+                context.coordinator.instanceId = instanceId
+            }
+        }
+        
+        guard let viewController = context.coordinator.viewController else {
+            print("[PreviewRenderViewPage] ⚠️ ViewController 为空")
+            return
+        }
         
         // 更新页面数据
-        nsViewController.update(withPageName: pageName, pageData: data)
+        viewController.update(withPageName: pageName, pageData: data)
         
-        // 检查尺寸是否变化，如果变化则更新视图大小
-        // ⚠️ 重要：从 RenderRequest 的 config 中获取 density，而不是从 pageData
-        // 因为 config 是经过 mergeConfig 处理的，包含了正确的 density 信息
-        
-        // 从 renderRequests 中获取 request，从 config 中获取 density
+        // 检查尺寸是否变化
         let density: CGFloat = {
             if let request = PreviewHttpServer.shared.renderRequests[instanceId],
                let configDensity = request.config?.density {
-                print("[PreviewRenderViewPage] 📐 从 config 获取 density: \(configDensity)")
                 return CGFloat(configDensity)
             }
-            // 如果 config 中没有 density，从 pageData 中获取（兼容旧逻辑）
             if let pageDataDensity = data["_preview_density"] as? NSNumber {
-                print("[PreviewRenderViewPage] ⚠️ config 中没有 density，从 pageData 获取: \(pageDataDensity)")
                 return CGFloat(pageDataDensity.floatValue)
             }
-            print("[PreviewRenderViewPage] ⚠️ 未找到 density，使用默认值 2.0")
-            return 2.0 // 默认 density
+            return 2.0
         }()
         
-        // 判断 width/height 是像素值还是点值
-        // 如果 width/height 很大（>1000），可能是像素值，需要转换
-        // 否则，可能是点值（来自 updatePreviewConfig），直接使用
-        let widthInPoints: CGFloat
-        let heightInPoints: CGFloat
+        let widthInPoints = width / density
+        let heightInPoints = height / density
         
-        
-        widthInPoints = width / density
-        heightInPoints = height / density
-        print("[PreviewRenderViewPage] 📐 检测到像素值，转换为点值: \(width)x\(height) / \(density) = \(widthInPoints)x\(heightInPoints)")
-    
-        let currentWidth = nsViewController.view.frame.width
-        let currentHeight = nsViewController.view.frame.height
+        let currentWidth = viewController.view.frame.width
+        let currentHeight = viewController.view.frame.height
         
         if abs(currentWidth - widthInPoints) > 0.1 || abs(currentHeight - heightInPoints) > 0.1 {
-            print("[PreviewRenderViewPage] 📐 检测到尺寸变化: \(currentWidth)x\(currentHeight) -> \(widthInPoints)x\(heightInPoints) (像素: \(width)x\(height))")
-            nsViewController.updateSize(widthInPoints, height: heightInPoints)
+            print("[PreviewRenderViewPage] 📐 检测到尺寸变化: \(currentWidth)x\(currentHeight) -> \(widthInPoints)x\(heightInPoints)")
+            viewController.updateSize(widthInPoints, height: heightInPoints)
         }
+    }
+    
+    /// Coordinator 用于持有 ViewController 引用
+    class Coordinator {
+        var viewController: PreviewRenderViewController?
+        var instanceId: String?
     }
 }
 

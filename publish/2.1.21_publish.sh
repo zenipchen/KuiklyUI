@@ -24,6 +24,7 @@ if [ "$MODULE" = "all" ]; then
   KUIKLY_AGP_VERSION="7.4.2" KUIKLY_KOTLIN_VERSION="2.1.21" ./gradlew -c settings.2.1.21.gradle.kts :core-ksp:$PUBLISH_TASK --stacktrace
   KUIKLY_AGP_VERSION="7.4.2" KUIKLY_KOTLIN_VERSION="2.1.21" ./gradlew -c settings.2.1.21.gradle.kts :core-render-android:$PUBLISH_TASK --stacktrace
   KUIKLY_AGP_VERSION="7.4.2" KUIKLY_KOTLIN_VERSION="2.1.21" ./gradlew -c settings.2.1.21.gradle.kts :compose:$PUBLISH_TASK --stacktrace
+  KUIKLY_AGP_VERSION="7.4.2" KUIKLY_KOTLIN_VERSION="2.1.21" ./gradlew -c settings.2.1.21.gradle.kts :ui-tooling:publishToMavenLocal --stacktrace
   KUIKLY_AGP_VERSION="7.4.2" KUIKLY_KOTLIN_VERSION="2.1.21" ./gradlew -c settings.2.1.21.gradle.kts :core-render-web:base:$PUBLISH_TASK --stacktrace
   KUIKLY_AGP_VERSION="7.4.2" KUIKLY_KOTLIN_VERSION="2.1.21" ./gradlew -c settings.2.1.21.gradle.kts :core-render-web:h5:$PUBLISH_TASK --stacktrace
   KUIKLY_AGP_VERSION="7.4.2" KUIKLY_KOTLIN_VERSION="2.1.21" ./gradlew -c settings.2.1.21.gradle.kts :core-render-web:miniapp:$PUBLISH_TASK --stacktrace

@@ -175,7 +175,7 @@ struct StatusBar: View {
                 .fill(isRunning ? Color.green : Color.red)
                 .frame(width: 8, height: 8)
             
-            Text("Kuikly Preview Server")
+            Text("Tcp ")
                 .font(.system(size: 12, weight: .medium))
 
             Text("Port: \(serverPort)")
@@ -320,8 +320,18 @@ struct WelcomeView: View {
     }
 }
 
+/// 分组数据结构 - 用于 ForEach 的稳定 ID
+private struct GroupData: Identifiable {
+    let group: String?
+    let instanceIds: [String]
+    
+    // 🎯 使用 group 名称作为稳定 ID，nil 用特殊字符串表示
+    var id: String { stableId }
+    var stableId: String { group ?? "__ungrouped__" }
+}
+
 /// 按 group 分组实例
-private func groupInstancesByGroup(_ renderRequests: [String: RenderRequest]) -> [(group: String?, instanceIds: [String])] {
+private func groupInstancesByGroup(_ renderRequests: [String: RenderRequest]) -> [GroupData] {
     var grouped: [String?: [String]] = [:]
     
     for (instanceId, request) in renderRequests {
@@ -346,11 +356,12 @@ private func groupInstancesByGroup(_ renderRequests: [String: RenderRequest]) ->
     // 每个 group 内的 instanceId 也排序
     return sortedGroups.map { group in
         let instanceIds = grouped[group]?.sorted() ?? []
-        return (group: group, instanceIds: instanceIds)
+        return GroupData(group: group, instanceIds: instanceIds)
     }
 }
 
 /// 多实例渲染视图
+/// 🎯 优化：分组模式下每个 group 独立 Flow 布局，同时通过稳定的 instanceId 避免重建
 struct MultiInstanceRenderView: View {
     let renderRequests: [String: RenderRequest]
     let renderCoreManager: PreviewRenderCoreManager?
@@ -362,21 +373,40 @@ struct MultiInstanceRenderView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 if isGrouped {
-                    // 按 group 分组显示
+                    // 🎯 分组模式：每个 group 独立 Flow 布局
                     let groupedInstances = groupInstancesByGroup(renderRequests)
                     
-                    ForEach(Array(groupedInstances.enumerated()), id: \.offset) { index, groupData in
-                        // 每个 group 使用独立的网格布局
-                        GroupGridView(
-                            group: groupData.group,
-                            instanceIds: groupData.instanceIds,
-                            renderRequests: renderRequests,
-                            renderCoreManager: renderCoreManager,
-                            globalScale: globalScale
-                        )
+                    ForEach(groupedInstances, id: \.stableId) { groupData in
+                        VStack(alignment: .leading, spacing: 8) {
+                            // 显示 group 名称
+                            if let groupName = groupData.group, !groupName.isEmpty {
+                                Text(groupName)
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.primary)
+                                    .padding(.horizontal, 4)
+                            }
+                            
+                            // 该 group 内的实例使用 Flow 布局
+                            let flowItems = groupData.instanceIds.compactMap { instanceId -> FlowItem? in
+                                guard let request = renderRequests[instanceId] else { return nil }
+                                return FlowItem(id: instanceId, request: request)
+                            }
+                            
+                            FlowLayout(flowItems, spacing: 16, scale: globalScale) { item in
+                                // 🎯 关键：使用 .id() 修饰符，让 SwiftUI 能跨父视图追踪同一实例
+                                InstanceRenderCard(
+                                    instanceId: item.id,
+                                    request: item.request,
+                                    renderCoreManager: renderCoreManager,
+                                    scale: globalScale
+                                )
+                                .id("card_\(item.id)")  // 全局唯一 ID
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
                 } else {
-                    // 不分组，所有实例平铺显示
+                    // 🎯 非分组模式：所有实例平铺 Flow 布局
                     let allInstanceIds = renderRequests.keys.sorted()
                     let flowItems = allInstanceIds.compactMap { instanceId -> FlowItem? in
                         guard let request = renderRequests[instanceId] else { return nil }
@@ -390,6 +420,7 @@ struct MultiInstanceRenderView: View {
                             renderCoreManager: renderCoreManager,
                             scale: globalScale
                         )
+                        .id("card_\(item.id)")  // 全局唯一 ID
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -435,6 +466,7 @@ struct FlowLayout<Data: RandomAccessCollection, Content: View>: View where Data.
     
     @State private var itemSizes: [Data.Element.ID: CGSize] = [:]
     @State private var availableWidth: CGFloat = 0
+    @State private var totalHeight: CGFloat = 0  // 🎯 新增：存储计算出的总高度
     @State private var dataVersion: Int = 0  // 数据版本号，用于检测数据变化
     
     init(_ data: Data, spacing: CGFloat = 8, scale: CGFloat = 1.0, @ViewBuilder content: @escaping (Data.Element) -> Content) {
@@ -445,8 +477,11 @@ struct FlowLayout<Data: RandomAccessCollection, Content: View>: View where Data.
     }
     
     var body: some View {
+        // 🎯 关键修复：将 GeometryReader 包装在一个有固定高度的容器中
+        // 这样 ScrollView 就能知道内容的实际高度
         GeometryReader { geometry in
             let containerWidth = geometry.size.width
+            let calculatedHeight = calculateTotalHeight(containerWidth: containerWidth)
             
             // 🎯 关键优化：使用稳定的布局方式，避免因换行变化导致视图重建
             // 始终使用 ZStack + offset，同时持续监听尺寸变化
@@ -465,7 +500,7 @@ struct FlowLayout<Data: RandomAccessCollection, Content: View>: View where Data.
                         .offset(x: position.x, y: position.y)
                 }
             }
-            .frame(height: calculateTotalHeight(containerWidth: containerWidth), alignment: .topLeading)
+            .frame(height: calculatedHeight, alignment: .topLeading)
             .onPreferenceChange(ItemSizePreferenceKey.self) { sizes in
                 // 🎯 持续更新尺寸（支持实例尺寸动态变化）
                 for (anyId, size) in sizes {
@@ -479,9 +514,20 @@ struct FlowLayout<Data: RandomAccessCollection, Content: View>: View where Data.
                         }
                     }
                 }
+                // 🎯 更新总高度
+                DispatchQueue.main.async {
+                    let newHeight = calculateTotalHeight(containerWidth: availableWidth > 0 ? availableWidth : containerWidth)
+                    if totalHeight != newHeight {
+                        totalHeight = newHeight
+                    }
+                }
             }
             .onChange(of: containerWidth) { newWidth in
                 availableWidth = newWidth
+                // 🎯 容器宽度变化时重新计算高度
+                DispatchQueue.main.async {
+                    totalHeight = calculateTotalHeight(containerWidth: newWidth)
+                }
             }
             .onChange(of: data.count) { newCount in
                 // 🎯 数据数量变化时，递增版本号（触发重新布局）
@@ -489,8 +535,11 @@ struct FlowLayout<Data: RandomAccessCollection, Content: View>: View where Data.
             }
             .onAppear {
                 availableWidth = containerWidth
+                totalHeight = calculatedHeight
             }
         }
+        // 🎯 关键修复：设置 FlowLayout 的固有高度，让 ScrollView 能正确计算滚动区域
+        .frame(height: totalHeight > 0 ? totalHeight : nil)
     }
     
     /// 计算单个 item 的位置（使用稳定的算法，不依赖行索引）
@@ -587,7 +636,7 @@ private struct ItemSizePreferenceKey: PreferenceKey {
     }
 }
 
-/// 单个 group 的 Flow 布局视图
+/// 单个 group 的 Flow 布局视图（保留用于其他场景，但主渲染不再使用）
 struct GroupGridView: View {
     let group: String?
     let instanceIds: [String]
@@ -682,26 +731,12 @@ struct InstanceRenderCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     // 显示名称：如果有 name，使用 name；如果有 group，使用 group-name；否则使用 pageName
                     Text(getDisplayName(for: request))
-                        .font(.system(size: 14, weight: .semibold))
-                    Text("Instance: \(String(instanceId.prefix(8)))...\(Int(request.width)) × \(Int(request.height))")
+                        .font(.system(size: 10, weight: .semibold))
+                    Text("\(Int(request.width)) × \(Int(request.height))")
                         .font(.system(size: 10, weight: .regular))
                         .foregroundColor(.secondary)
                 }
                 .padding(.horizontal, 12)
-                
-                Spacer()
-                
-                // 刷新按钮
-                Button(action: {
-                    triggerRefresh(instanceId: instanceId)
-                }) {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 12))
-                        .foregroundColor(.blue)
-                }
-                .padding(.horizontal, 12)
-                .buttonStyle(PlainButtonStyle())
-                .help("刷新预览")
             }
 //            .padding(.horizontal, 12)
 //            .padding(.vertical, 8)

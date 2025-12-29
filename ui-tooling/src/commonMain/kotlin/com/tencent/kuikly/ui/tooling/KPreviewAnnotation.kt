@@ -5,7 +5,7 @@ data object Info {
     const val minPluginVersion = "0.8.0" // Minimum version of the plugin that supports this annotation version
 }
 
-@Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Repeatable
 annotation class KPreview(
     val name: String = "",              // Name shown in the preview

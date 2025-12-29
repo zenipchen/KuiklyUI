@@ -614,8 +614,34 @@ NSData *UIImageJPEGRepresentation(NSImage *image, CGFloat compressionQuality) {
 }
 
 - (BOOL)resignFirstResponder {
-    [[self window] makeFirstResponder:nil];
-    return [super resignFirstResponder];
+    // 安全检查：确保 window 存在，避免访问无效内存
+    NSWindow *window = [self window];
+    if (!window) {
+        return [super resignFirstResponder];
+    }
+    
+    // 检查当前是否是 first responder，避免不必要的操作
+    if ([window firstResponder] != self) {
+        return YES;  // 已经不是 first responder，直接返回
+    }
+    
+    // 重要：在 resignFirstResponder 中调用 makeFirstResponder:nil 会导致递归调用
+    // 因为 makeFirstResponder 会触发系统再次调用 resignFirstResponder
+    // 解决方案：先调用 super，让系统处理 resign 逻辑
+    // 然后异步设置 first responder 为 nil，避免递归
+    BOOL result = [super resignFirstResponder];
+    
+    // 异步设置，避免在 resignFirstResponder 调用栈中直接调用 makeFirstResponder
+    if (result) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSWindow *currentWindow = [self window];
+            if (currentWindow && [currentWindow firstResponder] == self) {
+                [currentWindow makeFirstResponder:nil];
+            }
+        });
+    }
+    
+    return result;
 }
 
 - (BOOL)isFirstResponder {
