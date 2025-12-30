@@ -76,6 +76,7 @@ import com.tencent.kuikly.core.annotations.Page
 import com.tencent.kuikly.ui.tooling.KPreview
 import invokeComposeFunc
 
+@KPreview
 @Page("TextDemo")
 class TextDemo : ComposeContainer() {
     override fun willInit() {

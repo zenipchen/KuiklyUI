@@ -35,7 +35,9 @@ import com.tencent.kuikly.core.views.compose.Button
 import com.tencent.kuikly.demo.pages.base.BasePager
 import com.tencent.kuikly.demo.pages.base.Utils
 import com.tencent.kuikly.demo.pages.demo.base.NavBar
+import com.tencent.kuikly.ui.tooling.KPreview
 
+@KPreview
 @Page("router", supportInLocal = true)
 internal class RouterPage : BasePager() {
     var inputText: String = ""
