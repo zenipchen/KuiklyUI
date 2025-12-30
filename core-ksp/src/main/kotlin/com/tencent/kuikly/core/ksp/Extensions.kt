@@ -16,6 +16,7 @@
 package com.tencent.kuikly.core.ksp
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.tencent.kuikly.core.annotations.Page
 import impl.PageInfo
 
 /**
@@ -38,9 +39,13 @@ fun String.jvmFamily(): Boolean {
     return contains("jvm") && !contains("android")
 }
 
+private fun KSClassDeclaration.findPageAnnotation() = annotations.find {
+    it.annotationType.resolve().declaration.qualifiedName?.asString() == Page::class.qualifiedName
+}
+
 private fun KSClassDeclaration.pageAnnotateValue(): String {
     var name = ""
-    annotations.toList()[0].arguments.forEach {
+    findPageAnnotation()?.arguments?.forEach {
         if (it.name?.asString() == "name") {
             name = (it.value as? String) ?: ""
         }
@@ -52,8 +57,7 @@ private fun KSClassDeclaration.pageAnnotateValue(): String {
 }
 
 private fun KSClassDeclaration.supportInLocalAnnotateValue(): Boolean {
-    val pageAnnotation = annotations.toList()[0]
-    pageAnnotation.arguments.forEach {
+    findPageAnnotation()?.arguments?.forEach {
         if (it.name?.asString() == "supportInLocal") {
             return (it.value as? Boolean) ?: false
         }
@@ -63,7 +67,7 @@ private fun KSClassDeclaration.supportInLocalAnnotateValue(): Boolean {
 
 @Synchronized
 private fun KSClassDeclaration.moduleIdAnnotateValue(): String {
-    annotations.toList()[0].arguments.forEach {
+    findPageAnnotation()?.arguments?.forEach {
         if (it.name?.asString() == "moduleId") {
             return (it.value as? String) ?: ""
         }
