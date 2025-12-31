@@ -454,6 +454,7 @@
 - (NSDictionary<NSString *, id> *)mergeExtendedParametersWithOriginalParameters:(nullable NSDictionary<NSString *, id> *)parameters {
     NSMutableDictionary<NSString *, id> *mergedParameters = [parameters ?: @{} mutableCopy];
     mergedParameters[@"_preview_mode"] = @YES;
+    mergedParameters[@"inspectionMode"] = @0;
     return [mergedParameters copy];
 }
 
