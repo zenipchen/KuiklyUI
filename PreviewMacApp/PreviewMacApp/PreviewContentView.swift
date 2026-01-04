@@ -799,17 +799,6 @@ struct InstanceRenderCard: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(
-                // 渐变背景让标题栏更有层次感
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color(NSColor.controlBackgroundColor),
-                        Color(NSColor.controlBackgroundColor).opacity(0.95)
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
             
             // 分隔线
             Rectangle()
@@ -827,11 +816,6 @@ struct InstanceRenderCard: View {
             )
             .frame(width: widthInPoints, height: heightInPoints)
             .background(getBackgroundColor(for: request))
-            .cornerRadius(6)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 0.5)
-            )
             .padding(.horizontal, contentPadding)
             .padding(.bottom, contentPadding)
             .id("\(instanceId)_\(request.pageName)")
