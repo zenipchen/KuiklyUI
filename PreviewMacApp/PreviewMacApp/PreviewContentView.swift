@@ -371,19 +371,41 @@ struct MultiInstanceRenderView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 24) {
                 if isGrouped {
                     // 🎯 分组模式：每个 group 独立 Flow 布局
                     let groupedInstances = groupInstancesByGroup(renderRequests)
                     
                     ForEach(groupedInstances, id: \.stableId) { groupData in
-                        VStack(alignment: .leading, spacing: 8) {
-                            // 显示 group 名称
+                        VStack(alignment: .leading, spacing: 12) {
+                            // 🎨 优化后的分组标题
                             if let groupName = groupData.group, !groupName.isEmpty {
-                                Text(groupName)
-                                    .font(.system(size: 16, weight: .semibold))
-                                    .foregroundColor(.primary)
-                                    .padding(.horizontal, 4)
+                                HStack(spacing: 8) {
+                                    // 分组图标
+                                    Image(systemName: "folder.fill")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.accentColor)
+                                    
+                                    // 分组名称
+                                    Text(groupName)
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .foregroundColor(.primary)
+                                    
+                                    // 实例数量标签
+                                    Text("\(groupData.instanceIds.count)")
+                                        .font(.system(size: 10, weight: .medium))
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(
+                                            Capsule()
+                                                .fill(Color.accentColor.opacity(0.8))
+                                        )
+                                    
+                                    Spacer()
+                                }
+                                .padding(.horizontal, 4)
+                                .padding(.bottom, 4)
                             }
                             
                             // 该 group 内的实例使用 Flow 布局
@@ -392,7 +414,7 @@ struct MultiInstanceRenderView: View {
                                 return FlowItem(id: instanceId, request: request)
                             }
                             
-                            FlowLayout(flowItems, spacing: 16, scale: globalScale) { item in
+                            FlowLayout(flowItems, spacing: 20, scale: globalScale) { item in
                                 // 🎯 关键：使用 .id() 修饰符，让 SwiftUI 能跨父视图追踪同一实例
                                 InstanceRenderCard(
                                     instanceId: item.id,
@@ -413,7 +435,7 @@ struct MultiInstanceRenderView: View {
                         return FlowItem(id: instanceId, request: request)
                     }
                     
-                    FlowLayout(flowItems, spacing: 16, scale: globalScale) { item in
+                    FlowLayout(flowItems, spacing: 20, scale: globalScale) { item in
                         InstanceRenderCard(
                             instanceId: item.id,
                             request: item.request,
@@ -425,7 +447,7 @@ struct MultiInstanceRenderView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            .padding(16)
+            .padding(20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -645,25 +667,41 @@ struct GroupGridView: View {
     let globalScale: CGFloat
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // 显示 group 名称（如果有）
+        VStack(alignment: .leading, spacing: 12) {
+            // 🎨 优化后的分组标题
             if let groupName = group, !groupName.isEmpty {
-                Text(groupName)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.primary)
-                    .padding(.horizontal, 4)
+                HStack(spacing: 8) {
+                    Image(systemName: "folder.fill")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.accentColor)
+                    
+                    Text(groupName)
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.primary)
+                    
+                    Text("\(instanceIds.count)")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            Capsule()
+                                .fill(Color.accentColor.opacity(0.8))
+                        )
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 4)
+                .padding(.bottom, 4)
             }
             
             // Flow 布局
-            let spacing: CGFloat = 16  // Item 之间的间距
-            
-            // 创建符合 Identifiable 的数据结构
             let flowItems = instanceIds.compactMap { instanceId -> FlowItem? in
                 guard let request = renderRequests[instanceId] else { return nil }
                 return FlowItem(id: instanceId, request: request)
             }
             
-            FlowLayout(flowItems, spacing: spacing, scale: globalScale) { item in
+            FlowLayout(flowItems, spacing: 20, scale: globalScale) { item in
                 InstanceRenderCard(
                     instanceId: item.id,
                     request: item.request,
@@ -684,6 +722,8 @@ struct InstanceRenderCard: View {
     let renderCoreManager: PreviewRenderCoreManager?
     let scale: CGFloat  // 缩放比例
     
+    @State private var isHovered = false  // 悬停状态
+    
     /// 触发刷新：通过 TCP NOTIFICATION 通知 desktopAppWithMacRender 调用 refresh
     private func triggerRefresh(instanceId: String) {
         print("[InstanceRenderCard] 🔄 触发刷新: instanceId=\(instanceId)")
@@ -701,48 +741,82 @@ struct InstanceRenderCard: View {
     
     var body: some View {
         // 计算原始尺寸（未缩放）
-        // 标题栏实际高度：padding (8*2) + 内容高度（约 4 行文本，每行约 14+4+10+9，实际测量约 60-70）
-        // 为了安全，使用更大的值确保不被裁剪
-        let titleBarHeight: CGFloat = 70  // 标题栏高度（包括 padding 和所有文本内容）
-        let spacing: CGFloat = 8  // VStack spacing
+        let titleBarHeight: CGFloat = 36  // 优化后的标题栏高度（更紧凑）
+        let contentPadding: CGFloat = 8   // 内容区域的内边距
         
         // 将像素值转换为点值（macOS 使用点值）
-        // 预览配置中的 width/height 是像素值，需要根据 density 转换为点值
         let density: CGFloat = {
             if let configDensity = request.config?.density {
                 return CGFloat(configDensity)
             }
-            // 从 pageData 中获取 density
             if let pageDataDensity = request.pageData["_preview_density"] as? NSNumber {
                 return CGFloat(pageDataDensity.floatValue)
             }
-            return 1 // 默认 density
+            return 1
         }()
         let widthInPoints = request.width / density
         let heightInPoints = request.height / density
         
         // 原始卡片尺寸（未缩放，使用点值）
-        let originalCardWidth = widthInPoints  // 宽度 + 左右 padding
-        let originalCardHeight = titleBarHeight + spacing + heightInPoints  // 标题栏 + spacing + 预览视图
+        let originalCardWidth = widthInPoints + contentPadding * 2
+        let originalCardHeight = titleBarHeight + heightInPoints + contentPadding
         
-        VStack(alignment: .leading, spacing: spacing) {
-            // 实例标题栏（会一起缩放）
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    // 显示名称：如果有 name，使用 name；如果有 group，使用 group-name；否则使用 pageName
+        VStack(alignment: .leading, spacing: 0) {
+            // 🎨 优化后的标题栏
+            HStack(spacing: 8) {
+                // 预览图标
+                Image(systemName: "rectangle.on.rectangle")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.accentColor)
+                
+                // 名称和尺寸
+                VStack(alignment: .leading, spacing: 1) {
                     Text(getDisplayName(for: request))
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                    
                     Text("\(Int(request.width)) × \(Int(request.height))")
-                        .font(.system(size: 10, weight: .regular))
+                        .font(.system(size: 9, weight: .regular))
                         .foregroundColor(.secondary)
                 }
-                .padding(.horizontal, 12)
+                
+                Spacer()
+                
+                // 刷新按钮（悬停时显示）
+                if isHovered {
+                    Button(action: {
+                        triggerRefresh(instanceId: instanceId)
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.accentColor)
+                    }
+                    .buttonStyle(.plain)
+                    .help("刷新预览")
+                    .transition(.opacity)
+                }
             }
-//            .padding(.horizontal, 12)
-//            .padding(.vertical, 8)
-            .background(Color(NSColor.controlBackgroundColor))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(
+                // 渐变背景让标题栏更有层次感
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color(NSColor.controlBackgroundColor),
+                        Color(NSColor.controlBackgroundColor).opacity(0.95)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
             
-            // 渲染视图（保持原始尺寸，不改变渲染尺寸）
+            // 分隔线
+            Rectangle()
+                .fill(Color.gray.opacity(0.15))
+                .frame(height: 1)
+            
+            // 🎨 渲染视图区域
             PreviewRenderViewPage(
                 instanceId: instanceId,
                 pageName: request.pageName,
@@ -753,20 +827,40 @@ struct InstanceRenderCard: View {
             )
             .frame(width: widthInPoints, height: heightInPoints)
             .background(getBackgroundColor(for: request))
-            .cornerRadius(4)
+            .cornerRadius(6)
             .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(Color.gray.opacity(0.2), lineWidth: 0.5)
             )
-            // 使用 instanceId 和 pageName 作为 id，尺寸变化时通过 updateNSViewController 更新，避免重建
+            .padding(.horizontal, contentPadding)
+            .padding(.bottom, contentPadding)
             .id("\(instanceId)_\(request.pageName)")
         }
-        .frame(width: originalCardWidth, height: originalCardHeight)  // 先设置原始尺寸（未缩放）
-        .background(Color(NSColor.windowBackgroundColor))
-        .cornerRadius(8)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-        .scaleEffect(scale)  // 然后应用缩放（scaleEffect 会缩放整个视图，包括背景和阴影）
-        .frame(width: originalCardWidth * scale, height: originalCardHeight * scale)  // 缩放后的布局尺寸（让布局系统知道缩放后的空间占用）
+        .frame(width: originalCardWidth, height: originalCardHeight)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(NSColor.windowBackgroundColor))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(
+                    isHovered ? Color.accentColor.opacity(0.4) : Color.gray.opacity(0.15),
+                    lineWidth: isHovered ? 1.5 : 1
+                )
+        )
+        .shadow(
+            color: Color.black.opacity(isHovered ? 0.15 : 0.08),
+            radius: isHovered ? 8 : 4,
+            x: 0,
+            y: isHovered ? 4 : 2
+        )
+        .scaleEffect(scale)
+        .frame(width: originalCardWidth * scale, height: originalCardHeight * scale)
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered = hovering
+            }
+        }
     }
     
     /// 获取显示名称
