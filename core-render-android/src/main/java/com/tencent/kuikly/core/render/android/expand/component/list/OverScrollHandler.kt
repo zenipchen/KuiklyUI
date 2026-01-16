@@ -80,25 +80,32 @@ internal class OverScrollHandler(
     private var scrollPointerId = 0
     private var bounceAnimator: ObjectAnimator? = null
     private var scrollAccepted = false
+    private var wasAtEdge = false
 
     var nestedScrollPriority = NestedOverScrollPriority.SELF_FIRST
 
     fun onTouchEvent(event: MotionEvent): Boolean {
-        if (!isInStart() && !isInEnd() && !dragging) {
-            if (pointerDataMap.size() != 0) {
-                // 防止一开始是在start或者end, 然后pointerMap中存在down事件
-                // 最后滑到不是在start或者end时松手。此时不会走到clear,这里补一刀clear
-                pointerDataMap.clear()
+        val atEdge = isInStart() || isInEnd()
+        val activeIndex = event.actionIndex
+        
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                processDownEvent(activeIndex, event)
+                return false
             }
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                processPointerDownEvent(activeIndex, event)
+                return false
+            }
+        }
+        
+        if (!atEdge && !dragging) {
             if (!forceOverScroll) {
-                return false // 没有到达边缘, fast fail
+                return false
             }
         }
 
-        val activeIndex = event.actionIndex
         return when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> processDownEvent(activeIndex, event)
-            MotionEvent.ACTION_POINTER_DOWN -> processPointerDownEvent(activeIndex, event)
             MotionEvent.ACTION_MOVE -> processMoveEvent(event)
             MotionEvent.ACTION_POINTER_UP -> processPointerUpEVent(activeIndex, event)
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
@@ -133,6 +140,7 @@ internal class OverScrollHandler(
         initX = event.x
         initY = event.y
         scrollAccepted = false
+        wasAtEdge = isInStart() || isInEnd()
         obtainVelocityTracker()
         velocityTracker?.addMovement(event)
         return false
@@ -155,6 +163,11 @@ internal class OverScrollHandler(
         scrollAccepted = true
 
         val currentTranslation = getTranslation()
+        val atEdge = isInStart() || isInEnd()
+        if (!wasAtEdge && atEdge) {
+            wasAtEdge = true
+            resetPointerOffset(event)
+        }
         val offset = getOverScrollOffset(event)
         if (offset == 0f) {
             return dragging
@@ -211,11 +224,51 @@ internal class OverScrollHandler(
         }
     }
 
-    private fun needTranslate(offset: Float, currentTranslation: Float): Boolean =
-        needInStartTranslate(offset, currentTranslation) || needInEndTranslate(
+    private fun needTranslate(offset: Float, currentTranslation: Float): Boolean {
+        if (currentTranslation == 0f && shouldDeferToParent(offset)) {
+            return false
+        }
+        return needInStartTranslate(offset, currentTranslation) || needInEndTranslate(
             offset,
             currentTranslation
         )
+    }
+
+    private fun shouldDeferToParent(offset: Float): Boolean {
+        if (nestedScrollPriority == NestedOverScrollPriority.SELF_FIRST) {
+            return false
+        }
+        val direction = if (offset > 0) DIRECTION_SCROLL_UP else DIRECTION_SCROLL_DOWN
+        if (direction > 0 && nestedScrollPriority == NestedOverScrollPriority.BACKWARD_PARENT_FIRST) {
+            return false
+        }
+        if (direction < 0 && nestedScrollPriority == NestedOverScrollPriority.FORWARD_PARENT_FIRST) {
+            return false
+        }
+        if (direction > 0 && nestedScrollPriority == NestedOverScrollPriority.BACKWARD_SELF_FIRST) {
+            return false
+        }
+        if (direction < 0 && nestedScrollPriority == NestedOverScrollPriority.FORWARD_SELF_FIRST) {
+            return false
+        }
+        val parent = findParentRecyclerView() ?: return false
+        return if (isVertical) {
+            parent.canScrollVertically(direction)
+        } else {
+            parent.canScrollHorizontally(direction)
+        }
+    }
+
+    private fun findParentRecyclerView(): KRRecyclerView? {
+        var parent = recyclerView.parent
+        while (parent != null) {
+            if (parent is KRRecyclerView) {
+                return parent
+            }
+            parent = parent.parent
+        }
+        return null
+    }
 
     private fun needInStartTranslate(offset: Float, currentTranslation: Float): Boolean =
         !recyclerView.limitHeaderBounces && isInStart() && (offset > 0 || currentTranslation > 0)
@@ -230,8 +283,15 @@ internal class OverScrollHandler(
 
     internal fun processBounceBack(): Boolean {
         val wasDragging = dragging
+        val wasOverScrolling = overScrolling
         pointerDataMap.clear()
         dragging = false
+        
+        if (!wasOverScrolling && getTranslation() == 0f) {
+            recycleVelocityTracker()
+            return false
+        }
+        
         overScrollX = contentView.translationX
         overScrollY = contentView.translationY
         velocityTracker?.computeCurrentVelocity(1000, maxFlingVelocity.toFloat())
@@ -373,10 +433,9 @@ internal class OverScrollHandler(
     }
 
     private fun getOverScrollOffset(event: MotionEvent): Float {
-        val activePointerId = event.getPointerId(event.findPointerIndex(scrollPointerId).coerceAtLeast(0))
-        val pointerData = pointerDataMap.get(activePointerId) ?: return 0f
-        val pointerIndex = event.findPointerIndex(activePointerId)
+        val pointerIndex = event.findPointerIndex(scrollPointerId)
         if (pointerIndex < 0) return 0f
+        val pointerData = pointerDataMap.get(scrollPointerId) ?: return 0f
         val currentOffset = getCurrentOffset(pointerIndex, event)
         val deltaOffset = currentOffset - pointerData.offset
         pointerData.offset = currentOffset
@@ -418,6 +477,16 @@ internal class OverScrollHandler(
             pointerDataMap.put(pointerId, pointerData)
         } else {
             pointerData.offset = currentOffset
+        }
+    }
+
+    private fun resetPointerOffset(event: MotionEvent) {
+        val pointerIndex = event.findPointerIndex(scrollPointerId)
+        if (pointerIndex >= 0) {
+            val pointerData = pointerDataMap.get(scrollPointerId)
+            if (pointerData != null) {
+                pointerData.offset = getCurrentOffset(pointerIndex, event)
+            }
         }
     }
 
