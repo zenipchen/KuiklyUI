@@ -81,6 +81,8 @@ internal class OverScrollHandler(
     private var bounceAnimator: ObjectAnimator? = null
     private var scrollAccepted = false
 
+    var nestedScrollPriority = NestedOverScrollPriority.SELF_FIRST
+
     fun onTouchEvent(event: MotionEvent): Boolean {
         if (!isInStart() && !isInEnd() && !dragging) {
             if (pointerDataMap.size() != 0) {
@@ -438,6 +440,18 @@ internal class OverScrollHandler(
         }
     }
 
+    fun shouldChildOverScrollFirst(direction: Int): Boolean {
+        return nestedScrollPriority == NestedOverScrollPriority.SELF_FIRST ||
+                (direction > 0 && nestedScrollPriority == NestedOverScrollPriority.FORWARD_SELF_FIRST) ||
+                (direction < 0 && nestedScrollPriority == NestedOverScrollPriority.BACKWARD_SELF_FIRST)
+    }
+
+    fun shouldParentOverScrollFirst(direction: Int): Boolean {
+        return nestedScrollPriority == NestedOverScrollPriority.PARENT_FIRST ||
+                (direction > 0 && nestedScrollPriority == NestedOverScrollPriority.FORWARD_PARENT_FIRST) ||
+                (direction < 0 && nestedScrollPriority == NestedOverScrollPriority.BACKWARD_PARENT_FIRST)
+    }
+
     private data class PointerData(
         val pointerId: Int,
         var offset: Float
@@ -451,6 +465,15 @@ internal class OverScrollHandler(
         private const val DIRECTION_SCROLL_UP = -1
         private const val DIRECTION_SCROLL_DOWN = 1
     }
+}
+
+enum class NestedOverScrollPriority {
+    SELF_FIRST,
+    PARENT_FIRST,
+    FORWARD_SELF_FIRST,
+    FORWARD_PARENT_FIRST,
+    BACKWARD_SELF_FIRST,
+    BACKWARD_PARENT_FIRST
 }
 
 internal interface OverScrollEventCallback {

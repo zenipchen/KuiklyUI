@@ -123,7 +123,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     /**
      * 处理边缘回调的处理器
      */
-    private var overScrollHandler: OverScrollHandler? = null
+    internal var overScrollHandler: OverScrollHandler? = null
 
     /**
      * 是否正在拖拽
@@ -336,6 +336,14 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
 
     fun removeNestedChildInterceptEventListener(listener: INestedChildInterceptor) {
         nestedChildInterceptEventListeners?.remove(listener)
+    }
+
+    internal fun isInStartOrEnd(direction: Int): Boolean {
+        return if (directionRow) {
+            !canScrollHorizontally(direction)
+        } else {
+            !canScrollVertically(direction)
+        }
     }
 
     /**
@@ -1014,9 +1022,27 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
             JSONObject(propValue).apply {
                 scrollForwardMode = getNestScrollMode(optString("forward", ""))
                 scrollBackwardMode = getNestScrollMode(optString("backward", ""))
+                updateOverScrollPriority()
             }
         }
         return true
+    }
+
+    private fun updateOverScrollPriority() {
+        overScrollHandler?.nestedScrollPriority = when {
+            scrollForwardMode == KRNestedScrollMode.PARENT_FIRST && scrollBackwardMode == KRNestedScrollMode.PARENT_FIRST ->
+                NestedOverScrollPriority.PARENT_FIRST
+            scrollForwardMode == KRNestedScrollMode.SELF_FIRST && scrollBackwardMode == KRNestedScrollMode.SELF_FIRST ->
+                NestedOverScrollPriority.SELF_FIRST
+            scrollForwardMode == KRNestedScrollMode.PARENT_FIRST ->
+                NestedOverScrollPriority.FORWARD_PARENT_FIRST
+            scrollBackwardMode == KRNestedScrollMode.PARENT_FIRST ->
+                NestedOverScrollPriority.BACKWARD_PARENT_FIRST
+            scrollForwardMode == KRNestedScrollMode.SELF_FIRST ->
+                NestedOverScrollPriority.FORWARD_SELF_FIRST
+            else ->
+                NestedOverScrollPriority.BACKWARD_SELF_FIRST
+        }
     }
 
     private fun getNestScrollMode(rule: String): KRNestedScrollMode {
@@ -1852,18 +1878,22 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
                 didConsumeY = true
             } else {
                 if (touchType == ViewCompat.TYPE_TOUCH) {
-                    // 走Overscroll时，如果是ParentFirst模式，容易出现父亲有Overscroll可处理，导致子列表没法下拉查看数据的情况
-                    val needChildFirstWhenOverscroll = parentDy > 0 && target.canScrollVertically(parentDy)
-                    if (!needChildFirstWhenOverscroll) {
-                        // 只有触摸拖拽下拉模式才处理OverScroll，避免fling直接触发了下拉刷新
-                        overScrollHandler?.let{
-                            it.setTranslationByNestScrollTouch(parentDy.toFloat())
-                            target.skipFlingIfNestOverScroll = true
-                            // 累加补偿消耗的值，避免覆盖
-                            consumed[1] = compensationConsumedY + parentDy
-                            lastScrollParentY = parentDy
-                            didConsumeY = true
-                        }
+                    val parentHandler = overScrollHandler
+                    val childHandler = target.overScrollHandler
+                    val shouldParentOverScroll = parentHandler != null &&
+                            parentHandler.shouldParentOverScrollFirst(parentDy)
+                    val shouldChildOverScroll = childHandler != null &&
+                            childHandler.shouldChildOverScrollFirst(parentDy) &&
+                            (target.isInStartOrEnd(parentDy))
+                    
+                    if (shouldChildOverScroll && !shouldParentOverScroll) {
+                        // 子View优先模式，不消费，让子View自己处理overscroll
+                    } else if (parentHandler != null) {
+                        parentHandler.setTranslationByNestScrollTouch(parentDy.toFloat())
+                        target.skipFlingIfNestOverScroll = true
+                        consumed[1] = compensationConsumedY + parentDy
+                        lastScrollParentY = parentDy
+                        didConsumeY = true
                     }
                 }
             }
