@@ -76,8 +76,10 @@ internal class OverScrollHandler(
     private var hadBeginDrag = false
 
     private val maxFlingVelocity = ViewConfiguration.get(recyclerView.context).scaledMaximumFlingVelocity
-    private var velocityTracker =  VelocityTracker.obtain()
-    private var scrollPointerId = -1
+    private var velocityTracker: VelocityTracker? = null
+    private var scrollPointerId = 0
+    private var bounceAnimator: ObjectAnimator? = null
+    private var scrollAccepted = false
 
     fun onTouchEvent(event: MotionEvent): Boolean {
         if (!isInStart() && !isInEnd() && !dragging) {
@@ -118,7 +120,9 @@ internal class OverScrollHandler(
     }
 
     private fun processDownEvent(activeIndex: Int, event: MotionEvent): Boolean {
+        bounceAnimator?.cancel()
         downing = true
+        scrollPointerId = event.getPointerId(activeIndex)
         updatePointerData(activeIndex, event)
         if (forceOverScroll) {
             dragging = true
@@ -126,7 +130,9 @@ internal class OverScrollHandler(
         }
         initX = event.x
         initY = event.y
-        velocityTracker.addMovement(event)
+        scrollAccepted = false
+        obtainVelocityTracker()
+        velocityTracker?.addMovement(event)
         return false
     }
 
@@ -138,23 +144,27 @@ internal class OverScrollHandler(
     }
 
     private fun processMoveEvent(event: MotionEvent): Boolean {
-        if (!downing) { // 收到move事件时，没收到down事件的话，补发down事件
+        if (!downing) {
             processDownEvent(event.actionIndex, event)
         }
-        if (!acceptEvent(event)) {
-            velocityTracker.clear()
+        if (!scrollAccepted && !checkAcceptEvent(event)) {
             return false
         }
+        scrollAccepted = true
 
         val currentTranslation = getTranslation()
         val offset = getOverScrollOffset(event)
         if (offset == 0f) {
-            velocityTracker.clear()
             return dragging
         }
 
         var processEvent = false
         if (needTranslate(offset, currentTranslation)) {
+            val newTranslation = currentTranslation + offset
+            if (shouldExitOverScroll(currentTranslation, newTranslation)) {
+                exitOverScrollState()
+                return false
+            }
             setTranslation(offset)
             dragging = true
             processEvent = true
@@ -164,23 +174,39 @@ internal class OverScrollHandler(
             fireOverScrollCallback(contentView.translationX, contentView.translationY)
         }
         if (processEvent) {
-            velocityTracker.addMovement(event)
+            velocityTracker?.addMovement(event)
         }
         return processEvent
     }
 
-    private fun acceptEvent(event: MotionEvent): Boolean {
+    private fun shouldExitOverScroll(current: Float, new: Float): Boolean {
+        return (current > 0 && new <= 0) || (current < 0 && new >= 0)
+    }
+
+    private fun exitOverScrollState() {
+        resetTranslation()
+        dragging = false
+        overScrolling = false
+        hadBeginDrag = false
+        fireOverScrollCallback(0f, 0f)
+    }
+
+    private fun resetTranslation() {
+        if (isVertical) {
+            contentView.translationY = 0f
+        } else {
+            contentView.translationX = 0f
+        }
+    }
+
+    private fun checkAcceptEvent(event: MotionEvent): Boolean {
         val dx = event.x - initX
         val dy = event.y - initY
-        var startScroll = false
-        if (!isVertical && abs(dx) > touchSlop && abs(dx) > abs(dy)) {
-            startScroll = true
+        return if (isVertical) {
+            abs(dy) > touchSlop && abs(dy) > abs(dx)
+        } else {
+            abs(dx) > touchSlop && abs(dx) > abs(dy)
         }
-        if (isVertical && abs(dy) > touchSlop && abs(dy) > abs(dx)) {
-            startScroll = true
-        }
-
-        return startScroll
     }
 
     private fun needTranslate(offset: Float, currentTranslation: Float): Boolean =
@@ -201,33 +227,42 @@ internal class OverScrollHandler(
     }
 
     internal fun processBounceBack(): Boolean {
+        val wasDragging = dragging
         pointerDataMap.clear()
         dragging = false
         overScrollX = contentView.translationX
         overScrollY = contentView.translationY
-        velocityTracker.computeCurrentVelocity(1000, maxFlingVelocity.toFloat())
-        val velocityX = if (isVertical) 0f else -velocityTracker.getXVelocity(scrollPointerId)
-        val velocityY = if (isVertical) -velocityTracker.getYVelocity(scrollPointerId) else 0f
+        velocityTracker?.computeCurrentVelocity(1000, maxFlingVelocity.toFloat())
+        val velocityX = if (isVertical) 0f else -(velocityTracker?.getXVelocity(scrollPointerId) ?: 0f)
+        val velocityY = if (isVertical) -(velocityTracker?.getYVelocity(scrollPointerId) ?: 0f) else 0f
         overScrollEventCallback.onEndDragOverScroll(
             overScrollX,
             overScrollY,
             velocityX,
             velocityY,
             isInStart(),
-            dragging
+            wasDragging
         )
         startBounceBack()
-        velocityTracker.clear()
+        recycleVelocityTracker()
         return false
     }
 
-    private fun resetState() {
-        pointerDataMap.clear()
-        dragging = false
-        velocityTracker.clear()
+    private fun obtainVelocityTracker() {
+        if (velocityTracker == null) {
+            velocityTracker = VelocityTracker.obtain()
+        } else {
+            velocityTracker?.clear()
+        }
+    }
+
+    private fun recycleVelocityTracker() {
+        velocityTracker?.recycle()
+        velocityTracker = null
     }
 
     private fun startBounceBack(contentInset: KRRecyclerContentViewContentInset? = null) {
+        bounceAnimator?.cancel()
         val finalOffset = getFinalOffset(contentInset)
         val startOffset = if (isVertical) {
             contentView.translationY
@@ -244,25 +279,20 @@ internal class OverScrollHandler(
         animator.interpolator = DecelerateInterpolator()
         animator.duration = BOUND_BACK_DURATION
         animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationCancel(animation: Animator) {
-                hadBeginDrag = false
-                overScrolling = false
-                fireOverScrollAnimationCallback(finalOffset)
-                tryFireContentInsertFinish()
-            }
-
             override fun onAnimationEnd(animation: Animator) {
-                super.onAnimationEnd(animation)
                 hadBeginDrag = false
                 overScrolling = false
                 fireOverScrollAnimationCallback(finalOffset)
                 tryFireContentInsertFinish()
+                if (bounceAnimator == animation) {
+                    bounceAnimator = null
+                }
             }
-
         })
         animator.addUpdateListener {
             fireOverScrollAnimationCallback(it.animatedValue.toNumberFloat())
         }
+        bounceAnimator = animator
         animator.start()
     }
 
@@ -287,10 +317,11 @@ internal class OverScrollHandler(
     private fun getFinalOffset(viewContentInset: KRRecyclerContentViewContentInset?): Float {
         val ci = viewContentInset ?: contentInsetWhenEndDrag
         val contentInset = ci ?: return 0f
+        val currentTranslation = getTranslation()
         return if (isVertical) {
-            contentInset.top
+            if (currentTranslation >= 0) contentInset.top else -contentInset.bottom
         } else {
-            contentInset.left
+            if (currentTranslation >= 0) contentInset.left else -contentInset.right
         }
     }
 
@@ -340,18 +371,17 @@ internal class OverScrollHandler(
     }
 
     private fun getOverScrollOffset(event: MotionEvent): Float {
-        var offset = 0f
-        for (i in 0 until event.pointerCount) {
-            val pointerData = pointerDataMap.get(event.getPointerId(i)) ?: continue
-            val currentOffset = getCurrentOffset(i, event)
-            val deltaOffset = currentOffset - pointerData.offset
-            offset += deltaOffset
-            pointerData.offset = currentOffset
-        }
-        return if (abs(offset) <= touchSlop && !dragging) {
+        val activePointerId = event.getPointerId(event.findPointerIndex(scrollPointerId).coerceAtLeast(0))
+        val pointerData = pointerDataMap.get(activePointerId) ?: return 0f
+        val pointerIndex = event.findPointerIndex(activePointerId)
+        if (pointerIndex < 0) return 0f
+        val currentOffset = getCurrentOffset(pointerIndex, event)
+        val deltaOffset = currentOffset - pointerData.offset
+        pointerData.offset = currentOffset
+        return if (abs(deltaOffset) <= touchSlop && !dragging) {
             0f
         } else {
-            getNewOffset(getTranslation(), offset)
+            getNewOffset(getTranslation(), deltaOffset)
         }
     }
 
@@ -398,8 +428,8 @@ internal class OverScrollHandler(
     }
 
     internal fun setTranslationByNestScrollTouch(parentDy: Float) {
-        val newOffset = getNewOffset(getTranslation(), parentDy)
-        setTranslation(-newOffset)
+        val newOffset = getNewOffset(getTranslation(), -parentDy)
+        setTranslation(newOffset)
         if (!overScrolling) {
             dragging = true
             fireBeginOverScrollCallback()
