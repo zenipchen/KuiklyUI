@@ -8,7 +8,8 @@
 
     // ==================== 配置 ====================
     const CONFIG = {
-        COMPILE_SERVER_PORT: 3456,
+        // 使用相对路径，自动跟随当前域名和端口
+        API_BASE_URL: '',
         DEBOUNCE_DELAY: 1500,     // 自动编译防抖延迟(ms)
     };
 
@@ -180,7 +181,7 @@
         const startTime = Date.now();
 
         try {
-            const response = await fetch(`http://localhost:${CONFIG.COMPILE_SERVER_PORT}/compile`, {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/compile`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -209,9 +210,8 @@
                 // 编译服务未启动时，显示提示信息
                 updateBuildStatus('error', '❌ 无法连接编译服务', `${elapsed}ms`);
                 showError(
-                    `无法连接到编译服务器 (localhost:${CONFIG.COMPILE_SERVER_PORT})\n\n` +
-                    `请先启动编译服务：\n` +
-                    `  cd previewmcp && node server.js\n\n` +
+                    `无法连接到编译服务器\n\n` +
+                    `请检查服务是否正常运行\n\n` +
                     `详细信息：${err.message}`
                 );
             }
@@ -228,8 +228,8 @@
     function loadPreview(pageName) {
         const iframe = document.getElementById('preview-iframe');
         // 直接使用同一服务器的 /preview 路由，传入 page_name 参数
-        const previewUrl = `http://localhost:${CONFIG.COMPILE_SERVER_PORT}/preview?page_name=${pageName || 'PreviewPage'}&t=${Date.now()}`;
-        
+        const previewUrl = `${CONFIG.API_BASE_URL}/preview?page_name=${pageName || 'PreviewPage'}&t=${Date.now()}`;
+
         // 强制重新加载（加 timestamp 避免缓存）
         iframe.src = previewUrl;
     }
@@ -407,7 +407,7 @@
 
     async function checkConnection() {
         try {
-            const response = await fetch(`http://localhost:${CONFIG.COMPILE_SERVER_PORT}/health`, {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/health`, {
                 method: 'GET',
                 signal: AbortSignal.timeout(3000)
             });

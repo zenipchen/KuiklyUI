@@ -19,7 +19,7 @@ const { exec, spawn } = require('child_process');
 
 // ==================== 配置 ====================
 const CONFIG = {
-    PORT: 3456,
+    PORT: 8080,
     // KuiklyUI 根目录（server.js 所在 previewmcp 的父目录）
     PROJECT_ROOT: path.resolve(__dirname, '..'),
     // 预览页面的 Kotlin 源文件路径
@@ -32,8 +32,8 @@ const CONFIG = {
     COMPILE_TASK: ':demo:packLocalJsBundleDebug',
     // 额外的 Gradle 参数
     GRADLE_ARGS: ['-Pkuikly.useLocalKsp=false', '--no-daemon'],
-    // 编译超时时间（ms）
-    COMPILE_TIMEOUT: 120000,
+    // 编译超时时间（ms）- 首次编译需要下载依赖，设置为10分钟
+    COMPILE_TIMEOUT: 600000,
     // 静态文件目录
     STATIC_DIR: __dirname,
     // H5 预览相关产物路径
@@ -145,10 +145,17 @@ function runGradleBuild() {
         console.log(`[编译] 开始执行: ${CONFIG.GRADLE_CMD} ${CONFIG.COMPILE_TASK}`);
 
         const args = [CONFIG.COMPILE_TASK, ...CONFIG.GRADLE_ARGS];
+        // 设置 Java 环境变量
+        const env = {
+            ...process.env,
+            JAVA_HOME: process.env.JAVA_HOME || '/usr/lib/jvm/java-17-konajdk',
+            PATH: `${process.env.JAVA_HOME || '/usr/lib/jvm/java-17-konajdk'}/bin:${process.env.PATH}`
+        };
+
         const proc = spawn(CONFIG.GRADLE_CMD, args, {
             cwd: CONFIG.PROJECT_ROOT,
             shell: true,
-            env: { ...process.env },
+            env: env,
             stdio: ['ignore', 'pipe', 'pipe']
         });
 
