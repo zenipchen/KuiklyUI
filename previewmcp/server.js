@@ -1,14 +1,20 @@
 /**
- * Kuikly DSL Preview - 编译服务器
+ * Kuikly DSL Preview - 编译服务器 (优化版)
  * 
  * 功能：
  * 1. 接收前端发来的 DSL 代码
  * 2. 将代码写入 demo 项目的指定位置
- * 3. 调用 Gradle 编译生成 JS Bundle
+ * 3. 调用 Gradle 编译生成 JS Bundle（支持增量编译）
  * 4. 通知前端刷新 H5 预览
  * 
+ * 优化策略：
+ * 1. 单页面编译：使用 -PpageName=PreviewPage 只编译预览页面
+ * 2. Gradle Daemon：保持 JVM 热启动，大幅减少启动时间
+ * 3. 并行构建：充分利用多核 CPU
+ * 4. 增量编译：利用 Gradle 缓存，只编译变更的代码
+ * 
  * 工作流程：
- *   Editor → POST /compile → 写入 .kt 文件 → Gradle 编译 demo → 
+ *   Editor → POST /compile → 写入 .kt 文件 → Gradle 增量编译 → 
  *   packLocalJsBundleDebug → H5 iframe 刷新加载最新 nativevue2.js
  */
 
@@ -26,14 +32,34 @@ const CONFIG = {
     PREVIEW_FILE_PATH: 'demo/src/commonMain/kotlin/com/tencent/kuikly/demo/pages/preview/PreviewPage.kt',
     // 包名
     PACKAGE_NAME: 'com.tencent.kuikly.demo.pages.preview',
+    // 预览页面名称（用于单页面编译）
+    PREVIEW_PAGE_NAME: 'PreviewPage',
     // Gradle 命令
     GRADLE_CMD: process.platform === 'win32' ? 'gradlew.bat' : './gradlew',
     // 编译任务
     COMPILE_TASK: ':demo:packLocalJsBundleDebug',
-    // 额外的 Gradle 参数
-    GRADLE_ARGS: ['-Pkuikly.useLocalKsp=false', '--no-daemon'],
-    // 编译超时时间（ms）- 首次编译需要下载依赖，设置为10分钟
-    COMPILE_TIMEOUT: 600000,
+    // Gradle 参数 - 优化版
+    // 1. -PpageName=PreviewPage: 只编译预览页面，不编译整个 demo
+    // 2. --parallel: 启用并行构建
+    // 3. --build-cache: 启用构建缓存
+    // 4. 不使用 --no-daemon: 保持 Daemon 运行，加速后续编译
+    GRADLE_ARGS_FAST: [
+        '-PpageName=PreviewPage',
+        '-Pkuikly.useLocalKsp=false',
+        '--parallel',
+        '--build-cache',
+        '-Dorg.gradle.jvmargs=-Xmx2g -XX:+UseParallelGC'
+    ],
+    // 首次编译参数（完整编译）
+    GRADLE_ARGS_FULL: [
+        '-Pkuikly.useLocalKsp=false',
+        '--parallel',
+        '--build-cache',
+        '-Dorg.gradle.jvmargs=-Xmx2g -XX:+UseParallelGC'
+    ],
+    // 编译超时时间（ms）- 增量编译应该很快，但首次需要更长时间
+    COMPILE_TIMEOUT_FAST: 120000,   // 增量编译 2 分钟
+    COMPILE_TIMEOUT_FULL: 600000,   // 首次编译 10 分钟
     // 静态文件目录
     STATIC_DIR: __dirname,
     // H5 预览相关产物路径
@@ -48,6 +74,15 @@ let currentCompileProcess = null;
 // 编译队列（确保同一时间只有一个编译任务）
 let compileQueue = [];
 let isCompiling = false;
+// 是否已完成首次编译（首次编译后启用快速模式）
+let isFirstCompileDone = false;
+// 编译统计
+let compileStats = {
+    totalCompiles: 0,
+    fastCompiles: 0,
+    avgFastTime: 0,
+    lastCompileTime: 0
+};
 
 // ==================== 工具函数 ====================
 
@@ -124,8 +159,13 @@ function writeKotlinFile(code, type) {
 
 /**
  * 清理 KSP 缓存，避免增量编译时 Storage already registered 错误
+ * 注意：优化后只在首次编译时清理，增量编译时不清理以加快速度
  */
-function cleanKspCaches() {
+function cleanKspCaches(force = false) {
+    if (!force && isFirstCompileDone) {
+        // 增量编译时不清理缓存
+        return;
+    }
     const kspCacheDir = path.join(CONFIG.PROJECT_ROOT, 'demo/build/kspCaches');
     if (fs.existsSync(kspCacheDir)) {
         fs.rmSync(kspCacheDir, { recursive: true, force: true });
@@ -134,17 +174,35 @@ function cleanKspCaches() {
 }
 
 /**
- * 执行 Gradle 编译
+ * 检查是否需要完整编译
+ * 如果 nativevue2.js 不存在，说明是首次编译
  */
-function runGradleBuild() {
+function needsFullCompile() {
+    const jsPath = path.join(CONFIG.PROJECT_ROOT, CONFIG.NATIVEVUE2_JS_PATH);
+    return !fs.existsSync(jsPath);
+}
+
+/**
+ * 执行 Gradle 编译（优化版）
+ * @param {boolean} fullCompile - 是否执行完整编译
+ */
+function runGradleBuild(fullCompile = false) {
     return new Promise((resolve, reject) => {
-        // 编译前清理 KSP 缓存
-        cleanKspCaches();
+        const isFullBuild = fullCompile || needsFullCompile();
+        
+        // 只在首次编译时清理 KSP 缓存
+        if (isFullBuild) {
+            cleanKspCaches(true);
+        }
 
         const startTime = Date.now();
-        console.log(`[编译] 开始执行: ${CONFIG.GRADLE_CMD} ${CONFIG.COMPILE_TASK}`);
+        const gradleArgs = isFullBuild ? CONFIG.GRADLE_ARGS_FULL : CONFIG.GRADLE_ARGS_FAST;
+        const timeout = isFullBuild ? CONFIG.COMPILE_TIMEOUT_FULL : CONFIG.COMPILE_TIMEOUT_FAST;
+        
+        console.log(`[编译] 模式: ${isFullBuild ? '完整编译' : '增量编译（单页面）'}`);
+        console.log(`[编译] 开始执行: ${CONFIG.GRADLE_CMD} ${CONFIG.COMPILE_TASK} ${gradleArgs.join(' ')}`);
 
-        const args = [CONFIG.COMPILE_TASK, ...CONFIG.GRADLE_ARGS];
+        const args = [CONFIG.COMPILE_TASK, ...gradleArgs];
         // 设置 Java 环境变量
         const env = {
             ...process.env,
@@ -188,7 +246,21 @@ function runGradleBuild() {
             console.log(`[编译] 完成，退出码: ${code}, 耗时: ${elapsed}ms`);
 
             if (code === 0) {
-                resolve({ success: true, elapsed, stdout });
+                // 更新编译统计
+                compileStats.totalCompiles++;
+                compileStats.lastCompileTime = elapsed;
+                if (!isFullBuild) {
+                    compileStats.fastCompiles++;
+                    compileStats.avgFastTime = Math.round(
+                        (compileStats.avgFastTime * (compileStats.fastCompiles - 1) + elapsed) / compileStats.fastCompiles
+                    );
+                }
+                // 标记首次编译完成
+                if (!isFirstCompileDone) {
+                    isFirstCompileDone = true;
+                    console.log(`[编译] 首次编译完成，后续将启用增量编译模式`);
+                }
+                resolve({ success: true, elapsed, stdout, isFullBuild });
             } else {
                 // 提取关键错误信息
                 const errorMsg = extractCompileError(stdout + '\n' + stderr);
@@ -214,10 +286,10 @@ function runGradleBuild() {
                 proc.kill('SIGTERM');
                 reject({
                     success: false,
-                    error: `编译超时（${CONFIG.COMPILE_TIMEOUT / 1000}秒）`
+                    error: `编译超时（${timeout / 1000}秒）`
                 });
             }
-        }, CONFIG.COMPILE_TIMEOUT);
+        }, timeout);
     });
 }
 
@@ -357,13 +429,15 @@ const server = http.createServer(async (req, res) => {
 
     // ===== API 路由 =====
 
-    // 健康检查
+    // 健康检查（增加编译统计信息）
     if (url.pathname === '/health' && req.method === 'GET') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
             status: 'ok',
             isCompiling: isCompiling,
-            projectRoot: CONFIG.PROJECT_ROOT
+            projectRoot: CONFIG.PROJECT_ROOT,
+            compileMode: isFirstCompileDone ? 'incremental' : 'full',
+            stats: compileStats
         }));
         return;
     }
@@ -521,22 +595,29 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(CONFIG.PORT, () => {
     console.log(`
-╔══════════════════════════════════════════════════════╗
-║         Kuikly DSL Preview Server                    ║
-╠══════════════════════════════════════════════════════╣
-║                                                      ║
-║  编辑器地址:  http://localhost:${CONFIG.PORT}               ║
+╔═══════════════════════════════════════════════════════════════╗
+║         Kuikly DSL Preview Server (优化版)                    ║
+╠═══════════════════════════════════════════════════════════════╣
+║                                                               ║
+║  编辑器地址:  http://localhost:${CONFIG.PORT}                        ║
 ║  项目根目录:  ${CONFIG.PROJECT_ROOT}
-║                                                      ║
-║  编译服务:    http://localhost:${CONFIG.PORT}/compile        ║
-║  预览页面:    http://localhost:${CONFIG.PORT}/preview        ║
-║  健康检查:    http://localhost:${CONFIG.PORT}/health         ║
-║                                                      ║
+║                                                               ║
+║  编译服务:    http://localhost:${CONFIG.PORT}/compile                ║
+║  预览页面:    http://localhost:${CONFIG.PORT}/preview                ║
+║  健康检查:    http://localhost:${CONFIG.PORT}/health                 ║
+║                                                               ║
 ║  预览页文件:  ${CONFIG.PREVIEW_FILE_PATH}
-║                                                      ║
-║  所有服务已集成，无需额外启动其他服务！                ║
-║                                                      ║
-╚══════════════════════════════════════════════════════╝
+║                                                               ║
+╠═══════════════════════════════════════════════════════════════╣
+║  🚀 编译优化:                                                 ║
+║     • 单页面编译: 只编译 PreviewPage，跳过其他页面            ║
+║     • Gradle Daemon: 保持 JVM 热启动                          ║
+║     • 并行构建: 充分利用多核 CPU                              ║
+║     • 增量编译: 只编译变更的代码                              ║
+║                                                               ║
+║  首次编译较慢（需下载依赖），后续编译将显著加速！             ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
 `);
 });
 
