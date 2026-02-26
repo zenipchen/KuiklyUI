@@ -1,0 +1,18 @@
+{
+    "name": "kuikly-dsl-preview",
+    "version": "1.0.0",
+    "description": "Kuikly DSL 实时预览编辑器 - 支持边写 DSL 边编译预览",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node server.js",
+        "editor": "open http://localhost:3456 && node server.js"
+    },
+    "keywords": [
+        "kuikly",
+        "dsl",
+        "preview",
+        "editor"
+    ],
+    "license": "MIT"
+}

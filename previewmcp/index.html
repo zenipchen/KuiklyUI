@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuikly DSL Live Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部工具栏 -->
+        <header class="toolbar">
+            <div class="toolbar-left">
+                <div class="logo">
+                    <span class="logo-icon">🎨</span>
+                    <span class="logo-text">Kuikly DSL Editor</span>
+                </div>
+            </div>
+            <div class="toolbar-center">
+                <div class="tab-group">
+                    <button class="tab-btn active" data-tab="dsl">自研 DSL</button>
+                    <button class="tab-btn" data-tab="compose">Compose DSL</button>
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <select id="example-select" class="example-selector">
+                    <option value="">选择示例...</option>
+                    <optgroup label="自研 DSL 示例">
+                        <option value="hello-world">Hello World</option>
+                        <option value="counter">计数器</option>
+                        <option value="list-view">列表视图</option>
+                        <option value="flex-layout">Flex 布局</option>
+                        <option value="image-demo">图片示例</option>
+                    </optgroup>
+                    <optgroup label="Compose DSL 示例">
+                        <option value="compose-box">Box 布局</option>
+                        <option value="compose-column">Column 布局</option>
+                        <option value="compose-lazy">LazyColumn</option>
+                    </optgroup>
+                </select>
+                <button class="toolbar-btn" id="format-btn" title="格式化代码">
+                    <span>📝</span> 格式化
+                </button>
+                <button class="toolbar-btn" id="copy-btn" title="复制代码">
+                    <span>📋</span> 复制
+                </button>
+                <button class="toolbar-btn primary" id="run-btn" title="编译并预览">
+                    <span>▶️</span> 编译预览
+                </button>
+            </div>
+        </header>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 左侧编辑器面板 -->
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">📝 代码编辑器</span>
+                    <div class="panel-actions">
+                        <span class="file-name" id="file-name">PreviewPage.kt</span>
+                    </div>
+                </div>
+                <div id="editor-container"></div>
+            </div>
+
+            <!-- 可调整大小的分隔条 -->
+            <div class="resizer" id="resizer"></div>
+
+            <!-- 右侧预览面板 -->
+            <div class="preview-panel">
+                <div class="panel-header">
+                    <span class="panel-title">👁️ 实时预览</span>
+                    <div class="panel-actions">
+                        <div class="device-selector">
+                            <button class="device-btn active" data-device="phone" title="手机">📱</button>
+                            <button class="device-btn" data-device="tablet" title="平板">📲</button>
+                            <button class="device-btn" data-device="desktop" title="桌面">🖥️</button>
+                        </div>
+                        <button class="panel-btn" id="refresh-btn" title="刷新预览">🔄</button>
+                        <button class="panel-btn" id="devtools-btn" title="开发者工具">🔧</button>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <div class="device-frame phone" id="device-frame">
+                        <div class="device-notch"></div>
+                        <div class="preview-content" id="preview-content">
+                            <!-- 预览 iframe 将在这里加载 -->
+                            <iframe id="preview-iframe" class="preview-iframe" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+                        </div>
+                        <div class="device-home-indicator"></div>
+                    </div>
+                </div>
+                <!-- 编译状态面板 -->
+                <div class="status-panel" id="status-panel">
+                    <div class="status-content">
+                        <span class="status-icon" id="status-icon">⏸️</span>
+                        <span class="status-text" id="status-text">准备就绪</span>
+                    </div>
+                    <div class="build-time" id="build-time"></div>
+                </div>
+                <!-- 错误提示面板 -->
+                <div class="error-panel" id="error-panel">
+                    <div class="error-header">
+                        <span>⚠️ 编译错误</span>
+                        <button class="error-close" id="error-close">×</button>
+                    </div>
+                    <div class="error-content" id="error-content"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部状态栏 -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <span class="status-item" id="connection-status">🔗 已连接</span>
+                <span class="status-item" id="line-col">行 1, 列 1</span>
+            </div>
+            <div class="status-right">
+                <span class="status-item">Kuikly DSL</span>
+                <span class="status-item">UTF-8</span>
+                <span class="status-item">Kotlin</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="kuikly-language.js"></script>
+    <script src="examples.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
