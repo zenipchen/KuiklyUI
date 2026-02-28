@@ -1,7 +1,19 @@
 {
   "app": {
     "signingConfigs": [
-
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/zhenhuachen/.ohos/config/default_ohosApp_7jUqZhcv0CP4QSwy7tgIfO0YgRdUNKgHiScSPVgQ124=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BD403D6E01C7BB1307A2562D42AE11A9CDDC5223E82495B3C64CE939348E2A536DB8EE2F37E4371",
+          "profile": "/Users/zhenhuachen/.ohos/config/default_ohosApp_7jUqZhcv0CP4QSwy7tgIfO0YgRdUNKgHiScSPVgQ124=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/zhenhuachen/.ohos/config/default_ohosApp_7jUqZhcv0CP4QSwy7tgIfO0YgRdUNKgHiScSPVgQ124=.p12",
+          "storePassword": "0000001BCDE74EE44F65DDF1C3F10E8E9E58905C59D8A3ECD7EA95B853E3688C5F0044486976F157493283"
+        }
+      }
     ],
     "products": [
       {

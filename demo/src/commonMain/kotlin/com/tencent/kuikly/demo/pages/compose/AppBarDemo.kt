@@ -16,9 +16,14 @@
 package com.tencent.kuikly.demo.pages.compose
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.tencent.kuikly.compose.ComposeContainer
 import com.tencent.kuikly.compose.foundation.background
 import com.tencent.kuikly.compose.foundation.clickable
+import com.tencent.kuikly.compose.foundation.gestures.detectTapGestures
 import com.tencent.kuikly.compose.foundation.layout.*
 import com.tencent.kuikly.compose.material3.Text
 import com.tencent.kuikly.compose.material3.TopAppBar
@@ -29,6 +34,7 @@ import com.tencent.kuikly.compose.setContent
 import com.tencent.kuikly.compose.ui.Alignment
 import com.tencent.kuikly.compose.ui.Modifier
 import com.tencent.kuikly.compose.ui.graphics.Color
+import com.tencent.kuikly.compose.ui.input.pointer.pointerInput
 import com.tencent.kuikly.compose.ui.unit.dp
 import com.tencent.kuikly.core.annotations.Page
 
@@ -154,4 +160,26 @@ class AppBarDemo : ComposeContainer() {
             }
         }
     }
-} 
+}
+
+@Composable
+fun BrokenExample() {
+    var count by remember { mutableStateOf(0) }
+
+    Box(
+        modifier = Modifier
+            .size(100.dp)
+            .background(Color.Blue)
+            .pointerInput(Unit) {  // ❌ key 为 Unit
+                detectTapGestures {
+                    println("点击时 count = $count")  // 永远打印 0
+                }
+            }
+    ) {
+        Text("点击我，count = $count")
+    }
+
+    Button(onClick = { count++ }) {
+        Text("增加 count (当前 = $count)")
+    }
+}
