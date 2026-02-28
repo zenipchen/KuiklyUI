@@ -107,8 +107,53 @@ class NestedHorizontalPagerDemo : ComposeContainer() {
                         .fillMaxSize()
                         .bouncesEnable(false),
             ) { outerPage ->
-                // 每个外层页面都包含一个内层的 TabRow + HorizontalPager
-                InnerPagerPage(outerPageIndex = outerPage)
+                when (outerPage) {
+                    1 -> {
+                        // 只有第二个页面（index=1）包含嵌套的 HorizontalPager
+                        InnerPagerPage(outerPageIndex = outerPage)
+                    }
+                    else -> {
+                        // 其他页面显示纯色背景
+                        SimpleColorPage(pageIndex = outerPage)
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun SimpleColorPage(pageIndex: Int) {
+        val colors = listOf(
+            Color(0xFF1976D2), // Blue - 第1页
+            Color(0xFF388E3C), // Green - 第3页
+            Color(0xFFF57C00), // Orange - 第4页
+        )
+        val colorIndex = if (pageIndex > 1) pageIndex - 1 else 0
+        
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors[colorIndex % colors.size]),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    "主页面 ${pageIndex + 1}",
+                    fontSize = 24.sp,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    "纯色背景页面",
+                    fontSize = 18.sp,
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "这是第 ${pageIndex + 1} 个页面",
+                    fontSize = 14.sp,
+                    color = Color.White.copy(alpha = 0.6f)
+                )
             }
         }
     }
