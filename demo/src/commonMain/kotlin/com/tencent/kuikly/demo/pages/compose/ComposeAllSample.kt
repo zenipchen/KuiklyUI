@@ -125,6 +125,7 @@ internal class ComposeAllSample : ComposeContainer() {
             // Pager
 //            DemoItem("HorizontalPager2", "HorizontalPager的key，SnapPosition参数示例", "HorizontalPagerDemo2"),
             DemoItem("HorizontalPager3", "HorizontalPager各种状态信息示例", "HorizontalPagerDemo3"),
+            DemoItem("NestedHorizontalPager", "嵌套HorizontalPager带Tab示例", "NestedHorizontalPagerDemo"),
             // FlowRow/FlowColumn
             DemoItem("FlowRow", "FlowRow 流式行布局示例,无懒加载", "FlowRowDemo1"),
             DemoItem("FlowColumn", "FlowColumn 流式列布局示例，无懒加载", "FlowColumnDemo1"),
