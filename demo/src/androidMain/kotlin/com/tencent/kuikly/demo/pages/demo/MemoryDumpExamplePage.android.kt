@@ -14,5 +14,9 @@
  */
 package com.tencent.kuikly.demo.pages.demo
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
+
 actual fun dumpMemory() {
+    Thread.sleep(50)
 }

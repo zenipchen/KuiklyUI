@@ -35,6 +35,7 @@ import com.tencent.kuikly.compose.foundation.layout.fillMaxWidth
 import com.tencent.kuikly.compose.foundation.layout.height
 import com.tencent.kuikly.compose.foundation.layout.padding
 import com.tencent.kuikly.compose.foundation.lazy.LazyColumn
+import com.tencent.kuikly.compose.foundation.lazy.rememberLazyListState
 import com.tencent.kuikly.compose.foundation.pager.HorizontalPager
 import com.tencent.kuikly.compose.foundation.pager.rememberPagerState
 import com.tencent.kuikly.compose.material3.Tab
@@ -47,6 +48,10 @@ import com.tencent.kuikly.compose.ui.graphics.Color
 import com.tencent.kuikly.compose.ui.unit.dp
 import com.tencent.kuikly.compose.ui.unit.sp
 import com.tencent.kuikly.core.annotations.Page
+import com.tencent.kuikly.demo.pages.demo.dumpMemory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Page("NestedHorizontalPagerDemo")
@@ -102,6 +107,7 @@ class NestedHorizontalPagerDemo : ComposeContainer() {
             // 外层 HorizontalPager
             HorizontalPager(
                 state = outerPagerState,
+                beyondViewportPageCount = 0,
                 modifier =
                     Modifier
                         .fillMaxSize()
@@ -160,6 +166,10 @@ class NestedHorizontalPagerDemo : ComposeContainer() {
 
     @Composable
     fun InnerPagerPage(outerPageIndex: Int) {
+
+
+
+
         Column(
             modifier =
                 Modifier
@@ -204,9 +214,15 @@ class NestedHorizontalPagerDemo : ComposeContainer() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            LaunchedEffect(Unit) {
+//                delay(20)
+//                innerPagerState.animateScrollToPage(0)
+            }
+
             // 内层 HorizontalPager
             HorizontalPager(
                 state = innerPagerState,
+                beyondViewportPageCount = 3,
                 modifier =
                     Modifier
                         .fillMaxSize()
@@ -226,8 +242,22 @@ class NestedHorizontalPagerDemo : ComposeContainer() {
         outerPageIndex: Int,
         innerPageIndex: Int,
     ) {
+
+        GlobalScope.launch(Dispatchers.Main) {
+            delay(20)
+            dumpMemory()
+        }
+
+        val lazyState = rememberLazyListState()
+
+//        LaunchedEffect(Unit) {
+//            delay(200)
+//            lazyState.scrollToItem(1)
+//        }
+
         // 页面内容 - 使用 LazyColumn 展示可滚动的内容
         LazyColumn(
+            state = lazyState,
             modifier =
                 Modifier
                     .fillMaxSize()
