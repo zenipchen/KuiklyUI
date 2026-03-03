@@ -284,10 +284,12 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     private var lastLayoutTop = -1
 
     private fun checkAndStopScrollIfNeeded() {
+        KuiklyRenderLog.d("KRRecyclerView", "[checkAndStopScrollIfNeeded] hasAnim=${scrollAnimationManager.hasRunningAnimation()} scrollState=$scrollState")
         // 当所有动画都结束时，修正滚动状态，对齐 smoothScrollBy 的行为
         if (!scrollAnimationManager.hasRunningAnimation()) {
-            // 只在状态为 SETTLING 时才停止嵌套滚动和修正滚动状态，避免在用户拖拽时（状态为 DRAGGING）错误地重置状态
+            // 只在状态为 SETTLING 时才停止嵌套滚动和修正滚动状态，避免在用户拖拽时（状态为 DRAGGER）错误地重置状态
             if (scrollState == SCROLL_STATE_SETTLING) {
+                KuiklyRenderLog.d("KRRecyclerView", "[checkAndStopScrollIfNeeded] stopping scroll")
                 // 停止嵌套滚动（如果存在）
                 if (isNestScrolling()) {
                     stopNestedScroll(ViewCompat.TYPE_NON_TOUCH)
@@ -483,6 +485,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
             METHOD_CONTENT_INSET_WHEN_END_DRAG -> contentInsetWhenEndDrag(params)
             METHOD_CONTENT_INSET -> contentInset(params)
             METHOD_ABORT_CONTENT_OFFSET_ANIMATE -> {
+                KuiklyRenderLog.d("KRRecyclerView", "[call] METHOD_ABORT_CONTENT_OFFSET_ANIMATE")
                 scrollAnimationManager.cancel()
                 stopScroll()
             }
@@ -656,10 +659,12 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
             // 导致 RV 内部的状态一直都 DRAGGING，因此在 onInterceptEvent的时候，RV 内部一直拦截事件
             // 导致 RV 内部的横向子 List 无法滑动
             // 触发条件：先在横向子 List 滑动然后触发 cancel
+            KuiklyRenderLog.d("KRRecyclerView", "[fling] cancel animation due to nested scroll")
             scrollAnimationManager.cancel()
             stopScroll()
             return true
         }
+        KuiklyRenderLog.d("KRRecyclerView", "[fling] velocityX=$adjustedVelocityX velocityY=$adjustedVelocityY")
         return super.fling(adjustedVelocityX, adjustedVelocityY)
     }
 
@@ -719,6 +724,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
                 }
                 if (isIdeaStateToDraggingState(currentState) || isSettlingStateToDraggingState(currentState)) {
                     isDragging = true
+                    KuiklyRenderLog.d("KRRecyclerView", "[onScrollStateChanged] cancel animation due to drag start")
                     scrollAnimationManager.cancel()
                     fireBeginDragEvent()
                 }
@@ -976,9 +982,11 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     private fun setContentOffset(value: String?) {
+        KuiklyRenderLog.d("KRRecyclerView", "[setContentOffset] params=$value scrollState=$scrollState hasAnim=${scrollAnimationManager.hasRunningAnimation()}")
         val rvLayoutManager = layoutManager
         if (rvLayoutManager == null || !isContentViewAttached) { // 还没设置contentView，所以layoutManager为null，等Layout完再apply
             pendingSetContentOffsetStr = value ?: KRCssConst.EMPTY_STRING
+            KuiklyRenderLog.d("KRRecyclerView", "[setContentOffset] pending for later")
             return
         }
 
@@ -1000,6 +1008,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         if (contentOffsetSplits.size >= 7) {
             animationCurve = contentOffsetSplits[6].toInt()
         }
+        KuiklyRenderLog.d("KRRecyclerView", "[setContentOffset] offsetX=$offsetX offsetY=$offsetY animate=$animate duration=$animationDuration damping=$animationDamping velocity=$animationVelocity curve=$animationCurve")
 
         val originOffsetY = offsetY
         val originOffsetX = offsetX
@@ -1068,11 +1077,14 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
                 ox = 0
             }
 
+            val currentLeft = -contentView.left
+            val currentTop = -contentView.top
             if (isVertical) {
-                dy = oy - (-contentView.top)
+                dy = oy - currentTop
             } else {
-                dx = ox - (-contentView.left)
+                dx = ox - currentLeft
             }
+            KuiklyRenderLog.d("KRRecyclerView", "[internalSetContentOffset] isVertical=$isVertical currentPos=${if(isVertical) currentTop else currentLeft} targetPos=${if(isVertical) oy else ox} delta=${if(isVertical) dy else dx}")
             if (animate) {
                 if (animationDuration > 0) {
                     when (animationCurve) {
@@ -1130,7 +1142,9 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         velocity: Float,
         isVertical: Boolean
     ) {
+        KuiklyRenderLog.d("KRRecyclerView", "[startSpringScroll] dx=$dx dy=$dy duration=$duration damping=$damping velocity=$velocity")
         if (isLayoutSuppressed) {
+            KuiklyRenderLog.d("KRRecyclerView", "[startSpringScroll] suppressed")
             return
         }
         scrollAnimationManager.startSpringAnimation(
@@ -1140,6 +1154,10 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
                 forceSetScrollState(newState)
             }
         }
+    }
+
+    override fun smoothScrollToPosition(position: Int) {
+        super.smoothScrollToPosition(position)
     }
 
     private fun startLinearScroll(

@@ -17,6 +17,7 @@ package com.tencent.kuikly.core.render.android.expand.component.list
 
 import android.animation.ValueAnimator
 import android.view.animation.LinearInterpolator
+import com.tencent.kuikly.core.render.android.adapter.KuiklyRenderLog
 
 internal class KRSpringAnimation(
     startValue: Float,
@@ -29,8 +30,13 @@ internal class KRSpringAnimation(
     private var currentVelocity = velocity
     private var lastTime = 0L
     private val mass = 1f
+    private var frameCount = 0
     // c = 2 * m * sqrt(k/m) * zeta = 2 * sqrt(m*k) * zeta
     private val dampingCoefficient = 2f * kotlin.math.sqrt((mass * stiffness).toDouble()).toFloat() * dampingRatio
+
+    init {
+        KuiklyRenderLog.d("SpringAnim", "[INIT] start=$startValue end=$endValue velocity=$velocity stiffness=$stiffness damping=$dampingRatio")
+    }
 
     private val animator = ValueAnimator.ofFloat(0f, 1f).apply {
         duration = 100000L // Long enough
@@ -56,11 +62,19 @@ internal class KRSpringAnimation(
 
             currentVelocity += acceleration * dt
             currentValue += currentVelocity * dt
+            frameCount++
+
+            // 每10帧或关键状态打印日志
+            if (frameCount % 10 == 1 || kotlin.math.abs(currentValue - endValue) < 5f || kotlin.math.abs(currentVelocity) > 1000f) {
+                KuiklyRenderLog.d("SpringAnim", "[FRAME#$frameCount] dt=${dt}s value=$currentValue target=$endValue vel=$currentVelocity acc=$acceleration displacement=$displacement")
+            }
 
             onUpdate(currentValue)
 
             // End condition: close enough and slow enough
-            if (kotlin.math.abs(currentValue - endValue) < 0.5f && kotlin.math.abs(currentVelocity) < 10f) {
+            val distToEnd = kotlin.math.abs(currentValue - endValue)
+            if (distToEnd < 0.5f && kotlin.math.abs(currentVelocity) < 10f) {
+                KuiklyRenderLog.d("SpringAnim", "[END] frame=$frameCount value=$currentValue target=$endValue dist=$distToEnd vel=$currentVelocity")
                 cancel()
                 onUpdate(endValue)
             }
@@ -84,10 +98,13 @@ internal class KRSpringAnimation(
 
     override fun start() {
         lastTime = 0L
+        frameCount = 0
+        KuiklyRenderLog.d("SpringAnim", "[START] animator started")
         animator.start()
     }
 
     override fun cancel() {
+        KuiklyRenderLog.d("SpringAnim", "[CANCEL] frame=$frameCount value=$currentValue target=$endValue vel=$currentVelocity")
         animator.cancel()
     }
 }

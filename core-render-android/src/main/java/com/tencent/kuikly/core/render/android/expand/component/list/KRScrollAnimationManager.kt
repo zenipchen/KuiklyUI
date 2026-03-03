@@ -16,6 +16,7 @@
 package com.tencent.kuikly.core.render.android.expand.component.list
 
 import androidx.core.view.ViewCompat
+import com.tencent.kuikly.core.render.android.adapter.KuiklyRenderLog
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.PI
 import kotlin.math.abs
@@ -41,11 +42,16 @@ internal sealed class AnimationConfig {
                 return (2 * PI / durationSec).pow(2).toFloat()
             }
         }
+
+        override fun toString(): String =
+            "Spring(duration=$duration, damping=$damping, velocity=$velocity, isVertical=$isVertical)"
     }
 
     data class Linear(
         val duration: Int
-    ) : AnimationConfig()
+    ) : AnimationConfig() {
+        override fun toString(): String = "Linear(duration=$duration)"
+    }
 }
 
 /**
@@ -123,6 +129,7 @@ internal class KRScrollAnimationManager(
         config: AnimationConfig,
         onScrollStateChange: (Int) -> Unit
     ) {
+        KuiklyRenderLog.d("ScrollAnimMgr", "[START] dx=$dx dy=$dy hasRunning=${hasRunningAnimation()} config=$config")
         // 取消之前的动画
         cancel()
 
@@ -199,11 +206,17 @@ internal class KRScrollAnimationManager(
      */
     private fun setupAndStartAnimation(animation: KRScrollAnimation, targetDistance: Float) {
         var consumed = 0f
+        var updateCount = 0
 
         animation.onUpdate = { value ->
             if (currentAnimation === animation) {
                 val delta = value - consumed
                 val intDelta = delta.toInt()
+                updateCount++
+                
+                if (updateCount % 10 == 1 || kotlin.math.abs(delta) > 50f) {
+                    KuiklyRenderLog.d("ScrollAnimMgr", "[UPDATE#$updateCount] value=$value consumed=$consumed delta=$delta intDelta=$intDelta target=$targetDistance")
+                }
                 
                 if (intDelta != 0) {
                     scrollRecyclerView(intDelta)
@@ -213,15 +226,18 @@ internal class KRScrollAnimationManager(
         }
 
         animation.onEnd = {
+            KuiklyRenderLog.d("ScrollAnimMgr", "[ON_END] updateCount=$updateCount consumed=$consumed target=$targetDistance")
             if (currentAnimation === animation) {
                 // 动画结束时，检查是否还有剩余的小数部分需要滚动
                 // 由于 delta.toInt() 会截断小数部分，可能导致最后有 0.x px 的偏差
                 // 计算剩余距离：目标距离 - 已消费的整数部分
                 val remaining = targetDistance - consumed
+                KuiklyRenderLog.d("ScrollAnimMgr", "[END] remaining=$remaining")
                 if (kotlin.math.abs(remaining) >= 0.5f) {
                     // 如果剩余部分 >= 0.5px，就补上（四舍五入）
                     val finalDelta = remaining.roundToInt()
                     if (finalDelta != 0) {
+                        KuiklyRenderLog.d("ScrollAnimMgr", "[FINAL_DELTA] finalDelta=$finalDelta")
                         scrollRecyclerView(finalDelta)
                     }
                 }
@@ -231,6 +247,7 @@ internal class KRScrollAnimationManager(
         }
 
         currentAnimation = animation
+        KuiklyRenderLog.d("ScrollAnimMgr", "[ANIMATION_START] target=$targetDistance")
         animation.start()
     }
 
@@ -239,11 +256,29 @@ internal class KRScrollAnimationManager(
      * 根据当前滚动方向选择 X 或 Y 轴
      */
     private fun scrollRecyclerView(delta: Int) {
+        // 获取滚动前的位置
+        // 注意：RecyclerView的滚动位置需要通过compute*ScrollOffset获取，而不是scrollX/scrollY
+        val beforePos = if (isHorizontal) {
+            recyclerView.computeHorizontalScrollOffset()
+        } else {
+            recyclerView.computeVerticalScrollOffset()
+        }
+        
         if (isHorizontal) {
             recyclerView.scrollBy(delta, 0)
         } else {
             recyclerView.scrollBy(0, delta)
         }
+        
+        // 获取滚动后的位置
+        val afterPos = if (isHorizontal) {
+            recyclerView.computeHorizontalScrollOffset()
+        } else {
+            recyclerView.computeVerticalScrollOffset()
+        }
+        
+        val actualDelta = afterPos - beforePos
+        KuiklyRenderLog.d("ScrollAnimMgr", "[SCROLL] delta=$delta actualDelta=$actualDelta before=$beforePos after=$afterPos horizontal=$isHorizontal")
     }
 
     /**
