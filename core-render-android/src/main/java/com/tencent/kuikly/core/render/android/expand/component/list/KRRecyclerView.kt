@@ -58,9 +58,13 @@ enum class KRNestedScrollMode(val value: String){
 class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChild2,
     NestedScrollingParent2 {
 
-    constructor(context: Context) : super(context)
+    constructor(context: Context) : super(context) {
+        KuiklyRenderLog.d("KRR", "KRRecyclerView constructor(context)")
+    }
 
-    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet)
+    constructor(context: Context, attributeSet: AttributeSet?) : super(context, attributeSet) {
+        KuiklyRenderLog.d("KRR", "KRRecyclerView constructor(context, attributeSet)")
+    }
 
     /**
      * 滚动回调
@@ -307,6 +311,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     fun setContentInsert(contentInset: KRRecyclerContentViewContentInset?, immediately: Boolean = false) {
+        KuiklyRenderLog.d("KRR", "[setContentInsert] contentInset=$contentInset immediately=$immediately")
         val oh = overScrollHandler ?: return
         if (immediately) {
             oh.contentInsetWhenEndDrag = contentInset
@@ -317,14 +322,18 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     fun addScrollListener(listener: IKRRecyclerViewListener) {
+        KuiklyRenderLog.d("KRR", "[addScrollListener] listener=$listener")
         krRecyclerViewListeners.add(listener)
     }
 
     fun removeListener(listener: IKRRecyclerViewListener) {
+        KuiklyRenderLog.d("KRR", "[removeListener] listener=$listener")
         krRecyclerViewListeners.remove(listener)
     }
 
     fun addNestedChildInterceptEventListener(listener: INestedChildInterceptor) {
+        KuiklyRenderLog.d("KRR", "addNestedChildInterceptEventListener listener=$listener")
+        KuiklyRenderLog.d("KRR", "[addNestedChildInterceptEventListener] listener=$listener")
         val listeners = nestedChildInterceptEventListeners ?: mutableListOf<INestedChildInterceptor>().apply {
             nestedChildInterceptEventListeners = this
         }
@@ -332,6 +341,8 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     fun removeNestedChildInterceptEventListener(listener: INestedChildInterceptor) {
+        KuiklyRenderLog.d("KRR", "removeNestedChildInterceptEventListener listener=$listener")
+        KuiklyRenderLog.d("KRR", "[removeNestedChildInterceptEventListener] listener=$listener")
         nestedChildInterceptEventListeners?.remove(listener)
     }
 
@@ -353,6 +364,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
      * @return 是否处理
      */
     override fun setProp(propKey: String, propValue: Any): Boolean {
+        KuiklyRenderLog.d("KRR", "setProp propKey=$propKey propValue=$propValue")
         return when (propKey) {
             DRAG_BEGIN -> observeDragBegin(propValue)
             DRAG_END -> observeDragEnd(propValue)
@@ -480,6 +492,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     fun isScrollWithParent() = scrollWithParent
 
     override fun call(method: String, params: String?, callback: KuiklyRenderCallback?): Any? {
+        KuiklyRenderLog.d("KRR", "call method=$method params=$params")
         return when (method) {
             METHOD_CONTENT_OFFSET -> setContentOffset(params)
             METHOD_CONTENT_INSET_WHEN_END_DRAG -> contentInsetWhenEndDrag(params)
@@ -494,6 +507,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun setScrollingTouchSlop(slopConstant: Int) {
+        KuiklyRenderLog.d("KRR", "[setScrollingTouchSlop] slopConstant=$slopConstant")
         scrollConflictHandler.setScrollingTouchSlop(slopConstant)
         super.setScrollingTouchSlop(slopConstant)
     }
@@ -513,6 +527,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun addView(child: View, index: Int) {
+        KuiklyRenderLog.d("KRR", "addView child=$child index=$index")
         if (adapter == null) {
             setupAdapter(child)
         } else {
@@ -552,6 +567,8 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun onDestroy() {
+        KuiklyRenderLog.d("KRR", "onDestroy")
+        KuiklyRenderLog.d("KRR", "onDestroy")
         super.onDestroy()
         nestedHorizontalChildInterceptor?.also { interceptor ->
             closestHorizontalRecyclerViewParent?.removeNestedChildInterceptEventListener(interceptor)
@@ -570,6 +587,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        KuiklyRenderLog.d("KRR", "dispatchTouchEvent ev=$ev")
         return if (overScrollHandler?.forceOverScroll == true) {
             val r = super.dispatchTouchEvent(ev)
             touchDelegate?.dispatchHRRecyclerViewTouchEvent(ev)
@@ -580,6 +598,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
+        KuiklyRenderLog.d("KRR", "onInterceptTouchEvent e=$e")
         if (touchConsumeByKuikly) {
             return true
         }
@@ -615,6 +634,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
+        KuiklyRenderLog.d("KRR", "onTouchEvent e=$e")
         if (touchConsumeByKuikly) {
             return true
         }
@@ -631,6 +651,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun fling(velocityX: Int, velocityY: Int): Boolean {
+        KuiklyRenderLog.d("KRR", "fling velocityX=$velocityX velocityY=$velocityY")
         // When used by Compose DSL, limit fling velocity
         // to avoid excessive accumulated speed during rapid gestures.
         val rootView = krRootView()
@@ -669,6 +690,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun onAttachedToWindow() {
+        KuiklyRenderLog.d("KRR", "onAttachedToWindow")
         super.onAttachedToWindow()
         trySetupClosestHorizontalRecyclerViewParent()
         trySetupClosestVerticalRecyclerViewParent()
@@ -746,6 +768,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     private fun fireBeginDragEvent() {
+        KuiklyRenderLog.d("KRR", "fireBeginDragEvent")
         needFireWillEndDragEvent = true
         dispatchOnBeginDrag(contentOffsetX, contentOffsetY)
         dragBeginEventCallback?.invoke(getCommonScrollParams())
@@ -753,6 +776,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     private fun fireEndDragEvent() {
+        KuiklyRenderLog.d("KRR", "fireEndDragEvent")
         if (needFireWillEndDragEvent) {
             // onFling回调，RecyclerView 内部只有在 velocity > 系统的minVelocity
             // 才会回调, 因此当加速度小于 minVelocity时, 在这里补充回调
@@ -772,6 +796,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     private fun fireScrollEvent() {
+        KuiklyRenderLog.d("KRR", "fireScrollEvent")
         val cv = contentView
         val offsetX = (-cv.left.toFloat())
         val offsetY = (-cv.top.toFloat()) - contentView.translationY
@@ -789,6 +814,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     private fun fireWillDragEndEvent(velocityX: Int, velocityY: Int) {
+        KuiklyRenderLog.d("KRR", "fireWillDragEndEvent velocityX=$velocityX velocityY=$velocityY")
         needFireWillEndDragEvent = false
         val callback = willEndDragEventCallback ?: return
         val paramsMap = getCommonScrollParams()
@@ -805,6 +831,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     private fun fireEndScrollEvent() {
+        KuiklyRenderLog.d("KRR", "fireEndScrollEvent")
         scrollEndEventCallback?.invoke(getCommonScrollParams())
     }
 
@@ -982,6 +1009,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     private fun setContentOffset(value: String?) {
+        KuiklyRenderLog.d("KRR", "setContentOffset value=$value")
         KuiklyRenderLog.d("KRRecyclerView", "[setContentOffset] params=$value scrollState=$scrollState hasAnim=${scrollAnimationManager.hasRunningAnimation()}")
         val rvLayoutManager = layoutManager
         if (rvLayoutManager == null || !isContentViewAttached) { // 还没设置contentView，所以layoutManager为null，等Layout完再apply
@@ -1064,6 +1092,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         animationVelocity: Float = 0f,
         animationCurve: Int = 0
     ) {
+        KuiklyRenderLog.d("KRR", "internalSetContentOffset originOffsetX=$originOffsetX originOffsetY=$originOffsetY offsetX=$offsetX offsetY=$offsetY isVertical=$isVertical animate=$animate animationDuration=$animationDuration animationDamping=$animationDamping animationVelocity=$animationVelocity animationCurve=$animationCurve")
         if (isContentViewAttached) {
             var dx = 0
             var dy = 0
@@ -1126,6 +1155,7 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     }
 
     override fun smoothScrollToPosition(position: Int) {
+        KuiklyRenderLog.d("KRR", "smoothScrollToPosition position=$position")
         // 拦截滚动到顶部的操作，对齐 iOS 行为
         if (position == 0 && scrollToTopEventCallback != null) {
             scrollToTopEventCallback?.invoke(getCommonScrollParams())
@@ -1154,10 +1184,6 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
                 forceSetScrollState(newState)
             }
         }
-    }
-
-    override fun smoothScrollToPosition(position: Int) {
-        super.smoothScrollToPosition(position)
     }
 
     private fun startLinearScroll(
