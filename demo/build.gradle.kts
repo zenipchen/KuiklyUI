@@ -33,11 +33,15 @@ kotlin {
         browser {
             webpackTask {
                 outputFileName = "${moduleName}.js" // 最后输出的名字
+                // 启用 Webpack 持久化缓存，加速增量编译
+                args.add("--cache-type=filesystem")
             }
 
             commonWebpackConfig {
                 output?.library = null // 不导出全局对象，只导出必要的入口函数
-                devtool = "source-map" // 不使用默认的 eval 执行方式构建出 source-map，而是构建单独的 sourceMap 文件
+                // 预览模式：禁用 source-map 以加快编译速度
+                // 如需调试，可临时改为 "source-map"
+                devtool = if (project.properties["previewMode"] == "true") false else "source-map"
             }
         }
         binaries.executable() //将kotlin.js与kotlin代码打包成一份可直接运行的js文件
