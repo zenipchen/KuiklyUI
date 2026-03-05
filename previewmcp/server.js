@@ -332,8 +332,25 @@ function startHMRServer() {
 
     hmrProcess.stderr.on('data', (data) => {
         const str = data.toString();
+        
+        // 检测 Webpack 编译输出 (Webpack 输出到 stderr)
+        if (str.includes('asset') && str.includes('MiB') && str.includes('[emitted]')) {
+            console.log(`[HMR] ${str.trim()}`);
+            
+            // 检测到编译输出，说明 Webpack 已就绪
+            if (!isHMRReady) {
+                isHMRReady = true;
+                console.log('[HMR] ✅ Dev Server 已就绪！');
+                console.log(`[HMR] 访问 http://localhost:${CONFIG.HMR_DEV_SERVER_PORT} 查看预览`);
+                console.log('[HMR] 后续代码变更将自动热更新，无需刷新页面');
+                
+                // 通知所有等待的回调
+                hmrCallbacks.forEach(cb => cb(true));
+                hmrCallbacks = [];
+            }
+        }
         // 过滤掉常见的非错误日志
-        if (!str.includes('DeprecationWarning') && !str.includes('ExperimentalWarning')) {
+        else if (!str.includes('DeprecationWarning') && !str.includes('ExperimentalWarning')) {
             console.error(`[HMR Error] ${str.trim()}`);
         }
     });
@@ -351,6 +368,14 @@ function startHMRServer() {
 }
 
 /**
+ * 检查 HMR Dev Server 是否就绪（通过检测 nativevue2.js 是否存在）
+ */
+function checkHMRReady() {
+    const jsPath = path.join(CONFIG.PROJECT_ROOT, 'demo/build/kotlin-webpack/js/developmentExecutable/nativevue2.js');
+    return fs.existsSync(jsPath);
+}
+
+/**
  * 等待 HMR Dev Server 就绪
  */
 function waitForHMR(timeout = CONFIG.HMR_WAIT_TIMEOUT) {
@@ -361,7 +386,8 @@ function waitForHMR(timeout = CONFIG.HMR_WAIT_TIMEOUT) {
         }
 
         // 如果已经就绪，直接返回
-        if (isHMRReady) {
+        if (isHMRReady || checkHMRReady()) {
+            isHMRReady = true;
             resolve({ success: true, mode: 'hmr' });
             return;
         }
@@ -945,8 +971,33 @@ const server = http.createServer(async (req, res) => {
 
     // ===== H5 预览相关路由 =====
 
-    // 预览入口页面：动态生成 HTML，将 nativevue2.js 和 h5App.js 都指向本服务
+    // 预览入口页面
     if (url.pathname === '/preview') {
+        // HMR 模式：重定向到 HMR Dev Server
+        if (CONFIG.COMPILE_MODE === 'hmr') {
+            // 主动检测 HMR 是否就绪
+            if (!isHMRReady && !checkHMRReady()) {
+                res.writeHead(503, { 'Content-Type': 'text/html' });
+                res.end(`<html><body style="color:white;background:#1e1e2e;padding:20px;font-family:monospace">
+                    <h2>⏳ HMR Dev Server 正在初始化...</h2>
+                    <p>请等待首次编译完成后再刷新页面</p>
+                    <p>首次编译大约需要 30-60 秒</p>
+                    <script>setTimeout(()=>location.reload(), 3000);</script>
+                </body></html>`);
+                return;
+            }
+            // 标记为就绪
+            isHMRReady = true;
+            // 重定向到 HMR Dev Server
+            res.writeHead(302, {
+                'Location': `http://localhost:${CONFIG.HMR_DEV_SERVER_PORT}`,
+                'Cache-Control': 'no-cache'
+            });
+            res.end();
+            return;
+        }
+        
+        // 传统模式：动态生成 HTML
         const h5IndexPath = path.join(CONFIG.PROJECT_ROOT, CONFIG.H5APP_INDEX_HTML);
         if (fs.existsSync(h5IndexPath)) {
             let html = fs.readFileSync(h5IndexPath, 'utf-8');
