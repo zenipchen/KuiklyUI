@@ -39,9 +39,11 @@ kotlin {
 
             commonWebpackConfig {
                 output?.library = null // 不导出全局对象，只导出必要的入口函数
-                // 预览模式：禁用 source-map 以加快编译速度
-                // 如需调试，可临时改为 "source-map"
-                devtool = if (project.properties["previewMode"] == "true") false else "source-map"
+                // 预览模式：禁用 source-map 以加快编译速度 (~省 1-2秒，减少 16MB .map 文件)
+                // 如需调试，可注释掉下面这行或改为 devtool = "source-map"
+                if (project.properties["previewMode"] == "true") {
+                    devtool = null  // 禁用 source map
+                }
             }
         }
         binaries.executable() //将kotlin.js与kotlin代码打包成一份可直接运行的js文件
