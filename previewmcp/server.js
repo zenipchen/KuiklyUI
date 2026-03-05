@@ -71,6 +71,7 @@ const CONFIG = {
         '-PpageName=PreviewPage',
         '-Pkuikly.useLocalKsp=false',
         '-PpreviewMode=true',  // 启用预览模式 (禁用 source map)
+        '-PdevServerHost=0.0.0.0',  // 允许外部访问
         '--parallel',
         '--build-cache'
     ],
@@ -973,7 +974,7 @@ const server = http.createServer(async (req, res) => {
 
     // 预览入口页面
     if (url.pathname === '/preview') {
-        // HMR 模式：重定向到 HMR Dev Server
+        // HMR 模式：使用 iframe 嵌入 HMR Dev Server，避免跨域问题
         if (CONFIG.COMPILE_MODE === 'hmr') {
             // 主动检测 HMR 是否就绪
             if (!isHMRReady && !checkHMRReady()) {
@@ -988,12 +989,62 @@ const server = http.createServer(async (req, res) => {
             }
             // 标记为就绪
             isHMRReady = true;
-            // 重定向到 HMR Dev Server
-            res.writeHead(302, {
-                'Location': `http://localhost:${CONFIG.HMR_DEV_SERVER_PORT}`,
-                'Cache-Control': 'no-cache'
-            });
-            res.end();
+            // 返回加载完整 H5 渲染引擎的预览页面
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            const host = req.headers.host.split(':')[0];
+            res.end(`<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kuikly Preview (HMR)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { overflow: hidden; }
+        /* 隐藏输入框边框的样式 */
+        input:focus { outline: none; }
+        /* toast提示框的样式 */
+        .toast-wrapper {
+            position: fixed;
+            z-index: 100000;
+            height: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            top: 70px;
+            background-color: white;
+        }
+        .toast-content {
+            display: flex;
+            font-size: 12px;
+            line-height: 30px;
+            min-width: 150px;
+            border: 1px solid gray;
+            border-radius: 5px;
+            justify-content: center;
+        }
+        /* 隐藏滚动条的样式 */
+        .list-no-scrollbar {
+            scrollbar-width: none;
+        }
+        .list-no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* 转菊花的动画样式 */
+        @keyframes activityIndicatorRotate {
+            0% { transform: rotate(0deg) }
+            100% { transform: rotate(360deg) }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script src="http://${host}:${CONFIG.HMR_DEV_SERVER_PORT}/nativevue2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/libpag@4.3.51/lib/libpag.umd.min.js"></script>
+    <script src="http://${host}:8080/h5App.js"></script>
+</body>
+</html>`);
             return;
         }
         
