@@ -36,4 +36,6 @@ project(":miniApp").buildFileName = buildFileName
 include(":compose")
 project(":compose").buildFileName = buildFileName
 
+include(":compose-navigation")
+
 rootProject.buildFileName = buildFileName
