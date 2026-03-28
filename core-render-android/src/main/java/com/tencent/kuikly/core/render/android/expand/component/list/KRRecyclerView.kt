@@ -1430,8 +1430,8 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         val shouldScrollParentY = when {
             parentDy > 0 && target.scrollForwardMode == KRNestedScrollMode.PARENT_FIRST -> true
             parentDy < 0 && target.scrollBackwardMode == KRNestedScrollMode.PARENT_FIRST -> true
-            parentDy > 0 && target.scrollForwardMode == KRNestedScrollMode.SELF_FIRST && !target.canScrollVertically(parentDy) -> true
-            parentDy < 0 && target.scrollBackwardMode == KRNestedScrollMode.SELF_FIRST && !target.canScrollVertically(parentDy) -> true
+            parentDy > 0 && target.scrollForwardMode == KRNestedScrollMode.SELF_FIRST && !canTargetOrChildrenScrollVertically(target, parentDy) -> true
+            parentDy < 0 && target.scrollBackwardMode == KRNestedScrollMode.SELF_FIRST && !canTargetOrChildrenScrollVertically(target, parentDy) -> true
             else -> false
         }
 
@@ -1464,8 +1464,8 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         val shouldScrollParentX = when {
             parentDx > 0 && target.scrollForwardMode == KRNestedScrollMode.PARENT_FIRST -> true
             parentDx < 0 && target.scrollBackwardMode == KRNestedScrollMode.PARENT_FIRST -> true
-            parentDx > 0 && target.scrollForwardMode == KRNestedScrollMode.SELF_FIRST && !target.canScrollHorizontally(parentDx) -> true
-            parentDx < 0 && target.scrollBackwardMode == KRNestedScrollMode.SELF_FIRST && !target.canScrollHorizontally(parentDx) -> true
+            parentDx > 0 && target.scrollForwardMode == KRNestedScrollMode.SELF_FIRST && !canTargetOrChildrenScrollHorizontally(target, parentDx) -> true
+            parentDx < 0 && target.scrollBackwardMode == KRNestedScrollMode.SELF_FIRST && !canTargetOrChildrenScrollHorizontally(target, parentDx) -> true
             else -> false
         }
 
@@ -1478,6 +1478,88 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
             consumed[0] = actualScrollX
             lastScrollParentX = parentDx
         }
+    }
+
+    /**
+     * 检查 target 及其所有子滚动视图能否在指定方向垂直滚动
+     * 用于解决嵌套滚动中，只检查直接子容器而忽略更深层次子滚动视图的问题
+     * 
+     * @param target 目标视图（通常是 Kuikly 子容器）
+     * @param direction 滚动方向（> 0 向下，< 0 向上）
+     * @return true 如果 target 或任何子滚动视图可以滚动
+     */
+    private fun canTargetOrChildrenScrollVertically(target: View, direction: Int): Boolean {
+        // 1. 先检查 target 自身能否滚动
+        if (target.canScrollVertically(direction)) {
+            return true
+        }
+        
+        // 2. 递归检查所有子滚动视图（包括 Hippy ScrollView、WebView 等）
+        if (target is ViewGroup) {
+            return hasScrollableChildVertically(target, direction)
+        }
+        
+        return false
+    }
+
+    /**
+     * 递归查找是否有可滚动的子视图（纵向）
+     * 遍历整个视图树，找到所有可以滚动的子视图
+     * 支持：ScrollView, RecyclerView, ListView, WebView, Hippy ScrollView 等
+     */
+    private fun hasScrollableChildVertically(viewGroup: ViewGroup, direction: Int): Boolean {
+        for (i in 0 until viewGroup.childCount) {
+            val child = viewGroup.getChildAt(i)
+            
+            // 检查子视图是否可以滚动
+            // canScrollVertically() 是 View 的原生方法，支持所有滚动容器
+            if (child.canScrollVertically(direction)) {
+                return true
+            }
+            
+            // 如果子视图是容器，递归检查
+            if (child is ViewGroup) {
+                if (hasScrollableChildVertically(child, direction)) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
+     * 检查 target 及其所有子滚动视图能否在指定方向水平滚动
+     */
+    private fun canTargetOrChildrenScrollHorizontally(target: View, direction: Int): Boolean {
+        if (target.canScrollHorizontally(direction)) {
+            return true
+        }
+        
+        if (target is ViewGroup) {
+            return hasScrollableChildHorizontally(target, direction)
+        }
+        
+        return false
+    }
+
+    /**
+     * 递归查找是否有可滚动的子视图（横向）
+     */
+    private fun hasScrollableChildHorizontally(viewGroup: ViewGroup, direction: Int): Boolean {
+        for (i in 0 until viewGroup.childCount) {
+            val child = viewGroup.getChildAt(i)
+            
+            if (child.canScrollHorizontally(direction)) {
+                return true
+            }
+            
+            if (child is ViewGroup) {
+                if (hasScrollableChildHorizontally(child, direction)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     override fun getNestedScrollAxes(): Int {
