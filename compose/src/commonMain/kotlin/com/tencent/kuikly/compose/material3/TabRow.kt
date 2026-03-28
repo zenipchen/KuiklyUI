@@ -1026,14 +1026,14 @@ private fun ScrollableTabRowWithSubcomposeImpl(
     tabs: @Composable () -> Unit,
     scrollState: ScrollState,
 ) {
-    Surface(modifier = modifier, color = containerColor, contentColor = contentColor) {
+    Surface(modifier = Modifier, color = containerColor, contentColor = contentColor) {
         val coroutineScope = rememberCoroutineScope()
         val scrollableTabData =
             remember(scrollState, coroutineScope) {
                 ScrollableTabData(scrollState = scrollState, coroutineScope = coroutineScope)
             }
         SubcomposeLayout(
-            Modifier.wrapContentSize(align = Alignment.CenterStart)
+            modifier.wrapContentSize(align = Alignment.CenterStart)
                 .selectableGroup()
                 .clipToBounds(),
             scrollableState = scrollState,
