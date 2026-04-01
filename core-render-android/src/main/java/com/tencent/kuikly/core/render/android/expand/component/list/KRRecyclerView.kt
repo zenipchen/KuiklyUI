@@ -20,6 +20,7 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
@@ -164,6 +165,12 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
     private var lastScrollParentX = 0
 
     private var lastScrollParentY = 0
+
+    /**
+     * 用于在嵌套滚动场景中追踪真实的触摸速度 (px/s)，
+     * 替代之前使用 lastScrollParentX/Y（单帧位移）作为速度的不准确做法。
+     */
+    private var nestedScrollVelocityTracker: VelocityTracker? = null
 
     private var pagerSnapHelper: KRPagerSnapHelper? = null
 
@@ -565,9 +572,28 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         accumulatedPositionOffsetY = 0
         lastLayoutLeft = -1
         lastLayoutTop = -1
+        nestedScrollVelocityTracker?.recycle()
+        nestedScrollVelocityTracker = null
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        // Track touch velocity for nested scroll scenarios.
+        // The VelocityTracker is used in onStopNestedScroll to provide real velocity (px/s)
+        // to fireWillDragEndEvent, instead of using lastScrollParentX/Y (single-frame displacement).
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                nestedScrollVelocityTracker?.recycle()
+                nestedScrollVelocityTracker = VelocityTracker.obtain()
+                nestedScrollVelocityTracker?.addMovement(ev)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                nestedScrollVelocityTracker?.addMovement(ev)
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                nestedScrollVelocityTracker?.addMovement(ev)
+                nestedScrollVelocityTracker?.computeCurrentVelocity(1000)
+            }
+        }
         return if (overScrollHandler?.forceOverScroll == true) {
             val r = super.dispatchTouchEvent(ev)
             touchDelegate?.dispatchHRRecyclerViewTouchEvent(ev)
@@ -1288,6 +1314,8 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         skipFlingIfNestOverScroll = false
         lastScrollParentX = 0
         lastScrollParentY = 0
+        nestedScrollVelocityTracker?.recycle()
+        nestedScrollVelocityTracker = null
         // Reset position offset compensation
         accumulatedPositionOffsetX = 0
         accumulatedPositionOffsetY = 0
@@ -1558,11 +1586,14 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         if (overScrollHandler?.overScrolling != true) {
             // over scroll 时, willDragEnd 由 over scroll handler 处理
             if (lastScrollParentX != 0 || lastScrollParentY != 0) {
+                // Use real touch velocity from VelocityTracker instead of single-frame displacement.
+                val tracker = nestedScrollVelocityTracker
+                val realVelocityX = tracker?.xVelocity?.toInt() ?: 0
+                val realVelocityY = tracker?.yVelocity?.toInt() ?: 0
                 if (pagerSnapHelper != null) {
-                    pagerSnapHelper?.snapFromFling(lastScrollParentX, lastScrollParentY)
+                    pagerSnapHelper?.snapFromFling(realVelocityX, realVelocityY)
                 } else {
-                    // 用上次滚动父亲的距离作为WillDragEnd的速度，以驱动Pager选择滑动的方向
-                    fireWillDragEndEvent(lastScrollParentX, lastScrollParentY)
+                    fireWillDragEndEvent(realVelocityX, realVelocityY)
                 }
                 lastScrollParentX = 0
                 lastScrollParentY = 0
