@@ -1586,12 +1586,22 @@ class KRRecyclerView : RecyclerView, IKuiklyRenderViewExport, NestedScrollingChi
         if (overScrollHandler?.overScrolling != true) {
             // over scroll 时, willDragEnd 由 over scroll handler 处理
             if (lastScrollParentX != 0 || lastScrollParentY != 0) {
-                // Use real touch velocity from VelocityTracker instead of single-frame displacement.
+                val realVelocityX = tracker?.xVelocity?.toInt() ?: 0
+                val realVelocityY = tracker?.yVelocity?.toInt() ?: 0
+>>>>>>> f9336571c3bdcb2c0921823d9542e6edbc993974
+                if (pagerSnapHelper != null) {
+=======
+           // Use real touch velocity from VelocityTracker instead of single-frame displacement.
                 val tracker = nestedScrollVelocityTracker
                 // Negate velocity: VelocityTracker reports touch movement direction (positive = finger moves right/down),
                 // but scroll consumption (lastScrollParentX/Y) uses opposite convention (positive = content moves left/up).
                 val realVelocityX = -(tracker?.xVelocity?.toInt() ?: 0)
                 val realVelocityY = -(tracker?.yVelocity?.toInt() ?: 0)
+                if (pagerSnapHelper != null) {
+=======
+                val realVelocityX = tracker?.xVelocity?.toInt() ?: 0
+                val realVelocityY = tracker?.yVelocity?.toInt() ?: 0
+>>>>>>> f9336571c3bdcb2c0921823d9542e6edbc993974
                 if (pagerSnapHelper != null) {
                     pagerSnapHelper?.snapFromFling(realVelocityX, realVelocityY)
                 } else {
