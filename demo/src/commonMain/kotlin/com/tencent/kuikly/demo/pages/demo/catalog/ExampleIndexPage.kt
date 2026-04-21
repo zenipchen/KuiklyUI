@@ -274,6 +274,13 @@ internal class ExampleIndexPage : BasePager() {
             declarativeExampleUrl = generateJumpUrl("VideoExamplePage")
         })
 
+        itemList.add(ExampleItemData().apply {
+            avatarText = "Na"
+            titleText = "Android 手势导航栏规避"
+            subtitleText = "演示如何在 Kuikly 页面和底部弹窗中正确规避 Android 虚拟导航栏遮挡"
+            declarativeExampleUrl = generateJumpUrl("GestureNavBarDemoPage")
+        })
+
     }
 
     private fun generateJumpUrl(pagerName: String) : String {

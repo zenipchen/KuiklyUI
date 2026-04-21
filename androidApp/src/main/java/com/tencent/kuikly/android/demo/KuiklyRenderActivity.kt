@@ -126,7 +126,35 @@ class KuiklyRenderActivity : AppCompatActivity() {
         param["appId"] = 1
         param["sysLang"] = resources.configuration.locale.language
         param["debug"] = if (BuildConfig.DEBUG) 1 else 0
+        // 将 Android 虚拟导航栏（手势导航栏）高度传递给 Kuikly 侧，
+        // 业务页面应在 Kuikly 侧使用 pagerData.androidBottomBavBarHeight 自行规避遮挡，
+        // 而不应在容器层（Activity/Fragment）直接添加 padding 来规避。
+        param["androidBottomNavBarHeight"] = getNavigationBarHeightDp()
         return param
+    }
+
+    /**
+     * 获取 Android 虚拟导航栏高度，单位 dp。
+     * 手势导航模式下该值为 0；三键导航模式下返回实际高度。
+     */
+    @SuppressLint("InternalInsetResource")
+    private fun getNavigationBarHeightDp(): Float {
+        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        val heightPx = if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
+        // 手势导航模式下系统仍会上报一个固定高度，但实际上导航栏不可见。
+        // 通过判断 decorView 的 WindowInsets 来获取真实底部占用高度。
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val insets = window.decorView.rootWindowInsets
+            if (insets != null) {
+                val navInsetPx = insets.getInsets(
+                    android.view.WindowInsets.Type.navigationBars()
+                ).bottom
+                val density = resources.displayMetrics.density
+                return navInsetPx / density
+            }
+        }
+        val density = resources.displayMetrics.density
+        return heightPx / density
     }
 
     private fun argsToMap(): MutableMap<String, Any> {
