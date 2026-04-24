@@ -98,3 +98,10 @@ fun Modifier.lineSpacing(lineSpace: Float?): Modifier {
 fun Modifier.placeholderColor(color: Color): Modifier = setProp("placeholderColor", color.toKuiklyColor().toString())
 
 fun Modifier.lineBreakMargin(dp: Dp): Modifier = setProp("lineBreakMargin", dp.value)
+
+/**
+ * 设置文本后置处理器
+ * 配合 KRTextPostProcessorAdapter 使用，将短码（如 [smile]）替换为表情图片等
+ * @param processor 处理器名称，如 "input"
+ */
+fun Modifier.textPostProcessor(processor: String): Modifier = setProp("textPostProcessor", processor)
