@@ -30,6 +30,8 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.style.DynamicDrawableSpan
+import android.text.style.ImageSpan
 import android.text.TextWatcher
 import android.util.SizeF
 import android.util.TypedValue
@@ -121,6 +123,7 @@ open class KRTextFieldView(context: Context, private val softInputMode: Int?) : 
 
     private var hadSetEditorFactory = false
     private var textProps: KRTextProps? = null
+    private var textPostProcessor: String = ""
 
     /**
      * 键盘显示需要 window 和 view 两者同时处于 focus才能显示
@@ -169,6 +172,11 @@ open class KRTextFieldView(context: Context, private val softInputMode: Int?) : 
     override fun setProp(propKey: String, propValue: Any): Boolean {
         return when (propKey) {
             TEXT -> setText(propValue)
+            PROP_KEY_TEXT_POST_PROCESSOR -> {
+                textPostProcessor = propValue as String
+                android.util.Log.d("KRTextFieldView", "setProp: textPostProcessor=$textPostProcessor")
+                true
+            }
             KRTextProps.PROP_KEY_VALUES -> setValues(propValue)
             FONT_SIZE -> setFontSize(propValue)
             FONT_WEIGHT -> setFontWeight(propValue)
@@ -519,6 +527,7 @@ open class KRTextFieldView(context: Context, private val softInputMode: Int?) : 
     }
 
     private fun setText(propValue: Any): Boolean {
+        setInputEditorAdapterIfNeed()
         setInputText((propValue as? String)?: "")
         return true
     }
@@ -757,18 +766,29 @@ open class KRTextFieldView(context: Context, private val softInputMode: Int?) : 
             return
         }
         hadSetEditorFactory = true
+        android.util.Log.d("KRTextFieldView", "setInputEditorAdapterIfNeed: setting Editable.Factory")
         setEditableFactory(object : Editable.Factory() {
             override fun newEditable(source: CharSequence?): Editable {
+                android.util.Log.d("KRTextFieldView", "newEditable called, source='$source'")
                 if (source == null) {
                     return SpannableStringBuilder()
                 }
-                val tp = textProps ?: return SpannableStringBuilder()
-                val outputText = textPostProcessorAdapter.onTextPostProcess(kuiklyRenderContext, TextPostProcessorInput("input",
-                    source, tp)).text
-                return if (outputText is Editable) {
-                    outputText
-                } else {
-                    SpannableStringBuilder()
+                val tp = textProps ?: KRTextProps(kuiklyRenderContext).also {
+                    it.fontSize = if (fontSize > 0) fontSize else 16f
+                }
+                return try {
+                    val output = textPostProcessorAdapter.onTextPostProcess(kuiklyRenderContext, TextPostProcessorInput("input",
+                        source, tp))
+                    val outputText = output.text
+                    android.util.Log.d("KRTextFieldView", "newEditable result type=${outputText::class.simpleName}")
+                    if (outputText is Editable) {
+                        outputText
+                    } else {
+                        SpannableStringBuilder(outputText)
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("KRTextFieldView", "newEditable error: $e")
+                    SpannableStringBuilder(source)
                 }
             }
         })
@@ -815,7 +835,35 @@ open class KRTextFieldView(context: Context, private val softInputMode: Int?) : 
         if (textWatcher == null) {
             textWatcher = object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    s?.also(::ensureLineHeightSpan)
+                    val editable = s ?: return
+                    editable.also(::ensureLineHeightSpan)
+                    // 如果有 textPostProcessor，处理文本（应用 ImageSpan）
+                    // 仅在 Editable 中还没有对应的 ImageSpan 时才处理，避免重复
+                    if (textPostProcessor.isNotEmpty()) {
+                        val adapter = KuiklyRenderAdapterManager.krTextPostProcessorAdapter
+                        if (adapter != null) {
+                            val tp = textProps ?: KRTextProps(kuiklyRenderContext)
+                            val output = adapter.onTextPostProcess(
+                                kuiklyRenderContext,
+                                TextPostProcessorInput(textPostProcessor, editable, tp)
+                            )
+                            val outputText = output.text
+                            if (outputText is Spannable) {
+                                // 清除当前 Editable 中所有 ImageSpan
+                                val oldSpans = editable.getSpans(0, editable.length, ImageSpan::class.java)
+                                for (span in oldSpans) {
+                                    editable.removeSpan(span)
+                                }
+                                // 将处理后的 ImageSpan 复制过来
+                                val newSpans = outputText.getSpans(0, outputText.length, ImageSpan::class.java)
+                                for (span in newSpans) {
+                                    val start = outputText.getSpanStart(span)
+                                    val end = outputText.getSpanEnd(span)
+                                    editable.setSpan(span, start, end, outputText.getSpanFlags(span))
+                                }
+                            }
+                        }
+                    }
                     textDidChangeCallback?.invoke(createCallbackParamMap())
                 }
 
@@ -832,6 +880,7 @@ open class KRTextFieldView(context: Context, private val softInputMode: Int?) : 
 
     companion object {
         const val VIEW_NAME = "KRTextFieldView"
+        private const val PROP_KEY_TEXT_POST_PROCESSOR = "textPostProcessor"
         private const val TEXT = "text"
         private const val FONT_SIZE = "fontSize"
         private const val FONT_WEIGHT = "fontWeight"

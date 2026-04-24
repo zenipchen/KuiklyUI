@@ -105,6 +105,16 @@ class InputAttr : Attr() {
     }
 
     /**
+     * 设置文本后置处理器名称
+     * 配合 KRTextPostProcessorAdapter 使用，将短码替换为表情图片等
+     * @param processor 处理器名称，如 "input"
+     */
+    fun textPostProcessor(processor: String): InputAttr {
+        "textPostProcessor" with processor
+        return this
+    }
+
+    /**
      * 设置输入文本的文本样式
      * 配合TextArea的textDidChange来更改spans实现输入框富文本化
      * 注：设置新inputSpans后，光标会保持原index
