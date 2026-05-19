@@ -29,7 +29,11 @@ internal class MaxLengthElement(
                 lengthLimitType == other.lengthLimitType
     }
 
-    override fun hashCode(): Int = 31 * maxLength.hashCode() + lengthLimitType.hashCode()
+    override fun hashCode(): Int {
+        var result = maxLength.hashCode()
+        result = 31 * result + lengthLimitType.hashCode()
+        return result
+    }
 }
 
 internal class OnLimitChangeElement(
@@ -55,9 +59,9 @@ fun Modifier.maxLength(
 ): Modifier = this.then(MaxLengthElement(length, type))
 
 /**
- * 设置输入框长度变化/超限回调
- * 当字数变化或长度超过限制时回调
- * @param onLimitChange 回调函数，length 为当前文本长度，limit 为是否超限
+ * 设置输入框长度变化回调
+ * 当渲染层确认的长度或限额状态发生变化时回调；超限输入被拒绝时，也会回传当前真实长度状态
+ * @param onLimitChange 回调函数，length 为当前文本长度，limit 为是否已达到或超过上限
  */
 fun Modifier.onLimitChange(
     onLimitChange: (length: Int, limit: Boolean) -> Unit,

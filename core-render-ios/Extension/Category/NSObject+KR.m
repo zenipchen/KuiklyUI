@@ -22,6 +22,33 @@
 #import <Accelerate/Accelerate.h>
 #import <CoreImage/CoreImage.h>
 
+static const NSUInteger KRDefaultEmojiVisualWidth = 2;
+
+@implementation KRVisualWidthConfig
+
++ (instancetype)sharedConfig {
+    static KRVisualWidthConfig *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] init];
+    });
+    return instance;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _emojiVisualWidth = KRDefaultEmojiVisualWidth;
+    }
+    return self;
+}
+
+- (void)setEmojiVisualWidth:(NSUInteger)emojiVisualWidth {
+    _emojiVisualWidth = MAX((NSUInteger)1, emojiVisualWidth);
+}
+
+@end
+
 @implementation NSObject (KR)
 
 - (NSDictionary *)hr_stringToDictionary {
@@ -322,10 +349,11 @@
 - (NSUInteger)kr_visualWidth {
     NSUInteger visualWidth = 0;
     NSUInteger length = self.length;
+    NSUInteger emojiVisualWidth = [KRVisualWidthConfig sharedConfig].emojiVisualWidth;
     for (NSUInteger i = 0; i < length; ) {
         NSRange range = [self rangeOfComposedCharacterSequenceAtIndex:i];
         unichar firstChar = [self characterAtIndex:i];
-        
+
         // 检查是否是ASCII字符（0-127）
         if (range.length == 1 && firstChar < 128) {
             visualWidth += 1;
@@ -335,8 +363,10 @@
         } else if (range.length == 1 && firstChar == 0xFEFF) {
             // 零宽不换行空格
             visualWidth += 1;
+        } else if (range.length == 1 && firstChar == 0xFFFC) {
+            visualWidth += emojiVisualWidth;
         } else {
-            // 其他字符（中文、emoji等）占2个视觉宽度
+            // 其他字符（如中文、系统 emoji 等）占2个视觉宽度
             visualWidth += 2;
         }
         i += range.length;

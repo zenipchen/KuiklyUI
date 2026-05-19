@@ -44,6 +44,14 @@ data class TextInputState(
 
     fun encode(): String = toJSONObject().toString()
 
+    fun hasSameEditingState(other: TextInputState): Boolean {
+        return text == other.text &&
+            selectionStart == other.selectionStart &&
+            selectionEnd == other.selectionEnd &&
+            compositionStart == other.compositionStart &&
+            compositionEnd == other.compositionEnd
+    }
+
     companion object {
         const val NO_COMPOSITION = -1
 

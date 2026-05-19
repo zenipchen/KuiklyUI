@@ -347,7 +347,7 @@ fun TextFieldWithPlaceholder() {
 @Composable
 fun TextFieldWithMaxLength() {
     var text by remember { mutableStateOf("") }
-    
+
     TextField(
         value = text,
         onValueChange = { text = it },
@@ -363,9 +363,15 @@ fun TextFieldWithMaxLength() {
 
 **相关 API**：
 - `Modifier.maxLength(length: Int, type: LengthLimitType = LengthLimitType.CHARACTER)` - 设置最大输入长度；`type` 可选 `CHARACTER`（按字符）、`BYTE`（按字节）、`VISUAL_WIDTH`（按视觉宽度）
-- `Modifier.onLimitChange(onLimitChange: (length: Int, limit: Boolean) -> Unit)` - 长度变化或超限时回调，`length` 为当前长度，`limit` 为是否已达/超过限制
+- `Modifier.onLimitChange(onLimitChange: (length: Int, limit: Boolean) -> Unit)` - 长度变化回调，`length` 为当前长度，`limit` 为是否已达/超过限制
 
-> **提示**：以上为当前已支持的扩展能力，更多扩展能力将持续更新补充。
+> **说明 1**：当前公开 API 仅支持内置的 `CHARACTER` / `BYTE` / `VISUAL_WIDTH` 三种计数方式。
+>
+> **说明 2**：`onLimitChange` 中 `limit = true` 表示**当前长度已达到或超过上限**，不只是“严格大于上限”。
+>
+> **说明 3**：长度值由各平台输入组件按对应策略计算；在 emoji、attachment 或文本后处理场景下，结果不一定等同于 Kotlin 字符串的 `length`。
+>
+> **说明 4**：当 `TextFieldState.edit { replace(selection.start, selection.end, shortCode) }` 与 `textPostProcessor` / 自定义表情一起使用时，`maxLength` 会基于**替换后的 raw text** 做最终校验；如果整段短码放不下，会直接拒绝本次插入，保留原有文本和合法选区，不会写入半个 shortcode。
 
 #### 自动回收软键盘：`Modifier.autoHideKeyboardOnImeAction` <Badge text="版本2.17.0及以上" type="warn"/>
 
