@@ -124,6 +124,14 @@ internal class BridgeModule : Module() {
         syncCallNativeMethod(READ_ASSET_FILE, params, callback)
     }
 
+    fun enterLandscapeFullscreen() {
+        callNativeMethod(ENTER_LANDSCAPE_FULLSCREEN, null, null)
+    }
+
+    fun exitLandscapeFullscreen() {
+        callNativeMethod(EXIT_LANDSCAPE_FULLSCREEN, null, null)
+    }
+
     private fun callNativeMethod(methodName: String, data: JSONObject?, callbackFn: CallbackFn?) {
         toNative(
             false,
@@ -179,6 +187,8 @@ internal class BridgeModule : Module() {
         const val DOWNLOAD_PAG_SO = "downloadPagSo"
         const val GET_LOCAL_IMAGE_PATH = "getLocalImagePath"
         const val READ_ASSET_FILE = "readAssetFile"
+        const val ENTER_LANDSCAPE_FULLSCREEN = "enterLandscapeFullscreen"
+        const val EXIT_LANDSCAPE_FULLSCREEN = "exitLandscapeFullscreen"
     }
 
 }

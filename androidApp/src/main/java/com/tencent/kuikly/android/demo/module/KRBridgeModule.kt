@@ -18,6 +18,7 @@ package com.tencent.kuikly.android.demo.module
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.widget.Toast
@@ -98,6 +99,12 @@ class KRBridgeModule : KuiklyRenderBaseModule() {
             "readAssetFile" -> {
                 readAssetPath(params, callback)
             }
+            "enterLandscapeFullscreen" -> {
+                enterLandscapeFullscreen()
+            }
+            "exitLandscapeFullscreen" -> {
+                exitLandscapeFullscreen()
+            }
             else -> callback?.invoke(mapOf(
                 "code" to -1,
                 "message" to "方法不存在"
@@ -153,6 +160,14 @@ class KRBridgeModule : KuiklyRenderBaseModule() {
 
     private fun closePage(params: String?) {
         activity?.finish()
+    }
+
+    private fun enterLandscapeFullscreen() {
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE
+    }
+
+    private fun exitLandscapeFullscreen() {
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
 
     private fun showAlert(params: String?, callback: KuiklyRenderCallback?) {

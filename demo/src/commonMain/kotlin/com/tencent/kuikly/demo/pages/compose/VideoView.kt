@@ -21,11 +21,18 @@ import com.tencent.kuikly.compose.ui.Modifier
 import com.tencent.kuikly.core.views.VideoPlayControl
 import com.tencent.kuikly.core.views.VideoView
 
+enum class VideoResizeMode {
+    Cover,
+    Contain,
+    Stretch,
+}
+
 @Composable
 fun Video(
     src: String,
     playControl: VideoPlayControl,
     modifier: Modifier = Modifier,
+    resizeMode: VideoResizeMode? = null,
 ) {
     MakeKuiklyComposeNode<VideoView>(
         factory = {
@@ -34,14 +41,26 @@ fun Video(
         modifier = modifier,
         viewInit = {
             getViewAttr().run {
-                playControl(VideoPlayControl.PLAY)
                 src(src)
+                playControl(playControl)
+                when (resizeMode) {
+                    VideoResizeMode.Cover -> resizeModeToCover()
+                    VideoResizeMode.Contain -> resizeModeToContain()
+                    VideoResizeMode.Stretch -> resizeModeToStretch()
+                    null -> Unit
+                }
             }
         },
         viewUpdate = {
             it.getViewAttr().run {
                 src(src)
                 playControl(playControl)
+                when (resizeMode) {
+                    VideoResizeMode.Cover -> resizeModeToCover()
+                    VideoResizeMode.Contain -> resizeModeToContain()
+                    VideoResizeMode.Stretch -> resizeModeToStretch()
+                    null -> Unit
+                }
             }
         }
     )

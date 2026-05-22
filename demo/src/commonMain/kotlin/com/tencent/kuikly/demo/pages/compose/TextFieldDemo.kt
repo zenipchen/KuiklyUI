@@ -108,7 +108,7 @@ class TextFieldDemo : ComposeContainer() {
                     val scope = rememberCoroutineScope()
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = "0 推荐使用输入框 响应键盘高度 自动聚焦")
-                    var text7 by remember { mutableStateOf("") }
+                    var text7 by remember { mutableStateOf("234324") }
                     Box(modifier = Modifier.border(1.dp, Color.Black)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             TextField(
@@ -139,7 +139,8 @@ class TextFieldDemo : ComposeContainer() {
                             Box(
                                 modifier = Modifier.height(45.dp).wrapContentWidth()
                                     .background(Color.Red).padding(horizontal = 8.dp).clickable {
-                                        text7 = ""
+//                                        text7 = ""
+                                        text7 += "mixmix"
                                     }, contentAlignment = Alignment.Center
                             ) {
                                 Text("清除")

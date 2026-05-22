@@ -164,6 +164,7 @@ internal class ComposeAllSample : ComposeContainer() {
             DemoItem("GradientAnimationDemo", "Offset or color animate ", "GradientAnimationDemo"),
             DemoItem("重组性能分析", "RecompositionProfiler追踪重组热点", "RecompositionProfilerDemo"),
             DemoItem("TextFieldEmoji", "TextField 自定义表情示例", "TextFieldEmojiDemo"),
+            DemoItem("TextFieldInitialValueSync", "iOS 初值同步复现", "TextFieldInitialValueSyncReproDemo"),
         )
 
     @Composable
