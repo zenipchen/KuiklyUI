@@ -77,6 +77,14 @@ internal class FlushCoroutineDispatcher(
     /**
      * Perform all scheduled tasks and wait for the tasks which are already
      * performing in the [scope]
+     *
+     * Note: each task is executed with individual [CancellationException] protection.
+     * If a [kotlinx.coroutines.DispatchedTask] whose coroutine was cancelled (e.g. because
+     * [androidx.compose.runtime.Composition.dispose] ran concurrently) is flushed here,
+     * its [Runnable.run] calls [kotlinx.coroutines.CancellableContinuationImpl.callOnCancellation]
+     * which may attempt to unlock a [kotlinx.coroutines.sync.MutexImpl] that is already
+     * unlocked — causing a fatal crash. Catching [CancellationException] per-task mirrors
+     * the behaviour of [drainSafely] and prevents this race.
      */
     fun flush() = performRun {
         // Run tasks until they're empty in order to executed even ones that are added by the tasks
@@ -91,7 +99,16 @@ internal class FlushCoroutineDispatcher(
                 immediateTasks = tmp
             }
 
-            immediateTasksSwap.forEach(Runnable::run)
+            immediateTasksSwap.forEach { task ->
+                try {
+                    task.run()
+                } catch (_: CancellationException) {
+                    // A DispatchedTask whose coroutine was concurrently cancelled (e.g. by
+                    // Composition.dispose) may throw CancellationException from its
+                    // callOnCancellation handler. Swallow it here so the remaining tasks
+                    // in the queue are still executed and the render loop does not crash.
+                }
+            }
             immediateTasksSwap.clear()
         }
     }
