@@ -200,6 +200,11 @@ internal abstract class BaseComposeScene(
             recomposer.performScheduledTasks()
 
             frameClock.sendFrame(nanoTime) // Recomposition
+            // After sendFrame(), runRecomposeAndApplyChanges() coroutine dispatches
+            // applyChanges() asynchronously via recomposeDispatcher.
+            // Flush it synchronously to ensure applyChanges() completes before the
+            // next sendFrame(), preventing "Expected applyChanges() to have been called".
+            recomposer.performScheduledTasks()
             doLayout() // Layout
             recomposer.performScheduledEffects() // Composition effects (e.g. LaunchedEffect)
 
