@@ -19,6 +19,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Build
@@ -82,6 +83,11 @@ class KuiklyRenderView(
      * [KuiklyRenderView]的大小
      */
     private var lastSize: SizeF? = null
+
+    /**
+     * 当前屏幕密度，用于检测系统显示大小变更
+     */
+    private var currentDensity: Float = -1f
 
     /**
      * 初始化[renderCore]的闭包
@@ -251,6 +257,11 @@ class KuiklyRenderView(
         super.onAttachedToWindow()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        handleConfigurationChanged()
+    }
+
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
         if (delegate?.debugLogEnable() == true) {
             if (visibility != VISIBLE) {
@@ -326,6 +337,17 @@ class KuiklyRenderView(
         super.onSizeChanged(w, h, oldw, oldh)
         KuiklyRenderLog.d("KuiklyRenderTracer", "--onSizeChanged: w:${w}, h:${h}, oldw:${oldw}, oldh:${oldh}--")
         performInitRenderCoreLazyTaskOnce(w, h)
+        // Initialize currentDensity from current DisplayMetrics so that subsequent
+        // onConfigurationChanged can correctly detect density changes.
+        // Without this, the first onConfigurationChanged always sees currentDensity=-1
+        // and treats it as "first call", swallowing the density change.
+        if (currentDensity <= 0) {
+            val usingDisplayMetrics = KuiklyRenderAdapterManager.krFontAdapter
+                ?.getDisplayMetrics(useHostDisplayMetrics = kuiklyRenderContext.useHostDisplayMetrics())
+                ?: Resources.getSystem().displayMetrics
+            currentDensity = usingDisplayMetrics.density
+            KuiklyRenderLog.d(TAG, "onSizeChanged: initialized currentDensity=$currentDensity")
+        }
         sendSizeChangeIfNeed(w, h)
         isInOnSizeChanged = false
     }
@@ -359,6 +381,50 @@ class KuiklyRenderView(
                 )
             )
             lastSize = sizeF
+        }
+    }
+
+    /**
+     * 处理系统 Configuration 变更（如显示大小/字体缩放）。
+     * 参考 OHOS 的 [doOnDensityChanged] 实现，检测 density 变化并通知 Kuikly Core。
+     */
+    private fun handleConfigurationChanged() {
+        val usingDisplayMetrics = KuiklyRenderAdapterManager.krFontAdapter
+            ?.getDisplayMetrics(useHostDisplayMetrics = kuiklyRenderContext.useHostDisplayMetrics())
+            ?: Resources.getSystem().displayMetrics
+        val newDensity = usingDisplayMetrics.density
+
+        if (currentDensity > 0 && kotlin.math.abs(newDensity - currentDensity) > 0.001f) {
+            KuiklyRenderLog.d(
+                TAG,
+                "handleConfigurationChanged: density changed from $currentDensity to $newDensity, " +
+                "sending EVENT_ROOT_VIEW_SIZE_CHANGED with densityInfo"
+            )
+            val oldDensity = currentDensity
+            currentDensity = newDensity
+
+            val activitySize = getActivitySize()
+            val deviceSize = getDeviceSize()
+            val densityInfoStr =
+                "{\"$DENSITY_INFO_KEY_NEW_DENSITY\":$newDensity,\"$DENSITY_INFO_KEY_OLD_DENSITY\":$oldDensity}"
+
+            val w = width
+            val h = height
+            sendEvent(
+                EVENT_ROOT_VIEW_SIZE_CHANGED, mapOf(
+                    KRViewConst.WIDTH to kuiklyRenderContext.toDpF(w.toFloat()),
+                    KRViewConst.HEIGHT to kuiklyRenderContext.toDpF(h.toFloat()),
+                    ACTIVITY_WIDTH to kuiklyRenderContext.toDpF(activitySize.width.toFloat()),
+                    ACTIVITY_HEIGHT to kuiklyRenderContext.toDpF(activitySize.height.toFloat()),
+                    DEVICE_WIDTH to kuiklyRenderContext.toDpF(deviceSize.width.toFloat()),
+                    DEVICE_HEIGHT to kuiklyRenderContext.toDpF(deviceSize.height.toFloat()),
+                    SAFE_AREA_INSETS to formatSafeAreaInsetsForKuikly(view, kuiklyRenderContext),
+                    DENSITY_INFO to densityInfoStr
+                )
+            )
+        } else if (currentDensity <= 0) {
+            KuiklyRenderLog.d(TAG, "handleConfigurationChanged: init density=$newDensity (first call)")
+            currentDensity = newDensity
         }
     }
 
@@ -652,6 +718,9 @@ class KuiklyRenderView(
         private const val VIEW_DID_APPEAR = "viewDidAppear"
         private const val VIEW_DID_APPEAR_VALUE = "1"
         private const val DENSITY = "density"
+        private const val DENSITY_INFO = "densityInfo"
+        private const val DENSITY_INFO_KEY_NEW_DENSITY = "newDensity"
+        private const val DENSITY_INFO_KEY_OLD_DENSITY = "oldDensity"
         private const val FEATURE = "feature"
 
         const val PAGER_EVENT_FIRST_FRAME_PAINT = "pageFirstFramePaint"

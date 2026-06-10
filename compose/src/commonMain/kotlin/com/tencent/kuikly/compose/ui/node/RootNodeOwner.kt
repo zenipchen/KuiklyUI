@@ -130,7 +130,15 @@ internal class RootNodeOwner(
             field = value
             onRootConstrainsChanged(value?.toConstraints())
         }
-    var density by mutableStateOf(density)
+    private var _density by mutableStateOf(density)
+    var density: Density
+        get() = _density
+        set(value) {
+            if (_density != value) {
+                _density = value
+                owner.root.density = value
+            }
+        }
 
     private var _layoutDirection by mutableStateOf(layoutDirection)
     var layoutDirection: LayoutDirection
@@ -193,6 +201,16 @@ internal class RootNodeOwner(
 
     fun measureAndLayout() {
         owner.measureAndLayout(sendPointerUpdate = true)
+    }
+
+    /**
+     * Force the root layout to remeasure on the next frame.
+     * Required when density changes, because LayoutNode caches measurement results
+     * keyed by constraints — if constraints haven't changed, the old dp→px values
+     * are reused even though the density is different.
+     */
+    fun invalidateLayoutForDensityChange() {
+        owner.root.requestRemeasure(forceRequest = true)
     }
 
     fun invalidatePositionInWindow() {

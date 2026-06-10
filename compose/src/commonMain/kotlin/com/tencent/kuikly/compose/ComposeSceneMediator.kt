@@ -87,6 +87,7 @@ class ComposeSceneMediator(
     }
 
     fun viewWillLayoutSubviews() {
+        scene.density = Density(container.getPager().pagerDensity())
         val boundsInWindow = IntRect(
             offset = IntOffset.Zero,
             size = IntSize(

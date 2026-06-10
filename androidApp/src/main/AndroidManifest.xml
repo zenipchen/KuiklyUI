@@ -23,7 +23,7 @@
             android:value="true" />
         <activity
             android:name="com.tencent.kuikly.android.demo.KuiklyRenderActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|density"
             android:windowSoftInputMode="stateUnspecified|adjustNothing"
             android:exported="true">
             <intent-filter>

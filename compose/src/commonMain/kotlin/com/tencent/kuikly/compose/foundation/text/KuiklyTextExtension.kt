@@ -387,7 +387,12 @@ internal fun RichTextAttr.applyAnnotatedString(
                     .forEach { range ->
                         range.item.let { style ->
                             applyTextAlign(style.textAlign)
-                            setProp(TextConst.LINE_HEIGHT, style.lineHeight.value)
+                            if (style.lineHeight.isSpecified) {
+                                setProp(
+                                    TextConst.LINE_HEIGHT,
+                                    this@applyAnnotatedString.scaleToDensity(density, style.lineHeight.value)
+                                )
+                            }
                             applyTextIndent(style.textIndent)
                         }
                     }
@@ -457,6 +462,6 @@ internal fun TextSpan.applySpanStyle(spanStyle: SpanStyle, density: Density) {
 
     // Apply letter spacing
     if (spanStyle.letterSpacing.isSpecified) {
-        letterSpacing(spanStyle.letterSpacing.value)
+        letterSpacing(scaleToDensity(density, spanStyle.letterSpacing.value))
     }
 }

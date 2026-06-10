@@ -82,8 +82,13 @@ private class KuiklyComposeSceneImpl @InternalComposeUiApi constructor(
     override var density: Density = density
         set(value) {
             check(!isClosed) { "ComposeScene is closed" }
+            val densityChanged = field != value
             field = value
             mainOwner.density = value
+            if (densityChanged) {
+                // Force a root remeasure so cached dp/sp-based measurements are recalculated.
+                mainOwner.invalidateLayoutForDensityChange()
+            }
         }
 
     override var layoutDirection: LayoutDirection = layoutDirection
