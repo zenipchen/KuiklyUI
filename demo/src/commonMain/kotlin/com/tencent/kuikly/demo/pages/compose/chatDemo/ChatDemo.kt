@@ -13,6 +13,8 @@ import com.tencent.kuikly.compose.foundation.Canvas
 import com.tencent.kuikly.compose.foundation.Image
 import com.tencent.kuikly.compose.foundation.background
 import com.tencent.kuikly.compose.foundation.clickable
+import com.tencent.kuikly.compose.foundation.interaction.MutableInteractionSource
+import com.tencent.kuikly.compose.foundation.interaction.collectIsPressedAsState
 import com.tencent.kuikly.compose.foundation.layout.Arrangement
 import com.tencent.kuikly.compose.foundation.layout.Box
 import com.tencent.kuikly.compose.foundation.layout.Column
@@ -197,8 +199,37 @@ internal class ChatDemo : ComposeContainer() {
                                 }
                         )
                     }
+
+                    InputBottomMask(
+                        modifier = Modifier.height((pagerData.pageViewHeight / 3f).dp)
+                    )
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun InputBottomMask(modifier: Modifier = Modifier) {
+        val interactionSource = remember { MutableInteractionSource() }
+        val isPressed by interactionSource.collectIsPressedAsState()
+
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(
+                    if (isPressed) Color(0x99000000) else Color(0x4D000000)
+                )
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                ) { },
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = if (isPressed) "触摸中" else "遮罩区域（按住查看触摸态）",
+                color = Color.White.copy(alpha = if (isPressed) 1f else 0.7f),
+                fontSize = 14.sp,
+            )
         }
     }
 

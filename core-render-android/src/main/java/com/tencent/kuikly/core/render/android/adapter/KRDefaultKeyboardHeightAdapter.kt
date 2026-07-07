@@ -27,8 +27,11 @@ import android.view.WindowInsets
  */
 object KRDefaultKeyboardHeightAdapter : IKRKeyboardHeightAdapter {
 
+    /** 临时关闭三星适配，便于对比 raw 键盘高度上报效果 */
+    private const val ENABLE_SAMSUNG_ADAPTATION = false
+
     override fun adaptKeyboardHeight(context: KRKeyboardHeightContext): Int {
-        if (!isSamsung()) {
+        if (!ENABLE_SAMSUNG_ADAPTATION || !isSamsung()) {
             return context.rawHeightPx
         }
         return adaptSamsung(context)
