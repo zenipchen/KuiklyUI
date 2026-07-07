@@ -28,6 +28,9 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import java.util.concurrent.CopyOnWriteArrayList
+import com.tencent.kuikly.core.render.android.adapter.KRDefaultKeyboardHeightAdapter
+import com.tencent.kuikly.core.render.android.adapter.KRKeyboardHeightContext
+import com.tencent.kuikly.core.render.android.adapter.KuiklyRenderAdapterManager
 import com.tencent.kuikly.core.render.android.adapter.KuiklyRenderLog
 import com.tencent.kuikly.core.render.android.css.ktx.isAfterAndroid11
 import com.tencent.kuikly.core.render.android.export.KuiklyRenderBaseModule
@@ -221,7 +224,8 @@ class Android11PlusKeyboardWatcher(private val activity: Activity) : ViewTreeObs
             val imeHeight = insets.getInsets(WindowInsets.Type.ime()).bottom
             val navHeight = insets.getInsets(WindowInsets.Type.navigationBars()).bottom
             // 只有当键盘弹出时（imeHeight > 0），才尝试减去导航栏高度
-            if (imeHeight > 0) (imeHeight - navHeight).coerceAtLeast(0) else 0
+            val rawHeight = if (imeHeight > 0) (imeHeight - navHeight).coerceAtLeast(0) else 0
+            adaptKeyboardHeight(activity, rawHeight)
         } else {
             0
         }
@@ -258,4 +262,10 @@ class Android11PlusKeyboardWatcher(private val activity: Activity) : ViewTreeObs
  */
 interface KeyboardStatusListener {
     fun onHeightChanged(height: Int)
+}
+
+private fun adaptKeyboardHeight(activity: Activity, rawHeightPx: Int): Int {
+    val adapter = KuiklyRenderAdapterManager.krKeyboardHeightAdapter
+        ?: KRDefaultKeyboardHeightAdapter
+    return adapter.adaptKeyboardHeight(KRKeyboardHeightContext(activity, rawHeightPx))
 }
