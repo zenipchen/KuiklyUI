@@ -94,6 +94,12 @@ internal class TextStringRichNode(
     private var cacheResult: TextLayoutResult? = null
 
     /**
+     * 缓存上一次查询到的 isLineBreakMargin 结果，仅在结果变化时重新 fire 事件，
+     * 避免重复 fire 以及“从溢出变不溢出”时事件缺失。
+     */
+    private var lastLineBreakMarginFired: Boolean? = null
+
+    /**
      * Element has text params to update
      */
     fun updateText(text: String?, annotatedText: AnnotatedString?): Boolean {
@@ -259,6 +265,14 @@ internal class TextStringRichNode(
         }
 
         val effectiveAnnotated = annotatedText ?: AnnotatedString(plainText ?: "")
+        // 真实行数：shadow 未提供 lineCount 方法，此处通过 isLineBreakMargin 推导。
+        // 当 isLineBreakMargin=="1" 表示文本溢出（实际行数 > maxLines），业务只需判断“是否溢出”，
+        // 因此取 maxLines+1 作为溢出语义的近似值，满足 TextLayoutResult.lineCount 可用性。
+        val lineCount = if (textView?.shadow?.callMethod(TextConst.SHADOW_METHOD_IS_LINE_BREAK_MARGIN, "") == "1") {
+            (if (maxLines == Int.MAX_VALUE) 1 else maxLines + 1)
+        } else {
+            1
+        }
         return TextLayoutResult(
             TextLayoutInput(
                 effectiveAnnotated,
@@ -272,7 +286,7 @@ internal class TextStringRichNode(
 //                fontFamilyResolver,
 //                finalConstraints
             ),
-            MultiParagraph(placeholderRects = placeholderRects),
+            MultiParagraph(lineCount = lineCount, placeholderRects = placeholderRects),
             size
         )
     }
@@ -299,11 +313,15 @@ internal class TextStringRichNode(
 
         // Compose layout runs outside Kuikly's Flex layout loop,
         // so we need to manually fire the line break margin event.
+        // 查询结果缓存，仅在值发生变化时 fire ON_LINE_BREAK_MARGIN 事件。
         if (textView?.getViewAttr()?.getProp(TextConst.LINE_BREAK_MARGIN) != null) {
             val isLineBreakMargin =
                 textView.shadow?.callMethod(TextConst.SHADOW_METHOD_IS_LINE_BREAK_MARGIN, "") == "1"
-            if (isLineBreakMargin) {
-                textView.onFireEvent(TextEvent.TextEventConst.ON_LINE_BREAK_MARGIN, null)
+            if (isLineBreakMargin != lastLineBreakMarginFired) {
+                if (isLineBreakMargin) {
+                    textView.onFireEvent(TextEvent.TextEventConst.ON_LINE_BREAK_MARGIN, null)
+                }
+                lastLineBreakMarginFired = isLineBreakMargin
             }
         }
 

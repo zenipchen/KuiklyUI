@@ -237,12 +237,21 @@ open class RichTextView : DeclarativeBaseView<RichTextAttr, RichTextEvent>(),
             getPager().addTaskWhenPagerDidCalculateLayout {
                 val isLineBreakMargin =
                     shadow?.callMethod(TextConst.SHADOW_METHOD_IS_LINE_BREAK_MARGIN, "") == "1"
-                if (isLineBreakMargin) {
-                    onFireEvent(TextEvent.TextEventConst.ON_LINE_BREAK_MARGIN, null)
+                if (isLineBreakMargin != lastLineBreakMarginFired) {
+                    if (isLineBreakMargin) {
+                        onFireEvent(TextEvent.TextEventConst.ON_LINE_BREAK_MARGIN, null)
+                    }
+                    lastLineBreakMarginFired = isLineBreakMargin
                 }
             }
         }
     }
+
+    /**
+     * 缓存上一次 isLineBreakMargin 查询结果，仅在值变化时 fire 事件，
+     * 避免重复 fire 以及“从溢出变不溢出”时事件缺失。
+     */
+    private var lastLineBreakMarginFired: Boolean? = null
 
     fun buildValuesPropValue(): String {
         val values = arrayListOf<Map<String, Any>>()
