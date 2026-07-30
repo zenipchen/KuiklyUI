@@ -195,6 +195,9 @@ std::tuple<float, float, OH_Drawing_Typography *> KRParagraph::Measure(ArkUI_Sty
             OH_Drawing_TypographySetIndents(typo, 2, indents);
         }
         OH_Drawing_TypographyLayout(typo, max_width_pt * density_);
+        // V2 路径下取是否超出 maxLines，回传给 KRRichTextShadow，
+        // 供 isLineBreakMargin 事件与最后一行 lineBreakMargin 留白绘制判断。
+        did_exceed_max_lines_ = OH_Drawing_TypographyDidExceedMaxLines(typo);
         float paragraph_height = OH_Drawing_TypographyGetHeight(typo) / density_;
         double maxWidth = max_width_pt * density_;
         float longestLineWidth =
