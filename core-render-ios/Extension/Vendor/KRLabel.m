@@ -57,7 +57,15 @@ NSString *const KRBGAttributeKey = @"KRBGAttributeKey";
     if (self.textRender.lineBreakMargin > 0 && self.textRender.isBreakLine) {
         CGSize size = self.textRender.size;
         UIBezierPath * bezierPath = [UIBezierPath bezierPathWithRect:CGRectMake(size.width - self.textRender.lineBreakMargin, size.height - 10, self.textRender.lineBreakMargin, 10)];
-        self.textRender.textContainer.exclusionPaths = @[bezierPath];
+        // 仅在变化时设置，避免每次重绘都触发全量重排
+        UIBezierPath *currentPath = self.textRender.textContainer.exclusionPaths.firstObject;
+        if (self.textRender.textContainer.exclusionPaths.count != 1
+            || !CGRectEqualToRect(currentPath.bounds, bezierPath.bounds)) {
+            self.textRender.textContainer.exclusionPaths = @[bezierPath];
+        }
+    } else if (self.textRender.textContainer.exclusionPaths.count > 0) {
+        // 清除残留的 exclusionPath，避免 textRender 复用/状态翻转后正文末行仍被错误留白
+        self.textRender.textContainer.exclusionPaths = @[];
     }
     
     [self.textRender drawTextAtPoint:rect.origin isCanceled:nil];
@@ -79,7 +87,8 @@ NSString *const KRBGAttributeKey = @"KRBGAttributeKey";
 }
 
 + (CGSize)sizeThatFits:(CGSize)size attributedString:(NSAttributedString *)attString numberOfLines:(NSUInteger)lines lineBreakMode:(NSLineBreakMode)mode lineBreakMarin:(CGFloat)marin {
-    return [self sizeThatFits:size attributedString:attString numberOfLines:lines lineBreakMode:mode lineBreakMarin:0 lineHeight:0];
+    // Fix: 原实现把 marin 写死为 0 转发，导致走该重载的调用 lineBreakMargin 丢失
+    return [self sizeThatFits:size attributedString:attString numberOfLines:lines lineBreakMode:mode lineBreakMarin:marin lineHeight:0];
 }
 
 + (CGSize)sizeThatFits:(CGSize)size attributedString:(NSAttributedString *)attString numberOfLines:(NSUInteger)lines lineBreakMode:(NSLineBreakMode)mode lineBreakMarin:(CGFloat)marin lineHeight:(CGFloat)lineHeight {
@@ -268,6 +277,9 @@ NSString *const KRBGAttributeKey = @"KRBGAttributeKey";
 - (void)setLineBreakMode:(NSLineBreakMode)lineBreakMode{
     if (_textContainer.lineBreakMode != lineBreakMode) {
         _textContainer.lineBreakMode = lineBreakMode;
+        // lineBreakMode 变化影响排版结果，显式通知 layoutManager 失效重排，
+        // 避免部分 iOS 版本上不触发布局失效导致 usedRect 返回旧值
+        [_layoutManager textContainerChangedGeometry:_textContainer];
     }
 }
 
@@ -278,6 +290,13 @@ NSString *const KRBGAttributeKey = @"KRBGAttributeKey";
 - (void)setMaximumNumberOfLines:(NSUInteger)maximumNumberOfLines{
     if (_textContainer.maximumNumberOfLines != maximumNumberOfLines) {
         _textContainer.maximumNumberOfLines = maximumNumberOfLines;
+        // 关键修复：isBreakLine 判定依赖"限行 vs 不限行"两次测量的尺寸对比，
+        // 两次测量之间仅切换 maximumNumberOfLines。部分 iOS 版本上仅修改
+        // NSTextContainer.maximumNumberOfLines 不会触发 NSLayoutManager 布局失效，
+        // 第二次测量拿到的是旧布局缓存尺寸 -> newSize == fitSize -> isBreakLine 恒为 NO，
+        // 造成 isLineBreakMargin 返回 '0'、lineBreakMargin 留白不生效的机型差异问题。
+        // 这里显式通知 layoutManager 容器几何变化，强制布局失效。
+        [_layoutManager textContainerChangedGeometry:_textContainer];
     }
 }
 
@@ -314,10 +333,11 @@ NSString *const KRBGAttributeKey = @"KRBGAttributeKey";
 - (CGSize)textSizeWithRenderWidth:(CGFloat)renderWidth{
     if (!_textStorageOnRender)  return CGSizeZero;
     _textContainer.size = CGSizeMake(renderWidth, MAXFLOAT);
-#if TARGET_OS_OSX // [macOS NSLayoutManager needs explicit layout trigger
-    // Force layout to ensure usedRectForTextContainer returns correct size
+    // Force layout to ensure usedRectForTextContainer returns correct size.
+    // 原来仅 macOS 分支执行；iOS 上如果布局未被正确失效（如仅切换 maximumNumberOfLines），
+    // usedRectForTextContainer 可能返回 stale 尺寸，导致 isBreakLine 误判（机型/系统版本相关）。
+    // ensureLayout 对已完成布局的场景是 no-op，不会引入额外性能开销。
     [_layoutManager ensureLayoutForTextContainer:_textContainer];
-#endif // macOS]
     CGSize textSize = [self textBound].size;
     CGSize res = CGSizeMake(ceil(textSize.width), ceil(textSize.height));
     return  res;
