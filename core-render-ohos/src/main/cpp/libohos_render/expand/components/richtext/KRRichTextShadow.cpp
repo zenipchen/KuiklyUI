@@ -96,7 +96,9 @@ KRAnyValue KRRichTextShadow::Call(const std::string &method_name, const std::str
     if (kuikly::util::isEqual(method_name, "spanRect")) {  // 调用获取placeholder span位置方法
         return SpanRect(NewKRRenderValue(params)->toInt());
     } else if(method_name == "isLineBreakMargin"){
-        return NewKRRenderValue(did_exceed_max_lines_ && OH_Drawing_DestroyTextLines? "1" : "0");
+        // did_exceed_max_lines_ 表示文本是否超过 maxLines（溢出），
+        // 业务据此决定是否展示“展开”按钮。
+        return NewKRRenderValue(did_exceed_max_lines_ ? "1" : "0");
     }
     return KRRenderValue::Make(nullptr);
 }
@@ -153,10 +155,17 @@ KRSize KRRichTextShadow::CalculateRenderViewSizeWithStyledString(double constrai
     if (spans.empty()) {
         spans.push_back(KRRenderValue::Make(props_));
     }
-    
+    // 将 lineBreakMargin（dp）传入 paragraph，供溢出时最后一行留白使用。
+    float lineBreakMargin = GetKRValue("lineBreakMargin", props_, props_)->toFloat();
     auto nativeResMgr = rootView->GetNativeResourceManager();
     std::shared_ptr<KRParagraph> paragraph = std::make_shared<KRParagraph>(spans, props_, fontSizeScale, fontWeightScale, KRConfig::GetDpi(), nativeResMgr, text_linearGradient_);
+    if (lineBreakMargin > 0) {
+        paragraph->SetLineBreakMargin(lineBreakMargin);
+    }
     auto [width, height] = paragraph->Measure(constraint_width);
+    // V2 StyledString 路径：从 paragraph 回传是否溢出 maxLines，
+    // 使 isLineBreakMargin 事件与 KRRichTextView 的 lineBreakMargin 偏移生效。
+    did_exceed_max_lines_ = paragraph->DidExceedMaxLines();
     SetParagraph(paragraph);
     return KRSize(width, height);
 }

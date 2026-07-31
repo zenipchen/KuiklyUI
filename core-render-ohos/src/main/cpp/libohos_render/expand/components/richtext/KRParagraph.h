@@ -34,6 +34,12 @@ class KRParagraph final {
     int SpanIndexAt(float spanX, float spanY);
     std::tuple<float, float, float, float> SpanRect(int spanIndex);
 
+    // V2 StyledString 路径下，测量后由 OH_Drawing_TypographyDidExceedMaxLines 得到是否超行，
+    // 回传给 KRRichTextShadow 用于 isLineBreakMargin / 绘制偏移判断。
+    bool DidExceedMaxLines() const { return did_exceed_max_lines_; }
+    // 设置 lineBreakMargin（单位 dp），溢出绘制时最后一行可用宽度会减去该值留白。
+    void SetLineBreakMargin(float line_break_margin) { line_break_margin_ = line_break_margin; }
+
   private:
     OH_Drawing_ShaderEffect *CreateShaderEffect(std::shared_ptr<kuikly::util::KRLinearGradientParser> linearGradient);
     std::tuple<float, float, OH_Drawing_Typography *> Measure(ArkUI_StyledString *, float max_width_pt,
@@ -60,6 +66,8 @@ class KRParagraph final {
     std::shared_ptr<kuikly::util::KRLinearGradientParser> linear_gradient_ = nullptr;
     float measured_width_ = 0;
     float measured_height_ = 0;
+    bool did_exceed_max_lines_ = false;
+    float line_break_margin_ = 0;
 
     NativeResourceManager *resource_manager_ = nullptr;
 };

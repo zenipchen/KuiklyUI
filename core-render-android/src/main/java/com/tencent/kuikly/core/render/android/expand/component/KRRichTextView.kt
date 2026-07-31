@@ -671,6 +671,9 @@ class KRRichTextShadow : IKuiklyRenderShadowExport, IKuiklyRenderContextWrapper 
             text
         }
         val desiredWidth = getDesiredWith(textSource, constraintSize, measureMode)
+        // 每次进入测量都重置状态，避免"上一次溢出、本次不溢出"时状态残留，
+        // 导致 isLineBreakMargin 上报与真实布局不一致（展开按钮错误显示/不显示）。
+        textProps.isLineBreakMargin = false
         if (!isBeforeM) {
             val builder = createStaticLayoutBuilder(textSource, desiredWidth)
             if (textProps.numberOfLines > 0 && textProps.lineBreakMargin == 0f) {
@@ -682,10 +685,15 @@ class KRRichTextShadow : IKuiklyRenderShadowExport, IKuiklyRenderContextWrapper 
             } else {
                 val staticLayout = builder.build()
                 if (staticLayout.lineCount > textProps.numberOfLines) {
+                    // 文本溢出：行尾留白生效。
+                    // 关键：rightIndents 数组长度必须与实际行数一致，只在最后一行加 indent。
+                    // 否则部分 ROM 对"超出数组长度的行"的复用规则不一致（有的对所有行都加、
+                    // 有的最后一行漏加），导致 63dp 行尾留白在 vivo 等机型上不生效。
+                    val rightIndents = createLineBreakMarginArray(textProps, staticLayout.lineCount)
                     val newBuilder = createStaticLayoutBuilder(textSource, desiredWidth)
                     newBuilder.setMaxLines(textProps.numberOfLines)
                         .setEllipsize(TextUtils.TruncateAt.END)
-                        .setIndents(null, createLineBreakMarginArray(textProps))
+                        .setIndents(null, rightIndents)
                     textProps.isLineBreakMargin = true
                     newBuilder.build()
                 } else {
@@ -722,11 +730,22 @@ class KRRichTextShadow : IKuiklyRenderShadowExport, IKuiklyRenderContextWrapper 
             .setIncludePad(false)
     }
 
-    private fun createLineBreakMarginArray(textProps: KRTextProps): IntArray {
-        val maxLines = textProps.numberOfLines
-        val array = IntArray(maxLines)
-        for (i in 0 until maxLines) {
-            if (i == maxLines - 1) {
+    /**
+     * 生成 rightIndents 数组。
+     *
+     * 注意：数组长度必须与"实际行数(lineCount)"一致，且只在最后一行填充 lineBreakMargin。
+     * StaticLayout 对超出数组长度的行会复用最后一个元素，不同 ROM 对该复用规则的实现
+     * 存在差异：有的机型会对所有行都加 indent，有的机型最后一行漏加，导致 63dp 行尾留白
+     * 在部分机型（如 vivo X70 Pro+）上不生效。
+     * 通过让数组长度等于真实行数、并保证最后一行才是唯一被缩进的行，彻底消除该 ROM 差异。
+     *
+     * @param lineCount 实际行数（来自已 build 的 staticLayout.lineCount）
+     */
+    private fun createLineBreakMarginArray(textProps: KRTextProps, lineCount: Int): IntArray {
+        val lines = if (lineCount <= 0) textProps.numberOfLines else lineCount
+        val array = IntArray(lines)
+        for (i in 0 until lines) {
+            if (i == lines - 1) {
                 array[i] = textProps.lineBreakMargin.toInt()
             } else {
                 array[i] = 0

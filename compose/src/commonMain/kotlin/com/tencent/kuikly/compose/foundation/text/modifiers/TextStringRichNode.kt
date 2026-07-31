@@ -94,6 +94,12 @@ internal class TextStringRichNode(
     private var cacheResult: TextLayoutResult? = null
 
     /**
+     * 缓存上一次查询到的 isLineBreakMargin 结果，仅在结果变化时重新 fire 事件，
+     * 避免重复 fire 以及“从溢出变不溢出”时事件缺失。
+     */
+    private var lastLineBreakMarginFired: Boolean? = null
+
+    /**
      * Element has text params to update
      */
     fun updateText(text: String?, annotatedText: AnnotatedString?): Boolean {
@@ -259,6 +265,20 @@ internal class TextStringRichNode(
         }
 
         val effectiveAnnotated = annotatedText ?: AnnotatedString(plainText ?: "")
+        // —— lineCount 语义说明（对抗式 CR 修复 High）——
+        // Kuikly 富文本在 Compose 层目前无法从各端 shadow 拿到"真实渲染行数"
+        // （android/ios/ohos 的 shadow 尚未统一暴露 getLineCount，仅内部使用原生行数）。
+        // 因此 TextLayoutResult.lineCount 在此**降级为"溢出布尔"语义**，而非精确行数：
+        //   · 溢出(maxLines) -> maxLines + 1（明确 > maxLines，业务可据以判定"已截断"）
+        //   · 未溢出         -> 1（占位值，非真实行数，业务不应依赖其精确性）
+        // 业务如需精确行数 / 溢出状态，应监听 ON_LINE_BREAK_MARGIN 事件，
+        // 或待平台层暴露真实 getLineCount 后再切换为精确值。
+        val isOverflow = textView?.shadow?.callMethod(TextConst.SHADOW_METHOD_IS_LINE_BREAK_MARGIN, "") == "1"
+        val lineCount = if (isOverflow) {
+            (if (maxLines == Int.MAX_VALUE) 1 else maxLines + 1)
+        } else {
+            1
+        }
         return TextLayoutResult(
             TextLayoutInput(
                 effectiveAnnotated,
@@ -272,7 +292,7 @@ internal class TextStringRichNode(
 //                fontFamilyResolver,
 //                finalConstraints
             ),
-            MultiParagraph(placeholderRects = placeholderRects),
+            MultiParagraph(lineCount = lineCount, placeholderRects = placeholderRects),
             size
         )
     }
@@ -299,11 +319,15 @@ internal class TextStringRichNode(
 
         // Compose layout runs outside Kuikly's Flex layout loop,
         // so we need to manually fire the line break margin event.
+        // 查询结果缓存，仅在值发生变化时 fire ON_LINE_BREAK_MARGIN 事件。
         if (textView?.getViewAttr()?.getProp(TextConst.LINE_BREAK_MARGIN) != null) {
             val isLineBreakMargin =
                 textView.shadow?.callMethod(TextConst.SHADOW_METHOD_IS_LINE_BREAK_MARGIN, "") == "1"
-            if (isLineBreakMargin) {
-                textView.onFireEvent(TextEvent.TextEventConst.ON_LINE_BREAK_MARGIN, null)
+            if (isLineBreakMargin != lastLineBreakMarginFired) {
+                if (isLineBreakMargin) {
+                    textView.onFireEvent(TextEvent.TextEventConst.ON_LINE_BREAK_MARGIN, null)
+                }
+                lastLineBreakMarginFired = isLineBreakMargin
             }
         }
 
