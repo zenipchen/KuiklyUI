@@ -262,7 +262,7 @@ abstract class ViewContainer<A : ContainerAttr, E : Event> : DeclarativeBaseView
         super.createRenderView()
         createRenderViewing = false
         var index = 0
-        renderChildren().forEach { child ->
+        forEachRenderChild { child ->
             child.createRenderView()
             renderView?.insertSubRenderView(child.nativeRef, index++)
             child.renderViewDidMoveToParentRenderView()
@@ -271,7 +271,7 @@ abstract class ViewContainer<A : ContainerAttr, E : Event> : DeclarativeBaseView
 
     override fun removeRenderView() {
         super.removeRenderView()
-        renderChildren().forEach { child ->
+        forEachRenderChild { child ->
             child.removeRenderView()
         }
     }
@@ -302,7 +302,7 @@ abstract class ViewContainer<A : ContainerAttr, E : Event> : DeclarativeBaseView
     override fun layoutFrameDidChanged(frame: Frame) {
         super.layoutFrameDidChanged(frame)
         if (!isRenderView() && !lastFrame.isDefaultValue()) {
-            renderChildren().forEach {
+            forEachRenderChild {
                 it.setFrameToRenderView(it.flexNode.layoutFrame)
             }
         }
@@ -384,6 +384,18 @@ abstract class ViewContainer<A : ContainerAttr, E : Event> : DeclarativeBaseView
             }
         }
         return renderChildren
+    }
+
+    // 与 renderChildren() 同样的展开顺序，但不构造中间列表
+    fun forEachRenderChild(action: (DeclarativeBaseView<*, *>) -> Unit) {
+        fun walk(view: DeclarativeBaseView<*, *>) {
+            if (view.isRenderView()) {
+                action(view)
+            } else if (view is ViewContainer) {
+                view.forEachChild { child -> walk(child) }
+            }
+        }
+        forEachChild { child -> walk(child) }
     }
 
     // 层级扁平下，判断当前容器是否可以扁平
