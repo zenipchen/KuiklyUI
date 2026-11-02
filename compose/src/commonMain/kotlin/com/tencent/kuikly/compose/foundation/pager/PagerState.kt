@@ -295,6 +295,11 @@ abstract class PagerState internal constructor(
         if (scrollDelta.absoluteValue != 0L) {
             isLastScrollForwardState.value = scrollDelta > 0.0f
             isLastScrollBackwardState.value = scrollDelta < 0.0f
+            // 滑动中：本次（及后续连续滑动）的测量推迟 beyond 组合，
+            // 滚动停止 600ms 静默后由 scheduleBeyondRestoreOnIdle 补上，
+            // 避免相邻页组合成本（实测约 57ms）压在滑动帧上。
+            deferBeyondUntilIdle = true
+            scheduleBeyondRestoreOnIdle()
         }
 
         /**
@@ -1371,7 +1376,17 @@ abstract class PagerState internal constructor(
             clearSnapAnimationState()
             debugLog { "Scroll from page=$currentPage to page=$page" }
             val targetPage = page.coerceInPageRange()
-            snapToItem(targetPage, pageOffsetFraction, forceRemeasure = true)
+            skipBeyondCompose = true
+            try {
+                snapToItem(targetPage, pageOffsetFraction, forceRemeasure = true)
+            } finally {
+                skipBeyondCompose = false
+                // 切页当帧跳过 beyond 后，紧邻下一帧会以完整 beyond 再测量，
+                // 相邻页组合成本（实测约 57ms）会压在切页后的那一帧。
+                // 走与滑动一致的"推迟到静止后补"，让这笔开销离开切页帧。
+                deferBeyondUntilIdle = true
+                scheduleBeyondRestoreOnIdle()
+            }
         }
     }
 
@@ -1422,6 +1437,66 @@ abstract class PagerState internal constructor(
     }
 
     internal val measurementScopeInvalidator = ObservableScopeInvalidator()
+
+    /**
+     * 切页（scrollToPage）进行中为 true：测量跳过 beyond 页的预组合，
+     * 相邻页组合成本（实测约 57ms）不再落在切页当帧。
+     */
+    internal var skipBeyondCompose: Boolean = false
+
+    /**
+     * 滑动/切页后：把 beyond 页的组合推迟到滚动停止后。
+     * 滚动停止 600ms 静默后自动补一次，保证 beyond 生效而非长期缺失。
+     */
+    internal var deferBeyondUntilIdle: Boolean = false
+
+    /** 只由 scheduleBeyondRestoreOnIdle 的延迟任务置位，确保"补"只发生一次。 */
+    private var restoreRequested: Boolean = false
+
+    /** 滚动停止检测任务：复用活跃 Job，避免每帧 cancel/launch。 */
+    private var scrollIdleJob: kotlinx.coroutines.Job? = null
+
+    /** 最近一次滚动的时刻。 */
+    private var lastScrollMark: kotlin.time.TimeSource.Monotonic.ValueTimeMark? = null
+
+    /** 判定"滚动已停止"的静默时长。 */
+    private val scrollIdleDelayMs = 600L
+
+    internal fun scheduleBeyondRestoreOnIdle() {
+        // 滑动期间每个 MOVE 都会调用本函数。用时间戳 + 活跃 Job 复用，
+        // 避免滑动热路径上每帧 cancel/launch 协程。
+        lastScrollMark = kotlin.time.TimeSource.Monotonic.markNow()
+        if (scrollIdleJob?.isActive == true) {
+            return
+        }
+        val scope = pagerLayoutInfoState.value.coroutineScope
+        scrollIdleJob = scope.launch {
+            // 期间有新的 delta 会刷新 lastScrollMark，醒来发现未静默就再睡剩余时长
+            while (true) {
+                val mark = lastScrollMark ?: break
+                val remaining = scrollIdleDelayMs - mark.elapsedNow().inWholeMilliseconds
+                if (remaining <= 0) break
+                kotlinx.coroutines.delay(remaining)
+            }
+            lastScrollMark = null
+            if (deferBeyondUntilIdle) {
+                restoreRequested = true
+                measurementScopeInvalidator.invalidateScope()
+            }
+        }
+    }
+
+    /** 本次测量实际使用的 beyond 数量。 */
+    internal fun resolveBeyondCount(requested: Int): Int {
+        if (skipBeyondCompose) return 0
+        if (restoreRequested) {
+            restoreRequested = false
+            deferBeyondUntilIdle = false
+            return requested
+        }
+        if (deferBeyondUntilIdle) return 0
+        return requested
+    }
 
     /**
      * Requests the [page] to be at the snapped position during the next remeasure,
