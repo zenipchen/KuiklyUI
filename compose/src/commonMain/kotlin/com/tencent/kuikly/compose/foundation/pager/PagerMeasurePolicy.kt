@@ -183,7 +183,7 @@ internal fun rememberPagerMeasurePolicy(
                 mainAxisAvailableSize = mainAxisAvailableSize,
                 visualPageOffset = visualItemOffset,
                 pageAvailableSize = pageAvailableSize,
-                beyondViewportPageCount = beyondViewportPageCount,
+                beyondViewportPageCount = state.resolveBeyondCount(beyondViewportPageCount),
                 orientation = orientation,
                 currentPage = currentPage,
                 currentPageOffset = currentPageOffset,
